@@ -1,0 +1,26 @@
+package the_dark_jumper.cannonTracer.modules.moduleElements;
+
+public class ModuleBase {
+	public String name;
+	public int keybind1, keybind2;
+	public boolean render;
+	
+	public ModuleBase(String name, boolean render, int keybind1, int keybind2) {
+		this.name = name;
+		this.render = render;
+		this.keybind1 = keybind1;
+		this.keybind2 = keybind2;
+	}
+	
+	public void updateKeybind(int index, int keybind) {
+		if(index == 0) {
+			keybind1 = keybind;
+		}else if(index == 1) {
+			keybind2 = keybind;
+		}
+	}
+	
+	public void keyPressed(int key) {}
+	
+	public void keyReleased(int key) {}
+}
