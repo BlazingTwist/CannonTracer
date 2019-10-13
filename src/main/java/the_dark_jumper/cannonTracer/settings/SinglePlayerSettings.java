@@ -5,21 +5,39 @@ import java.util.Iterator;
 
 import net.minecraft.client.Minecraft;
 import the_dark_jumper.cannonTracer.Main;
+import the_dark_jumper.cannonTracer.util.GetterAndSetter;
 import the_dark_jumper.cannonTracer.util.TracingData;
 
 public class SinglePlayerSettings {
 	public final Main main;
 	
 	public int mode = 0;
-	public long renderTick = 0;
+	public GetterAndSetter<Integer> modeGNS;
+	public int renderTick = 0;
+	public GetterAndSetter<Integer> renderTickGNS;
 	public boolean xRayTrace = false;
+	public GetterAndSetter<Boolean> xRayTraceGNS;
 	public boolean renderBoxes = false;
+	public GetterAndSetter<Boolean> renderBoxesGNS;
 	public boolean renderMenu = false;
+	public GetterAndSetter<Boolean> renderMenuGNS;
 	
 	public SinglePlayerSettings(Main main) {
 		this.main = main;
+		setupAccessors();
 	}
 	
+	public void setupAccessors() {
+		modeGNS = new GetterAndSetter<Integer>(this::getMode, this::setMode);
+		renderTickGNS = new GetterAndSetter<Integer>(this::getRenderTick, this::setRenderTick);
+		xRayTraceGNS = new GetterAndSetter<Boolean>(this::getXRayTrace, this::setXRayTrace);
+		renderBoxesGNS = new GetterAndSetter<Boolean>(this::getRenderBoxes, this::setRenderBoxes);
+		renderMenuGNS = new GetterAndSetter<Boolean>(this::getRenderMenu, this::setRenderMenu);
+	}
+	
+	public int getMode() {
+		return this.mode;
+	}
 	public void setMode(int mode) {
 		this.mode = mode;
 		if(mode != 1) {
@@ -28,24 +46,37 @@ public class SinglePlayerSettings {
 		}
 	}
 	
-	public void setRenderTick(long renderTick) {
+	public int getRenderTick() {
+		return this.renderTick;
+	}
+	public void setRenderTick(int renderTick) {
 		this.renderTick = renderTick;
 	}
 	
+	public boolean getXRayTrace() {
+		return this.xRayTrace;
+	}
 	public void setXRayTrace(boolean xRayTrace) {
 		this.xRayTrace = xRayTrace;
 	}
 	
+	public boolean getRenderBoxes() {
+		return this.renderBoxes;
+	}
 	public void setRenderBoxes(boolean renderBoxes) {
 		this.renderBoxes = renderBoxes;
 	}
 	
+	public boolean getRenderMenu() {
+		return this.renderMenu;
+	}
 	public void setRenderMenu(boolean renderMenu) {
 		if(renderMenu) {
 			main.guiManager.configGUI.generateSingleplayerScreenComponents();
 			Minecraft.getInstance().displayGuiScreen(main.guiManager.configGUI);
 		}else{
 			main.guiManager.configGUI.onClose();
+			main.dataManager.Save();
 		}
 		this.renderMenu = renderMenu;
 	}

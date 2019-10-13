@@ -11,7 +11,7 @@ import the_dark_jumper.cannonTracer.modules.moduleElements.ModuleOnOff;
 import the_dark_jumper.cannonTracer.modules.moduleElements.ModuleStateMachine;
 import the_dark_jumper.cannonTracer.modules.moduleElements.ModuleToggle;
 
-public class IngameGUI extends Screen implements JumperGui{
+public class IngameGUI extends Screen{
 	public final GuiManager guiManager;
 	
 	public IngameGUI(GuiManager guiManager) {
@@ -40,7 +40,7 @@ public class IngameGUI extends Screen implements JumperGui{
 					drawString(minecraft.fontRenderer, mt.name + " :" + mt.state, 4, 4 + (10 * count), mt.state ? 0x7f00ff00 : 0x7fff0000);
 				}else if(module instanceof ModuleCounter) {
 					ModuleCounter mc = (ModuleCounter)module;
-					drawString(minecraft.fontRenderer, mc.name + " :" + mc.value, 4, 4 + (10 * count), 0x7fffffff);
+					drawString(minecraft.fontRenderer, mc.name + " :" + mc.valueGNS.getter.get(), 4, 4 + (10 * count), 0x7fffffff);
 				}else if(module instanceof ModuleStateMachine) {
 					ModuleStateMachine msm = (ModuleStateMachine)module;
 					drawString(minecraft.fontRenderer, msm.name + " :" + msm.stateNames[msm.currentState], 4, 4 + (10 * count), 0x7fffffff);

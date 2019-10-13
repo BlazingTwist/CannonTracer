@@ -6,7 +6,7 @@ import java.util.function.Supplier;
 
 import the_dark_jumper.cannonTracer.modules.moduleElements.ModuleBase;
 import the_dark_jumper.cannonTracer.Main;
-import the_dark_jumper.cannonTracer.util.GetterAndSetter_INT;
+import the_dark_jumper.cannonTracer.util.GetterAndSetter;
 
 public class KeybindManager {
 	public final Main main;
@@ -15,16 +15,16 @@ public class KeybindManager {
 	public LinkedHashMap<String, KeybindAccessors> variablesMP = new LinkedHashMap<>();
 	
 	public class KeybindAccessors{
-		public GetterAndSetter_INT accessors[] = new GetterAndSetter_INT[2];
+		public GetterAndSetter accessors[] = new GetterAndSetter[2];
 		
-		KeybindAccessors(GetterAndSetter_INT accessor1, GetterAndSetter_INT accessor2) {
+		KeybindAccessors(GetterAndSetter accessor1, GetterAndSetter accessor2) {
 			this.accessors[0] = accessor1;
 			this.accessors[1] = accessor2;
 		}
 		
 		KeybindAccessors(Supplier<Integer> getter1, Consumer<Integer> setter1, Supplier<Integer> getter2, Consumer<Integer> setter2){
-			this.accessors[0] = new GetterAndSetter_INT(getter1, setter1);
-			this.accessors[1] = new GetterAndSetter_INT(getter2, setter2);
+			this.accessors[0] = new GetterAndSetter(getter1, setter1);
+			this.accessors[1] = new GetterAndSetter(getter2, setter2);
 		}
 	}
 	

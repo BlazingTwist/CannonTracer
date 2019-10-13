@@ -3,50 +3,50 @@ package the_dark_jumper.cannonTracer.gui.guiElements;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import the_dark_jumper.cannonTracer.Main;
+import the_dark_jumper.cannonTracer.gui.JumperGui;
+import the_dark_jumper.cannonTracer.gui.JumperGui.FrameConfig;
+import the_dark_jumper.cannonTracer.gui.guiElements.interfaces.RenderableFrame;
 
 public class BasicTextFrame implements RenderableFrame{
 	public final Main main;
-	public final Screen parent;
+	public final JumperGui parent;
 	public final Minecraft minecraft;
 	public String text;
-	public int x, y, xEnd, yEnd, borderThickness, borderColor, innerColor;
+	public FrameConfig config;
+	public FrameColors colors;
 	
 	//all values are percentages of the full screen
-	public BasicTextFrame(Main main, Screen parent, String text, int x, int y, int xEnd, int yEnd, int borderThickness,
-			int innerColor, int borderColor) {
+	public BasicTextFrame(Main main, JumperGui parent, String text, FrameConfig config, FrameColors colors) {
 		this.main = main;
 		this.parent = parent;
 		this.minecraft = parent.getMinecraft();
-		init(text, x, y, xEnd, yEnd, borderThickness, innerColor, borderColor);
+		init(text, config, colors);
 	}
 	
-	public void init(String text, int x, int y, int xEnd, int yEnd, int borderThickness, int innerColor, int borderColor) {
+	public void init(String text, FrameConfig frameConfig, FrameColors colors) {
 		this.text = text;
-		this.x = x;
-		this.y = y;
-		this.xEnd = xEnd;
-		this.yEnd = yEnd;
-		this.borderThickness = borderThickness;
-		this.innerColor = innerColor;
-		this.borderColor = borderColor;
+		this.config = frameConfig;
+		this.colors = colors;
 	}
 	
 	public void render(int scaledScreenWidth, int scaledScreenHeight, int guiScale) {
 		//outer corners
-		int x1 = getPercentValue(scaledScreenWidth, this.x);
-		int x2 = getPercentValue(scaledScreenWidth, this.xEnd);
-		int y1 = getPercentValue(scaledScreenHeight, this.y);
-		int y2 = getPercentValue(scaledScreenHeight, this.yEnd);
-		doFills(x1, y1, x2, y2, borderThickness / guiScale);
-		drawTexts(x1, y1, x2, y2);
+		int x1 = getPercentValue(scaledScreenWidth, this.config.x);
+		int x2 = getPercentValue(scaledScreenWidth, this.config.xEnd);
+		int y1 = getPercentValue(scaledScreenHeight, this.config.y);
+		int y2 = getPercentValue(scaledScreenHeight, this.config.yEnd);
+		doFills(x1, y1, x2, y2, config.borderThickness / guiScale);
+		if(!text.equals("")) {
+			drawTexts(x1, y1, x2, y2);
+		}
 	}
 	
 	public void doFills(int x1, int y1, int x2, int y2, int borderPx) {
-		Screen.fill(x1, y1, x1 + borderPx, y2, borderColor); //left edge
-		Screen.fill(x1, y1, x2, y1 + borderPx, borderColor); //top edge
-		Screen.fill(x2 - borderPx, y1, x2, y2, borderColor); //right edge
-		Screen.fill(x1, y2 - borderPx, x2, y2, borderColor); //bottom edge
-		Screen.fill(x1 + borderPx, y1 + borderPx, x2 - borderPx, y2 - borderPx, innerColor);
+		Screen.fill(x1, y1, x1 + borderPx, y2, colors.borderColor); //left edge
+		Screen.fill(x1 + borderPx, y1, x2 - borderPx, y1 + borderPx, colors.borderColor); //top edge
+		Screen.fill(x2 - borderPx, y1, x2, y2, colors.borderColor); //right edge
+		Screen.fill(x1 + borderPx, y2 - borderPx, x2 - borderPx, y2, colors.borderColor); //bottom edge
+		Screen.fill(x1 + borderPx, y1 + borderPx, x2 - borderPx, y2 - borderPx, colors.innerColor);
 	}
 	
 	public void drawTexts(int x1, int y1, int x2, int y2) {

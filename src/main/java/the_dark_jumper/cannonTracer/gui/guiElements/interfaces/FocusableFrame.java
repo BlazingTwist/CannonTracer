@@ -1,8 +1,8 @@
-package the_dark_jumper.cannonTracer.gui.guiElements;
+package the_dark_jumper.cannonTracer.gui.guiElements.interfaces;
 
 import net.minecraftforge.client.event.InputEvent;
 
-public interface Focusable {
+public interface FocusableFrame {
 	public void focused();
 	
 	public void focusLost();

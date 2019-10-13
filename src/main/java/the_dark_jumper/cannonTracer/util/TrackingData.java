@@ -1,14 +1,16 @@
 package the_dark_jumper.cannonTracer.util;
 
-import java.util.HashMap;
-import java.util.function.Consumer;
-
 public class TrackingData {
 	private float time;
+	public GetterAndSetter<Float> timeGNS;
 	private float thickness;
+	public GetterAndSetter<Float> thicknessGNS;
 	private int red,green,blue,alpha;
+	public GetterAndSetter<Integer> redGNS, greenGNS, blueGNS, alphaGNS;
 	private boolean render;
-	public HashMap<String, Consumer<Object>> setters = new HashMap<>();
+	public GetterAndSetter<Boolean> renderGNS;
+
+	//public LinkedHashMap<String, GetterAndSetter<Object>> gettersAndSetters = new LinkedHashMap<>();
 	
 	public TrackingData(float time, float thickness, int red, int green, int blue, int alpha, boolean render){
 		this.time = time;
@@ -26,74 +28,53 @@ public class TrackingData {
 	}
 	
 	public void initSetters() {
-		setters.put("time", this::setTime);
-		setters.put("thickness", this::setThickness);
-		setters.put("red", this::setRed);
-		setters.put("green", this::setGreen);
-		setters.put("blue", this::setBlue);
-		setters.put("alpha", this::setAlpha);
-		setters.put("render", this::setRender);
+		timeGNS = new GetterAndSetter<Float>(this::getTime, this::setTime);
+		thicknessGNS = new GetterAndSetter<Float>(this::getThickness, this::setThickness);
+		redGNS = new GetterAndSetter<Integer>(this::getRed, this::setRed);
+		greenGNS = new GetterAndSetter<Integer>(this::getGreen, this::setGreen);
+		blueGNS = new GetterAndSetter<Integer>(this::getBlue, this::setBlue);
+		alphaGNS = new GetterAndSetter<Integer>(this::getAlpha, this::setAlpha);
+		renderGNS = new GetterAndSetter<Boolean>(this::getRender, this::setRender);
 	}
 	
-	public void setTime(Object o) {
-		System.out.println("setTime receiving class: "+o.getClass());
-		if(o instanceof Float) {
-			time = ((Float)o).floatValue();
-		}
+	public void setTime(float o) {
+		time = o;
 	}
 	public float getTime() {
 		return time;
 	}
-	public void setThickness(Object o) {
-		System.out.println("setThickness receiving class: "+o.getClass());
-		if(o instanceof Float) {
-			thickness = ((Float)o).floatValue();
-		}
+	public void setThickness(float o) {
+		thickness = o;
 	}
 	public float getThickness(){
 		return thickness;
 	}
-	public void setRed(Object o) {
-		System.out.println("setRed receiving class: "+o.getClass());
-		if(o instanceof Integer) {
-			red = ((Integer) o).intValue();
-		}
+	public void setRed(int o) {
+		red = o;
 	}
 	public int getRed() {
 		return red;
 	}
-	public void setGreen(Object o) {
-		System.out.println("setGreen receiving class: "+o.getClass());
-		if(o instanceof Integer) {
-			green = ((Integer) o).intValue();
-		}
+	public void setGreen(int o) {
+		green = o;
 	}
 	public int getGreen() {
 		return green;
 	}
-	public void setBlue(Object o) {
-		System.out.println("setBlue receiving class: "+o.getClass());
-		if(o instanceof Integer) {
-			blue = ((Integer) o).intValue();
-		}
+	public void setBlue(int o) {
+		blue = o;
 	}
 	public int getBlue() {
 		return blue;
 	}
-	public void setAlpha(Object o) {
-		System.out.println("setAlpha receiving class: "+o.getClass());
-		if(o instanceof Integer) {
-			alpha = ((Integer) o).intValue();
-		}
+	public void setAlpha(int o) {
+		alpha = o;
 	}
 	public int getAlpha() {
 		return alpha;
 	}
-	public void setRender(Object o) {
-		System.out.println("setRender receiving class: "+o.getClass());
-		if(o instanceof Boolean) {
-			render = ((Boolean)o).booleanValue();
-		}
+	public void setRender(boolean o) {
+		render = o;
 	}
 	public boolean getRender() {
 		return render;

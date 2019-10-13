@@ -2,35 +2,29 @@ package the_dark_jumper.cannonTracer.modules.moduleElements;
 
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.function.Consumer;
+
+import the_dark_jumper.cannonTracer.util.GetterAndSetter;
 
 public class ModuleCounter extends ModuleBase{
 	Timer timer;
-	public int value;
 	public int min;
 	public int max;
 	public int step;
 	public boolean decrementLoopIsRunning = false;
 	public boolean incrementLoopIsRunning = false;
-	Consumer<Integer> valueChanged;
+	public GetterAndSetter<Integer> valueGNS;
 	
-	public ModuleCounter(String name, boolean render, int value, int min, int max, int step, int keybind1, int keybind2) {
+	public ModuleCounter(String name, boolean render, int min, int max, int step, GetterAndSetter<Integer> valueGNS, int keybind1, int keybind2) {
 		super(name, render, keybind1, keybind2);
-		init(value, min, max, step, null);
+		init(min, max, step, valueGNS);
 	}
 	
-	public ModuleCounter(String name, boolean render, int value, int min, int max, int step, Consumer<Integer> valueChanged, int keybind1, int keybind2) {
-		super(name, render, keybind1, keybind2);
-		init(value, min, max, step, valueChanged);
-	}
-	
-	public void init(int value, int min, int max, int step, Consumer<Integer> valueChanged) {
+	public void init(int min, int max, int step, GetterAndSetter<Integer> valueGNS) {
 		timer = new Timer();
-		this.value = value;
 		this.min = min;
 		this.max = max;
 		this.step = step;
-		this.valueChanged = valueChanged;
+		this.valueGNS = valueGNS;
 	}
 	
 	public void keyPressed(int key) {
@@ -64,6 +58,7 @@ public class ModuleCounter extends ModuleBase{
 	}
 	
 	public void increment() {
+		int value = valueGNS.getter.get();
 		if(value == max) {
 			return;
 		}
@@ -71,12 +66,11 @@ public class ModuleCounter extends ModuleBase{
 		if(value > max) {
 			value = max;
 		}
-		if(valueChanged != null) {
-			valueChanged.accept(value);
-		}
+		valueGNS.setter.accept(value);
 	}
 	
 	public void decrement() {
+		int value = valueGNS.getter.get();
 		if(value == min) {
 			return;
 		}
@@ -84,9 +78,7 @@ public class ModuleCounter extends ModuleBase{
 		if(value < min) {
 			value = min;
 		}
-		if(valueChanged != null) {
-			valueChanged.accept(value);
-		}
+		valueGNS.setter.accept(value);
 	}
 	
 	public void onIncrementLoop() {

@@ -62,7 +62,7 @@ public class TracingData {
 		if(!entityTracker.main.singlePlayerSettings.renderBoxes) {
 			return;
 		}
-		if(entityTracker.main.singlePlayerSettings.mode==2&&!(ticksAlive.contains(entityTracker.main.singlePlayerSettings.renderTick))) {
+		if(entityTracker.main.singlePlayerSettings.mode == 2 && !(ticksAlive.contains((long)entityTracker.main.singlePlayerSettings.renderTick))) {
 			return;
 		}
 		bufferBuilder.pos((x2-0.49), (y2-0.49), (z2-0.49)).color(0,0,0,0).endVertex();

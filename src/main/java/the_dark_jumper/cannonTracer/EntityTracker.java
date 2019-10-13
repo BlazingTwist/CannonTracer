@@ -77,28 +77,29 @@ public class EntityTracker {
 		Entity a_e;
 		TrackingData track_data;
 		try {
-			if(trackedEntities!=null && trackedEntities.size()>0) {
-				for(Iterator<Entity>it=trackedEntities.iterator(); it.hasNext();) {
-					a_e=it.next();
+			if(trackedEntities != null && trackedEntities.size() > 0) {
+				for(Iterator<Entity>it = trackedEntities.iterator(); it.hasNext();) {
+					a_e = it.next();
 					if(!a_e.isAlive()) {
 						it.remove();
 						continue;
 					}
-					if(a_e.ticksExisted<=0)
+					if(a_e.ticksExisted <= 0) {
 						continue;
-					track_data=observedEntityIDSP.get(a_e.getClass().getSimpleName());
-					boolean newData=true;
-					double x1=a_e.prevPosX, x2=a_e.posX, y1=a_e.prevPosY, y2=a_e.posY, z1=a_e.prevPosZ, z2=a_e.posZ;
+					}
+					track_data = observedEntityIDSP.get(a_e.getClass().getSimpleName());
+					boolean newData = true;
+					double x1 = a_e.prevPosX, x2 = a_e.posX, y1 = a_e.prevPosY, y2 = a_e.posY, z1 = a_e.prevPosZ, z2 = a_e.posZ;
 					TracingData trace_data;
-					if(main.singlePlayerSettings.mode==2) {
-						for(Iterator<TracingData> iter=lastSecond.iterator(); iter.hasNext();) {
+					if(main.singlePlayerSettings.mode == 2) {
+						for(Iterator<TracingData> iter = lastSecond.iterator(); iter.hasNext();) {
 							trace_data=iter.next();
-							if(System.currentTimeMillis()-trace_data.timeOfCreation>=5000) {
+							if(System.currentTimeMillis() - trace_data.timeOfCreation >= 5000) {
 								iter.remove();
 							}else if(!trace_data.isNewData(x1, x2, y1, y2, z1, z2)){
-								newData=false;
-								long time=System.currentTimeMillis();
-								trace_data.timeOfCreation=time;
+								newData = false;
+								long time = System.currentTimeMillis();
+								trace_data.timeOfCreation = time;
 								trace_data.ticksAlive.add(time);
 								break;
 							}
@@ -151,8 +152,10 @@ public class EntityTracker {
 			for(Iterator<TracingData> it=tracingHistory.iterator(); it.hasNext();) {
 				trace_data = it.next();
 				track_data=observedEntityIDSP.get(trace_data.ID);
-				trace_data.setupDrawingBuffer(bufferBuilder, track_data);
-				if(System.currentTimeMillis()-trace_data.timeOfCreation>=(track_data.getTime()*1000) && main.singlePlayerSettings.mode==0) {
+				if(track_data.renderGNS.getter.get()) {
+					trace_data.setupDrawingBuffer(bufferBuilder, track_data);
+				}
+				if(System.currentTimeMillis() - trace_data.timeOfCreation >= (track_data.getTime() * 1000) && main.singlePlayerSettings.mode == 0) {
 					//rendered time >= max time
 					it.remove();
 				}

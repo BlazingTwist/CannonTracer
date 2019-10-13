@@ -1,30 +1,29 @@
 package the_dark_jumper.cannonTracer.gui;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraftforge.client.event.InputEvent;
+import the_dark_jumper.cannonTracer.configSaving.KeybindManager.KeybindAccessors;
 import the_dark_jumper.cannonTracer.gui.guiElements.BasicTextFrame;
-import the_dark_jumper.cannonTracer.gui.guiElements.Clickable;
-import the_dark_jumper.cannonTracer.gui.guiElements.Focusable;
+import the_dark_jumper.cannonTracer.gui.guiElements.FrameColors;
 import the_dark_jumper.cannonTracer.gui.guiElements.KeybindFrame;
-import the_dark_jumper.cannonTracer.gui.guiElements.RenderableFrame;
-import the_dark_jumper.cannonTracer.gui.guiElements.Tickable;
-import the_dark_jumper.cannonTracer.gui.guiElements.ToggleFrame;
-import the_dark_jumper.cannonTracer.modules.moduleElements.ModuleBase;
-import the_dark_jumper.cannonTracer.modules.moduleElements.ModuleToggle;
+import the_dark_jumper.cannonTracer.gui.guiElements.ToggleValueFrame;
+import the_dark_jumper.cannonTracer.gui.guiElements.ValueFrame;
+import the_dark_jumper.cannonTracer.gui.guiElements.interfaces.ClickableFrame;
+import the_dark_jumper.cannonTracer.gui.guiElements.interfaces.FocusableFrame;
+import the_dark_jumper.cannonTracer.gui.guiElements.interfaces.RenderableFrame;
+import the_dark_jumper.cannonTracer.gui.guiElements.interfaces.TickableFrame;
+import the_dark_jumper.cannonTracer.util.TrackingData;
 
-public class ConfigGUI extends Screen implements JumperGui{
-	public final int borderColor = 0xff444444;
-	public final int innerColor = 0xff4a9bce;
-	public final int innerColor2 = 0xff3e82ad;
-	public final int colorOn = 0xff00ff00;
-	public final int colorOff = 0xffff0000;
-	public final int colorHover = 0xff4a88ce;
-	public final int colorHover2 = 0xff3e72ad;
-	
+public class ConfigGUI extends Screen implements JumperGui{	
 	public boolean leftDown = false;
+	public boolean getLeftDown() {
+		return leftDown;
+	}
 	
 	public final GuiManager guiManager;
 	public ArrayList<RenderableFrame> guiComponents = new ArrayList<>();
@@ -37,16 +36,74 @@ public class ConfigGUI extends Screen implements JumperGui{
 	
 	public void generateSingleplayerScreenComponents() {
 		guiComponents.clear();
-		guiComponents.add(new KeybindFrame(guiManager.main, this, 10, 10, 30, 14, 8, innerColor, innerColor2, borderColor,
-				colorHover, colorHover2, "Menu1", guiManager.main.keybindManager.variablesSP.get("MenuSP").accessors[0]));
-		/*guiComponents.add(new BasicTextFrame(this, "Hello World", 10, 10, 30, 14, 8, innerColor, borderColor));
-		for(ModuleBase module : guiManager.main.moduleManager.activeModules) {
-			if(module.name.equals("XRay Traces")) {
-				guiComponents.add(new ToggleFrame(this, 10, 15, 30, 19, 8, innerColor, innerColor2, borderColor,
-						colorOn, colorOff, colorHover, colorHover2, (ModuleToggle) module, 5));
-			}
-		}*/
+		FrameConfig config = new FrameConfig();
+		//alpha outliner
+		config.init(5, 5, 95, 95, 8);
+		FrameColors backGroundColors = new FrameColors();
+		backGroundColors.innerColor = backGroundColors.borderColor = 0x55000000;
+		guiComponents.add(new BasicTextFrame(guiManager.main, this, "", config.duplicate(), backGroundColors));
+		//headline
+		config.init(6, 10, 49, 14, 8);
+		FrameColors colors = new FrameColors();
+		guiComponents.add(new BasicTextFrame(guiManager.main, this, "Config-Screen", config.duplicate(), colors));
+		config.init(50, 10, 71, 14, 8);
+		guiComponents.add(new ValueFrame(guiManager.main, this, config.duplicate(), colors, "displayTick", guiManager.main.singlePlayerSettings.renderTickGNS, Integer.class));
+		config.init(72, 10, 94, 14, 8);
+		guiComponents.add(new ToggleValueFrame(guiManager.main, this, config.duplicate(), colors, "logIDs", guiManager.main.guiSettings.bLogGNS));
+		//keybinds
+		config.init(6, 20, 94, 24, 8);
+		guiComponents.add(new BasicTextFrame(guiManager.main, this, "Keybinds", config.duplicate(), colors));
+		generateKeybindScreenComponents(guiManager.main.keybindManager.variablesSP, 0, config, colors, 6, 25, 94, 29, 8);
+		generateKeybindScreenComponents(guiManager.main.keybindManager.variablesSP, 1, config, colors, 6, 30, 94, 34, 8);
+		//tracing entries
+		config.init(6, 40, 94, 44, 8);
+		guiComponents.add(new BasicTextFrame(guiManager.main, this, "Tracked Entities", config.duplicate(), colors));
+		generateTrackingScreenComponents(guiManager.main.entityTracker.observedEntityIDSP, config, colors, 6, 45, 94, 5, 8);		
+	}
+	
+	public void generateKeybindScreenComponents(LinkedHashMap<String, KeybindAccessors> keybindVariables, int accessorIndex, FrameConfig config, FrameColors colors, int x1, int y1, int x2, int y2, int border) {
+		int i = 0;
+		float steps = (float)(x2 - x1) / keybindVariables.size();
+		for(String key : keybindVariables.keySet()) {
+			int innerx1 = (int)(x1 + (steps * i));
+			config.init(innerx1, y1, (int)(innerx1 + steps - 1), y2, border);
+			guiComponents.add(new KeybindFrame(guiManager.main, this, config.duplicate(), colors, key, keybindVariables.get(key).accessors[accessorIndex]));
+			i++;
+		}
+	}
+	
+	public void generateTrackingScreenComponents(HashMap<String, TrackingData> entities, FrameConfig config, FrameColors colors, int x1, int y1, int x2, int height, int border) {
+		System.out.println("generating tracking screen components!");
+		System.out.println("entity length: "+entities.size());
 		
+		int i = 0;
+		float steps = (x2 - x1) / 8f;
+		for(String key : entities.keySet()) {
+			int innery1 = y1 + height * i;
+			config.init(x1, innery1, (int)(x1 + steps - 1), (innery1 + height - 1), border);
+			guiComponents.add(new BasicTextFrame(guiManager.main, this, key, config.duplicate(), colors));
+			TrackingData trackingData = entities.get(key);
+			for(int i2 = 1; i2 <= 7; i2++) {
+				int innerx1 = (int)(x1 + (i2 * steps));
+				config.init(innerx1, innery1, (int)(innerx1 + steps - 1), (innery1 + height - 1), border);
+				if(i2 == 1) {
+					guiComponents.add(new ValueFrame(guiManager.main, this, config.duplicate(), colors, "time", trackingData.timeGNS, Float.class));
+				}else if(i2 == 2) {
+					guiComponents.add(new ValueFrame(guiManager.main, this, config.duplicate(), colors, "thickness", trackingData.thicknessGNS, Float.class));
+				}else if(i2 == 3) {
+					guiComponents.add(new ValueFrame(guiManager.main, this, config.duplicate(), colors, "red", trackingData.redGNS, Integer.class));
+				}else if(i2 == 4) {
+					guiComponents.add(new ValueFrame(guiManager.main, this, config.duplicate(), colors, "green", trackingData.greenGNS, Integer.class));
+				}else if(i2 == 5) {
+					guiComponents.add(new ValueFrame(guiManager.main, this, config.duplicate(), colors, "blue", trackingData.blueGNS, Integer.class));
+				}else if(i2 == 6) {
+					guiComponents.add(new ValueFrame(guiManager.main, this, config.duplicate(), colors, "alpha", trackingData.alphaGNS, Integer.class));
+				}else if(i2 == 7) {
+					guiComponents.add(new ToggleValueFrame(guiManager.main, this, config.duplicate(), colors, "render", trackingData.renderGNS));
+				}
+			}
+			i++;
+		}
 	}
 	
 	@Override
@@ -60,11 +117,11 @@ public class ConfigGUI extends Screen implements JumperGui{
 		int scaledScreenHeight = minecraft.mainWindow.getScaledHeight();
 		int guiScale = minecraft.gameSettings.guiScale;
 		for(RenderableFrame renderable : guiComponents) {
-			if(renderable instanceof Clickable) {
-				((Clickable)renderable).mouseOver(mouseX, mouseY, scaledScreenWidth, scaledScreenHeight, this.leftDown);
+			if(renderable instanceof ClickableFrame) {
+				((ClickableFrame)renderable).mouseOver(mouseX, mouseY, scaledScreenWidth, scaledScreenHeight, this.leftDown);
 			}			
-			if(renderable instanceof Tickable) {
-				((Tickable)renderable).tick(this);
+			if(renderable instanceof TickableFrame) {
+				((TickableFrame)renderable).tick(this);
 			}
 			renderable.render(scaledScreenWidth, scaledScreenHeight, guiScale);
 		}
@@ -72,9 +129,9 @@ public class ConfigGUI extends Screen implements JumperGui{
 	
 	public void keyEvent(InputEvent.KeyInputEvent event) {
 		for(RenderableFrame renderable : guiComponents) {
-			if(renderable instanceof Focusable) {
-				if(((Focusable)renderable).getFocused()) {
-					((Focusable)renderable).keyEvent(event);
+			if(renderable instanceof FocusableFrame) {
+				if(((FocusableFrame)renderable).getFocused()) {
+					((FocusableFrame)renderable).keyEvent(event);
 				}
 			}
 		}

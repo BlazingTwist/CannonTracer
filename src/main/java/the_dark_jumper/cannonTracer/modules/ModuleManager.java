@@ -57,7 +57,7 @@ public class ModuleManager {
 			lastSecond = new ModuleOnOff("Last Second", false, false, main.singlePlayerSettings::lastSeconds, main.keybindManager.lastSecond1, main.keybindManager.lastSecond2);
 		}
 		if(displayTick == null) {
-			displayTick = new ModuleCounter("Display Tick", true, 0, 0, 100, 1, main.singlePlayerSettings::setRenderTick, main.keybindManager.prevTick, main.keybindManager.nextTick);
+			displayTick = new ModuleCounter("Display Tick", true, 0, 100, 1, main.singlePlayerSettings.renderTickGNS, main.keybindManager.prevTick, main.keybindManager.nextTick);
 		}
 		activeModules.add(tracerMode);
 		activeModules.add(xRayTraces);
