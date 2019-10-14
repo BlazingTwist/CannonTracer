@@ -11,34 +11,37 @@ import the_dark_jumper.cannonTracer.util.TracingData;
 public class SinglePlayerSettings {
 	public final Main main;
 	
-	public int mode = 0;
+	private int mode = 0;
 	public GetterAndSetter<Integer> modeGNS;
-	public int renderTick = 0;
+	private int renderTick = 0;
 	public GetterAndSetter<Integer> renderTickGNS;
-	public boolean xRayTrace = false;
+	private boolean xRayTrace = false;
 	public GetterAndSetter<Boolean> xRayTraceGNS;
-	public boolean renderBoxes = false;
+	private boolean renderBoxes = false;
 	public GetterAndSetter<Boolean> renderBoxesGNS;
-	public boolean renderMenu = false;
+	private boolean renderMenu = false;
 	public GetterAndSetter<Boolean> renderMenuGNS;
+	private boolean bLog = false;
+	public GetterAndSetter<Boolean> bLogGNS;
 	
 	public SinglePlayerSettings(Main main) {
 		this.main = main;
 		setupAccessors();
 	}
 	
-	public void setupAccessors() {
+	private void setupAccessors() {
 		modeGNS = new GetterAndSetter<Integer>(this::getMode, this::setMode);
 		renderTickGNS = new GetterAndSetter<Integer>(this::getRenderTick, this::setRenderTick);
 		xRayTraceGNS = new GetterAndSetter<Boolean>(this::getXRayTrace, this::setXRayTrace);
 		renderBoxesGNS = new GetterAndSetter<Boolean>(this::getRenderBoxes, this::setRenderBoxes);
 		renderMenuGNS = new GetterAndSetter<Boolean>(this::getRenderMenu, this::setRenderMenu);
+		bLogGNS = new GetterAndSetter<Boolean>(this::getBLog, this::setBLog);
 	}
 	
-	public int getMode() {
+	private int getMode() {
 		return this.mode;
 	}
-	public void setMode(int mode) {
+	private void setMode(int mode) {
 		this.mode = mode;
 		if(mode != 1) {
 			main.entityTracker.tracingHistory.clear();
@@ -46,31 +49,31 @@ public class SinglePlayerSettings {
 		}
 	}
 	
-	public int getRenderTick() {
+	private int getRenderTick() {
 		return this.renderTick;
 	}
-	public void setRenderTick(int renderTick) {
+	private void setRenderTick(int renderTick) {
 		this.renderTick = renderTick;
 	}
 	
-	public boolean getXRayTrace() {
+	private boolean getXRayTrace() {
 		return this.xRayTrace;
 	}
-	public void setXRayTrace(boolean xRayTrace) {
+	private void setXRayTrace(boolean xRayTrace) {
 		this.xRayTrace = xRayTrace;
 	}
 	
-	public boolean getRenderBoxes() {
+	private boolean getRenderBoxes() {
 		return this.renderBoxes;
 	}
-	public void setRenderBoxes(boolean renderBoxes) {
+	private void setRenderBoxes(boolean renderBoxes) {
 		this.renderBoxes = renderBoxes;
 	}
 	
-	public boolean getRenderMenu() {
+	private boolean getRenderMenu() {
 		return this.renderMenu;
 	}
-	public void setRenderMenu(boolean renderMenu) {
+	private void setRenderMenu(boolean renderMenu) {
 		if(renderMenu) {
 			main.guiManager.configGUI.generateSingleplayerScreenComponents();
 			Minecraft.getInstance().displayGuiScreen(main.guiManager.configGUI);
@@ -79,6 +82,13 @@ public class SinglePlayerSettings {
 			main.dataManager.Save();
 		}
 		this.renderMenu = renderMenu;
+	}
+	
+	private boolean getBLog() {
+		return this.bLog;
+	}
+	private void setBLog(boolean b) {
+		this.bLog = b;
 	}
 	
 	public void lastSeconds(boolean b) {

@@ -10,9 +10,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
-import the_dark_jumper.cannonTracer.util.TrackingData;
 import the_dark_jumper.cannonTracer.Main;
-import the_dark_jumper.cannonTracer.configSaving.KeybindManager.KeybindAccessors;
+import the_dark_jumper.cannonTracer.util.KeybindAccessors;
+import the_dark_jumper.cannonTracer.util.TrackingData;
 
 public class DataManager {
 	public final Main main;
@@ -28,8 +28,7 @@ public class DataManager {
 					"\\Documents\\The_Dark_Jumper_Cannon_Tracer\\tracer.config");
 			BufferedWriter bwout = new BufferedWriter(out);
 			writeSinglePlayerConfig(bwout);			
-			writeMultiPlayerConfig(bwout);
-			writeGuiConfig(bwout);			
+			writeMultiPlayerConfig(bwout);		
 			bwout.close();
 		}catch(Exception e){
 			System.out.println("thrown error while saving");
@@ -38,11 +37,11 @@ public class DataManager {
 	}
 	
 	public void writeSinglePlayerConfig(BufferedWriter bwout) {
-		writeServerSpecificConfig(bwout, "SinglePlayer", main.entityTracker.observedEntityIDSP, main.keybindManager.variablesSP);
+		writeServerSpecificConfig(bwout, "SinglePlayer", main.entityTracker.observedEntityIDSP, main.keybindManagerSP.variables);
 	}
 	
 	public void writeMultiPlayerConfig(BufferedWriter bwout) {
-		writeServerSpecificConfig(bwout, "MultiPlayer", main.entityTracker.observedEntityIDMP, main.keybindManager.variablesMP);
+		writeServerSpecificConfig(bwout, "MultiPlayer", main.entityTracker.observedEntityIDMP, main.keybindManagerMP.variables);
 	}
 	
 	public void writeServerSpecificConfig(BufferedWriter bwout, String headerName,
@@ -67,12 +66,6 @@ public class DataManager {
 		}
 	}
 	
-	public void writeGuiConfig(BufferedWriter bwout) {
-		/*Header header = new Header("GuiSettings", "", 1);
-		header.content = new GuiSettingsContent(main.guiSettings).buildContent();
-		header.write(bwout);*/
-	}
-	
 	public void Load() {
 		try{
 			BufferedReader br=new BufferedReader(new FileReader(new File("C:\\Users\\"+System.getProperty("user.name")+"\\Documents\\The_Dark_Jumper_Cannon_Tracer\\tracer.config")));
@@ -80,9 +73,8 @@ public class DataManager {
 			for(String line; (line = br.readLine())!=null;) {
 				lines.add(line);
 			}
-			loadServerSpecificConfig(lines, "SinglePlayer", main.entityTracker.observedEntityIDSP, main.keybindManager.variablesSP);
-			loadServerSpecificConfig(lines, "MultiPlayer", main.entityTracker.observedEntityIDMP, main.keybindManager.variablesMP);
-			loadGuiConfig(lines);
+			loadServerSpecificConfig(lines, "SinglePlayer", main.entityTracker.observedEntityIDSP, main.keybindManagerSP.variables);
+			loadServerSpecificConfig(lines, "MultiPlayer", main.entityTracker.observedEntityIDMP, main.keybindManagerMP.variables);
 			br.close();
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -126,23 +118,5 @@ public class DataManager {
 				continue;
 			}
 		}
-	}
-	
-	public void loadGuiConfig(ArrayList<String> lines) {
-		/*Header header = new Header(null, null, 0);
-		GuiSettingsContent gsContent = new GuiSettingsContent(main.guiSettings);
-		for(Iterator<String> it = lines.iterator(); it.hasNext();) {
-			String line = it.next();
-			if(!header.readHeader(line)) {
-				continue;
-			}
-			if(header.level == 1 && header.name.equals("GuiSettings")) {
-				if(!gsContent.readContent(header.content)) {
-					//couldn't read gui settings... now what?
-					continue;
-				}
-				return;
-			}
-		}*/
 	}
 }

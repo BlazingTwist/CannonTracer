@@ -9,13 +9,13 @@ public class ModuleStateMachine extends ModuleBase{
 	public boolean key1Pressed = false, key2Pressed = false;
 	public Consumer<Integer> valueChanged;
 	
-	public ModuleStateMachine(String name, boolean render, int states, int currentState, int keybind1, int keybind2, String... stateNames) {
-		super(name, render, keybind1, keybind2);
+	public ModuleStateMachine(String name, boolean render, boolean isGlobal, int states, int currentState, int keybind1, int keybind2, String... stateNames) {
+		super(name, render, isGlobal, keybind1, keybind2);
 		initialize(null, states, currentState, stateNames);
 	}
 	
-	public ModuleStateMachine(String name, boolean render, int states, int currentState, Consumer<Integer> valueChanged, int keybind1, int keybind2, String... stateNames) {
-		super(name, render, keybind1, keybind2);
+	public ModuleStateMachine(String name, boolean render, boolean isGlobal, int states, int currentState, Consumer<Integer> valueChanged, int keybind1, int keybind2, String... stateNames) {
+		super(name, render, isGlobal, keybind1, keybind2);
 		initialize(valueChanged, states, currentState, stateNames);
 	}
 	

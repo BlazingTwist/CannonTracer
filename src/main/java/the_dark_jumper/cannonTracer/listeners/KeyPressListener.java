@@ -42,7 +42,7 @@ public class KeyPressListener {
 		}
 		if(event.getAction() == GLFW.GLFW_PRESS) {
 			pressedKeys.add(event.getScanCode());
-			main.moduleManager.keyPressed(event.getScanCode());
+			main.moduleManager.keyPressed(event.getScanCode(), Minecraft.getInstance().currentScreen != null);
 		}else if(event.getAction() == GLFW.GLFW_RELEASE) {
 			pressedKeys.remove(event.getScanCode());
 			main.moduleManager.keyReleased(event.getScanCode());

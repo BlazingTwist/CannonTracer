@@ -8,6 +8,7 @@ import the_dark_jumper.cannonTracer.modules.moduleElements.ModuleCounter;
 import the_dark_jumper.cannonTracer.modules.moduleElements.ModuleOnOff;
 import the_dark_jumper.cannonTracer.modules.moduleElements.ModuleStateMachine;
 import the_dark_jumper.cannonTracer.modules.moduleElements.ModuleToggle;
+import the_dark_jumper.cannonTracer.util.TrackingData;
 
 public class ModuleManager {
 	Main main;
@@ -15,12 +16,18 @@ public class ModuleManager {
 	public ArrayList<ModuleBase> activeModules = new ArrayList<ModuleBase>();
 	public State state = State.MENU;
 	
-	public ModuleStateMachine tracerMode = null;
-	public ModuleToggle xRayTraces = null;
-	public ModuleToggle menu = null;
-	public ModuleToggle renderBoxes = null;
-	public ModuleOnOff lastSecond = null;
-	public ModuleCounter displayTick = null;
+	public ModuleStateMachine tracerModeSP = null;
+	public ModuleToggle xRayTracesSP = null;
+	public ModuleToggle menuSP = null;
+	public ModuleToggle renderBoxesSP = null;
+	public ModuleOnOff lastSecondSP = null;
+	public ModuleCounter displayTickSP = null;
+	
+	public ModuleToggle xRayTracesMP = null;
+	public ModuleToggle menuMP = null;
+	public ModuleToggle renderBoxesMP = null;
+	public ModuleOnOff pullDataMP = null;
+	public ModuleCounter displayTickMP = null;
 	
 	public enum State{
 		SINGLEPLAYER,
@@ -41,38 +48,71 @@ public class ModuleManager {
 	}
 	
 	public void registerSinglePlayerModules() {
-		if(tracerMode == null) {
-			tracerMode = new ModuleStateMachine("Tracer Mode", true, 3, 0, main.singlePlayerSettings::setMode, main.keybindManager.tracerBind1, main.keybindManager.tracerBind2,"Timed Render", "Permanent Render", "Last 5 Seconds");
+		if(tracerModeSP == null) {
+			tracerModeSP = new ModuleStateMachine("Tracer Mode", true, false, 3, 0, main.singlePlayerSettings.modeGNS.setter, main.keybindManagerSP.tracerBind1, main.keybindManagerSP.tracerBind2,"Timed Render", "Permanent Render", "Last 5 Seconds");
 		}
-		if(xRayTraces == null) {
-			xRayTraces = new ModuleToggle("XRay Traces", true, false, main.singlePlayerSettings::setXRayTrace, main.keybindManager.xRayTraces1, main.keybindManager.xRayTraces2);
+		if(xRayTracesSP == null) {
+			xRayTracesSP = new ModuleToggle("XRay Traces", true, false, false, main.singlePlayerSettings.xRayTraceGNS.setter, main.keybindManagerSP.xRayTraces1, main.keybindManagerSP.xRayTraces2);
 		}
-		if(menu == null) {
-			menu = new ModuleToggle("Menu", false, false, main.singlePlayerSettings::setRenderMenu, main.keybindManager.menu1, main.keybindManager.menu2);
+		if(menuSP == null) {
+			menuSP = new ModuleToggle("Menu", false, true, false, main.singlePlayerSettings.renderMenuGNS.setter, main.keybindManagerSP.menu1, main.keybindManagerSP.menu2);
 		}
-		if(renderBoxes == null) {
-			renderBoxes = new ModuleToggle("Render Boxes", true, false, main.singlePlayerSettings::setRenderBoxes, main.keybindManager.rendBox1, main.keybindManager.rendBox2);
+		if(renderBoxesSP == null) {
+			renderBoxesSP = new ModuleToggle("Render Boxes", true, false, false, main.singlePlayerSettings.renderBoxesGNS.setter, main.keybindManagerSP.rendBox1, main.keybindManagerSP.rendBox2);
 		}
-		if(lastSecond == null) {
-			lastSecond = new ModuleOnOff("Last Second", false, false, main.singlePlayerSettings::lastSeconds, main.keybindManager.lastSecond1, main.keybindManager.lastSecond2);
+		if(lastSecondSP == null) {
+			lastSecondSP = new ModuleOnOff("Last Second", false, false, false, main.singlePlayerSettings::lastSeconds, main.keybindManagerSP.lastSecond1, main.keybindManagerSP.lastSecond2);
 		}
-		if(displayTick == null) {
-			displayTick = new ModuleCounter("Display Tick", true, 0, 100, 1, main.singlePlayerSettings.renderTickGNS, main.keybindManager.prevTick, main.keybindManager.nextTick);
+		if(displayTickSP == null) {
+			displayTickSP = new ModuleCounter("Display Tick", true, false, 0, 100, 1, main.singlePlayerSettings.renderTickGNS, main.keybindManagerSP.prevTick, main.keybindManagerSP.nextTick);
 		}
-		activeModules.add(tracerMode);
-		activeModules.add(xRayTraces);
-		activeModules.add(menu);
-		activeModules.add(renderBoxes);
-		activeModules.add(lastSecond);
-		activeModules.add(displayTick);
+		activeModules.add(tracerModeSP);
+		activeModules.add(xRayTracesSP);
+		activeModules.add(menuSP);
+		activeModules.add(renderBoxesSP);
+		activeModules.add(lastSecondSP);
+		activeModules.add(displayTickSP);
+	}
+	
+	public int getMaxDisplayTickMP() {
+		float max = 0;
+		for(TrackingData trackingData : main.entityTracker.observedEntityIDMP.values()) {
+			if(trackingData.timeGNS.getter.get() > max) {
+				max = trackingData.timeGNS.getter.get();
+			}
+		}
+		// + 1 as a safety net regarding truncating
+		return (int)((max + 1) * 20);
 	}
 	
 	public void registerMultiplayerModules() {
-		//no modules yet
+		if(xRayTracesMP == null) {
+			xRayTracesMP = new ModuleToggle("XRay Traces", true, false, false, main.multiPlayerSettings.xRayTraceGNS.setter, main.keybindManagerMP.xRayTraces1, main.keybindManagerMP.xRayTraces2);
+		}
+		if(menuMP == null) {
+			menuMP = new ModuleToggle("Menu", false, true, false, main.multiPlayerSettings.renderMenuGNS.setter, main.keybindManagerMP.menu1, main.keybindManagerMP.menu2);
+		}
+		if(renderBoxesMP == null) {
+			renderBoxesMP = new ModuleToggle("Render Boxes", true, false, false, main.multiPlayerSettings.renderBoxesGNS.setter, main.keybindManagerMP.rendBox1, main.keybindManagerMP.rendBox2);
+		}
+		if(pullDataMP == null) {
+			pullDataMP = new ModuleOnOff("pullData", false, false, false, main.multiPlayerSettings::pullData, main.keybindManagerMP.pullData1, main.keybindManagerMP.pullData2);
+		}
+		if(displayTickMP == null) {
+			displayTickMP = new ModuleCounter("Display Tick", true, false, 0, this::getMaxDisplayTickMP, 1, main.multiPlayerSettings.renderTickGNS, main.keybindManagerMP.prevTick, main.keybindManagerMP.nextTick);
+		}
+		activeModules.add(xRayTracesMP);
+		activeModules.add(menuMP);
+		activeModules.add(renderBoxesMP);
+		activeModules.add(pullDataMP);
+		activeModules.add(displayTickMP);
 	}
 	
-	public void keyPressed(int key) {
+	public void keyPressed(int key, boolean screenActive) {
 		for(ModuleBase module : activeModules) {
+			if(screenActive && !module.isGlobal) {
+				continue;
+			}
 			module.keyPressed(key);
 		}
 	}
@@ -82,55 +122,4 @@ public class ModuleManager {
 			module.keyReleased(key);
 		}
 	}
-	
-	/*public static void checkKeypresses() {
-		for(ModuleBase module : activeModules) {
-			if(module.toggle) {
-				if(testKeybind(module)) {
-					module.toggle();
-				}else {
-					module.buttonReleased();
-				}
-			}else if(OldModuleCounter.class.isInstance(module)) {
-				if(!KeyPressListener.pressedKeys.contains(module.keybind[0]) && !KeyPressListener.pressedKeys.contains(module.keybind[1])) {
-					module.buttonReleased();
-				}else if(KeyPressListener.pressedKeys.contains(module.keybind[0]) && !KeyPressListener.pressedKeys.contains(module.keybind[1])) {
-					module.activate();
-				}else if(KeyPressListener.pressedKeys.contains(module.keybind[1]) && !KeyPressListener.pressedKeys.contains(module.keybind[1])) {
-					module.deactivate();
-				}
-			}else if(KeyPressListener.pressedKeys.contains(module.keybind[0])) {
-				if(KeyPressListener.pressedKeys.contains(module.keybind[1])) {
-					module.deactivate();
-				}else {
-					module.activate();
-				}
-			}else {
-				module.buttonReleased();
-			}
-		}
-	}*/
-	
-	/*public static void onKeyPressed(int Keycode) {
-		if(!ModuleManager.renderMenu)
-			return;
-		for(BaseEmbeddedBox beb : BaseMenu.textboxes) {
-			if(beb.getClass()==InteractableTextbox.class) {
-				InteractableTextbox itb=(InteractableTextbox)beb;
-				if(itb.isFocused) {
-					itb.onKeyPressed(Keycode);
-				}
-			}else if(beb.getClass()==KeybindBox.class) {
-				KeybindBox kbb=(KeybindBox)beb;
-				if(kbb.isFocused){
-					kbb.onKeyPressed(Keycode);
-				}
-			}else if(beb.getClass()==TextboxAnyFunc.class) {
-				TextboxAnyFunc tbaf=(TextboxAnyFunc)beb;
-				if(tbaf.isFocused) {
-					tbaf.onKeyPressed(Keycode);
-				}
-			}
-		}
-	}*/
 }

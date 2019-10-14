@@ -6,6 +6,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 
 import net.minecraft.client.renderer.BufferBuilder;
 import the_dark_jumper.cannonTracer.EntityTracker;
+import the_dark_jumper.cannonTracer.modules.ModuleManager;
 
 public class TracingData {
 	public final EntityTracker entityTracker;
@@ -59,11 +60,20 @@ public class TracingData {
 		bufferBuilder.pos(x1, y2, z1).color(td.getRed(), td.getGreen(), td.getBlue(), td.getAlpha()).endVertex();
 		bufferBuilder.pos(x2, y2, z1).color(td.getRed(), td.getGreen(), td.getBlue(), td.getAlpha()).endVertex();
 		bufferBuilder.pos(x2, y2, z2).color(td.getRed(), td.getGreen(), td.getBlue(), td.getAlpha()).endVertex();
-		if(!entityTracker.main.singlePlayerSettings.renderBoxes) {
-			return;
-		}
-		if(entityTracker.main.singlePlayerSettings.mode == 2 && !(ticksAlive.contains((long)entityTracker.main.singlePlayerSettings.renderTick))) {
-			return;
+		if(entityTracker.main.moduleManager.state == ModuleManager.State.SINGLEPLAYER) {
+			if(!entityTracker.main.singlePlayerSettings.renderBoxesGNS.getter.get()) {
+				return;
+			}
+			if(entityTracker.main.singlePlayerSettings.modeGNS.getter.get() == 2 && !(ticksAlive.contains((long)entityTracker.main.singlePlayerSettings.renderTickGNS.getter.get()))) {
+				return;
+			}
+		}else if(entityTracker.main.moduleManager.state == ModuleManager.State.MULTIPLAYER) {
+			if(!entityTracker.main.multiPlayerSettings.renderBoxesGNS.getter.get()) {
+				return;
+			}
+			if(!ticksAlive.contains((long)entityTracker.main.multiPlayerSettings.renderTickGNS.getter.get())) {
+				return;
+			}
 		}
 		bufferBuilder.pos((x2-0.49), (y2-0.49), (z2-0.49)).color(0,0,0,0).endVertex();
 		bufferBuilder.pos((x2+0.49), (y2-0.49), (z2-0.49)).color(td.getRed(), td.getGreen(), td.getBlue(), td.getAlpha()).endVertex();

@@ -4,10 +4,12 @@ public class ModuleBase {
 	public String name;
 	public int keybind1, keybind2;
 	public boolean render;
+	public boolean isGlobal;
 	
-	public ModuleBase(String name, boolean render, int keybind1, int keybind2) {
+	public ModuleBase(String name, boolean render, boolean isGlobal, int keybind1, int keybind2) {
 		this.name = name;
 		this.render = render;
+		this.isGlobal = isGlobal;
 		this.keybind1 = keybind1;
 		this.keybind2 = keybind2;
 	}

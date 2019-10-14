@@ -7,7 +7,6 @@ import java.util.LinkedHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraftforge.client.event.InputEvent;
-import the_dark_jumper.cannonTracer.configSaving.KeybindManager.KeybindAccessors;
 import the_dark_jumper.cannonTracer.gui.guiElements.BasicTextFrame;
 import the_dark_jumper.cannonTracer.gui.guiElements.FrameColors;
 import the_dark_jumper.cannonTracer.gui.guiElements.KeybindFrame;
@@ -17,6 +16,7 @@ import the_dark_jumper.cannonTracer.gui.guiElements.interfaces.ClickableFrame;
 import the_dark_jumper.cannonTracer.gui.guiElements.interfaces.FocusableFrame;
 import the_dark_jumper.cannonTracer.gui.guiElements.interfaces.RenderableFrame;
 import the_dark_jumper.cannonTracer.gui.guiElements.interfaces.TickableFrame;
+import the_dark_jumper.cannonTracer.util.KeybindAccessors;
 import the_dark_jumper.cannonTracer.util.TrackingData;
 
 public class ConfigGUI extends Screen implements JumperGui{	
@@ -49,16 +49,43 @@ public class ConfigGUI extends Screen implements JumperGui{
 		config.init(50, 10, 71, 14, 8);
 		guiComponents.add(new ValueFrame(guiManager.main, this, config.duplicate(), colors, "displayTick", guiManager.main.singlePlayerSettings.renderTickGNS, Integer.class));
 		config.init(72, 10, 94, 14, 8);
-		guiComponents.add(new ToggleValueFrame(guiManager.main, this, config.duplicate(), colors, "logIDs", guiManager.main.guiSettings.bLogGNS));
+		guiComponents.add(new ToggleValueFrame(guiManager.main, this, config.duplicate(), colors, "logIDs", guiManager.main.singlePlayerSettings.bLogGNS));
 		//keybinds
 		config.init(6, 20, 94, 24, 8);
 		guiComponents.add(new BasicTextFrame(guiManager.main, this, "Keybinds", config.duplicate(), colors));
-		generateKeybindScreenComponents(guiManager.main.keybindManager.variablesSP, 0, config, colors, 6, 25, 94, 29, 8);
-		generateKeybindScreenComponents(guiManager.main.keybindManager.variablesSP, 1, config, colors, 6, 30, 94, 34, 8);
+		generateKeybindScreenComponents(guiManager.main.keybindManagerSP.variables, 0, config, colors, 6, 25, 94, 29, 8);
+		generateKeybindScreenComponents(guiManager.main.keybindManagerSP.variables, 1, config, colors, 6, 30, 94, 34, 8);
 		//tracing entries
 		config.init(6, 40, 94, 44, 8);
 		guiComponents.add(new BasicTextFrame(guiManager.main, this, "Tracked Entities", config.duplicate(), colors));
 		generateTrackingScreenComponents(guiManager.main.entityTracker.observedEntityIDSP, config, colors, 6, 45, 94, 5, 8);		
+	}
+	
+	public void generateMultiplayerScreenComponents() {
+		guiComponents.clear();
+		FrameConfig config = new FrameConfig();
+		//alpha outliner
+		config.init(5, 5, 95, 95, 8);
+		FrameColors backGroundColors = new FrameColors();
+		backGroundColors.innerColor = backGroundColors.borderColor = 0x55000000;
+		guiComponents.add(new BasicTextFrame(guiManager.main, this, "", config.duplicate(), backGroundColors));
+		//headline
+		config.init(6, 10, 49, 14, 8);
+		FrameColors colors = new FrameColors();
+		guiComponents.add(new BasicTextFrame(guiManager.main, this, "Config-Screen", config.duplicate(), colors));
+		config.init(50, 10, 71, 14, 8);
+		guiComponents.add(new ValueFrame(guiManager.main, this, config.duplicate(), colors, "displayTick", guiManager.main.multiPlayerSettings.renderTickGNS, Integer.class));
+		config.init(72, 10, 94, 14, 8);
+		guiComponents.add(new ToggleValueFrame(guiManager.main, this, config.duplicate(), colors, "logIDs", guiManager.main.multiPlayerSettings.bLogGNS));
+		//keybinds
+		config.init(6, 20, 94, 24, 8);
+		guiComponents.add(new BasicTextFrame(guiManager.main, this, "Keybinds", config.duplicate(), colors));
+		generateKeybindScreenComponents(guiManager.main.keybindManagerMP.variables, 0, config, colors, 6, 25, 94, 29, 8);
+		generateKeybindScreenComponents(guiManager.main.keybindManagerMP.variables, 1, config, colors, 6, 30, 94, 34, 8);
+		//tracing entries
+		config.init(6, 40, 94, 44, 8);
+		guiComponents.add(new BasicTextFrame(guiManager.main, this, "Tracked Entities", config.duplicate(), colors));
+		generateTrackingScreenComponents(guiManager.main.entityTracker.observedEntityIDMP, config, colors, 6, 45, 94, 5, 8);
 	}
 	
 	public void generateKeybindScreenComponents(LinkedHashMap<String, KeybindAccessors> keybindVariables, int accessorIndex, FrameConfig config, FrameColors colors, int x1, int y1, int x2, int y2, int border) {
@@ -73,9 +100,6 @@ public class ConfigGUI extends Screen implements JumperGui{
 	}
 	
 	public void generateTrackingScreenComponents(HashMap<String, TrackingData> entities, FrameConfig config, FrameColors colors, int x1, int y1, int x2, int height, int border) {
-		System.out.println("generating tracking screen components!");
-		System.out.println("entity length: "+entities.size());
-		
 		int i = 0;
 		float steps = (x2 - x1) / 8f;
 		for(String key : entities.keySet()) {

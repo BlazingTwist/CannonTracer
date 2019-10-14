@@ -7,13 +7,13 @@ public class ModuleToggle extends ModuleBase{
 	public boolean state;
 	public Consumer<Boolean> valueChanged;
 	
-	public ModuleToggle(String name, boolean render, int keybind1, int keybind2) {
-		super(name, render, keybind1, keybind2);
+	public ModuleToggle(String name, boolean render, boolean isGlobal, int keybind1, int keybind2) {
+		super(name, render, isGlobal, keybind1, keybind2);
 		initialize(false, null);
 	}
 	
-	public ModuleToggle(String name, boolean render, boolean state, Consumer<Boolean> valueChanged, int keybind1, int keybind2) {
-		super(name, render, keybind1, keybind2);
+	public ModuleToggle(String name, boolean render, boolean isGlobal, boolean state, Consumer<Boolean> valueChanged, int keybind1, int keybind2) {
+		super(name, render, isGlobal, keybind1, keybind2);
 		initialize(state, valueChanged);
 	}
 	

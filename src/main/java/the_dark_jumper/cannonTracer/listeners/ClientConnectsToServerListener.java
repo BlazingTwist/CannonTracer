@@ -46,6 +46,7 @@ public class ClientConnectsToServerListener {
 	}
 	
 	private void checkWorldStatus() {
+		main.serverChatListener.isRegistered = false;
 		main.entityTracker.tracingHistory.clear();
 		main.entityTracker.lastSecond.clear();
 		if(Minecraft.getInstance().world == null) {

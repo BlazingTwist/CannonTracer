@@ -51,7 +51,7 @@ public class EntityTracker {
 		if(entity == null) {
 			return;
 		}
-		if(main.guiSettings.bLog) {
+		if(main.singlePlayerSettings.bLogGNS.getter.get()) {
 			try {
 				FileWriter out=new FileWriter("C:\\Users\\"+System.getProperty("user.name")+"\\Documents\\The_Dark_Jumper_Cannon_Tracer\\log.cue", true);
 				BufferedWriter BWout=new BufferedWriter(out);
@@ -91,7 +91,7 @@ public class EntityTracker {
 					boolean newData = true;
 					double x1 = a_e.prevPosX, x2 = a_e.posX, y1 = a_e.prevPosY, y2 = a_e.posY, z1 = a_e.prevPosZ, z2 = a_e.posZ;
 					TracingData trace_data;
-					if(main.singlePlayerSettings.mode == 2) {
+					if(main.singlePlayerSettings.modeGNS.getter.get() == 2) {
 						for(Iterator<TracingData> iter = lastSecond.iterator(); iter.hasNext();) {
 							trace_data=iter.next();
 							if(System.currentTimeMillis() - trace_data.timeOfCreation >= 5000) {
@@ -139,7 +139,7 @@ public class EntityTracker {
 			GlStateManager.disableTexture();
 			GlStateManager.enableBlend();
 			GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-			if(main.singlePlayerSettings.xRayTrace) {
+			if(main.singlePlayerSettings.xRayTraceGNS.getter.get()) {
 				GlStateManager.disableDepthTest();
 			}
 			GlStateManager.translated(-player_pos.x, -player_pos.y, -player_pos.z);
@@ -155,14 +155,14 @@ public class EntityTracker {
 				if(track_data.renderGNS.getter.get()) {
 					trace_data.setupDrawingBuffer(bufferBuilder, track_data);
 				}
-				if(System.currentTimeMillis() - trace_data.timeOfCreation >= (track_data.getTime() * 1000) && main.singlePlayerSettings.mode == 0) {
+				if(System.currentTimeMillis() - trace_data.timeOfCreation >= (track_data.getTime() * 1000) && main.singlePlayerSettings.modeGNS.getter.get() == 0) {
 					//rendered time >= max time
 					it.remove();
 				}
 			}
 
 			tessellator.draw();
-			if(main.singlePlayerSettings.xRayTrace) {
+			if(main.singlePlayerSettings.xRayTraceGNS.getter.get()) {
 				GlStateManager.enableDepthTest();
 			}
 			GlStateManager.lineWidth(1.0f);
