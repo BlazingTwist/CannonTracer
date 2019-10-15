@@ -1,12 +1,9 @@
 package the_dark_jumper.cannonTracer.settings;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-
 import net.minecraft.client.Minecraft;
 import the_dark_jumper.cannonTracer.Main;
 import the_dark_jumper.cannonTracer.util.GetterAndSetter;
-import the_dark_jumper.cannonTracer.util.TracingData;
+import the_dark_jumper.cannonTracer.util.SingleTickMoveData;
 
 public class SinglePlayerSettings {
 	public final Main main;
@@ -97,23 +94,8 @@ public class SinglePlayerSettings {
 				return;
 			}
 			main.entityTracker.tracingHistory.clear();
-			TracingData tracingData;
-			long time = System.currentTimeMillis();
-			ArrayList<Long> tickList = new ArrayList<Long>();
-			for(Iterator<TracingData> it = main.entityTracker.lastSecond.iterator(); it.hasNext();) {
-				tracingData = it.next();
-				for(long tick : tracingData.ticksAlive) {
-					tickList.add((tick + 5000 - time) / 50);
-				}
-				main.entityTracker.tracingHistory.add(new TracingData(main.entityTracker, tracingData.ID,
-						tracingData.x1,
-						tracingData.x2,
-						tracingData.y1 - 0.49,
-						tracingData.y2 - 0.49,
-						tracingData.z1,
-						tracingData.z2,
-						tickList));
-				tickList.clear();
+			for(SingleTickMoveData moveData : main.entityTracker.lastSecond) {
+				main.entityTracker.tracingHistory.add(moveData.copy());
 			}
 		}else {
 			if(mode == 0) {
