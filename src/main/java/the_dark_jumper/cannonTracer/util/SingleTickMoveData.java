@@ -11,20 +11,18 @@ import the_dark_jumper.cannonTracer.modules.ModuleManager;
 
 public class SingleTickMoveData {
 	public final EntityTracker entityTracker;
-	public long timeOfCreation;
 	public HashMap<String, ArrayList<Integer>> tickData = new HashMap<>();
 	public SimpleLocation pos1, pos2;
+	public int tickOffset = 0;
 	
 	public SingleTickMoveData(EntityTracker entityTracker, SimpleLocation pos1, SimpleLocation pos2) {
 		this.entityTracker = entityTracker;
-		this.timeOfCreation = System.currentTimeMillis();
 		this.pos1 = pos1;
 		this.pos2 = pos2;
 	}
 	
 	public SingleTickMoveData copy() {
 		SingleTickMoveData moveData = new SingleTickMoveData(entityTracker, pos1.copy(), pos2.copy());
-		moveData.timeOfCreation = timeOfCreation;
 		HashMap<String, ArrayList<Integer>> copy = new HashMap<>();
 		for(String key : tickData.keySet()) {
 			ArrayList<Integer> copyList = new ArrayList<Integer>();
@@ -41,12 +39,11 @@ public class SingleTickMoveData {
 		return !(pos1.equals(a) && pos2.equals(b));
 	}
 	
-	public void addTick(String entityName) {
+	public void addTick(String entityName, int tick) {
 		if(!tickData.containsKey(entityName)) {
 			tickData.put(entityName, new ArrayList<Integer>());
 		}
 		ArrayList<Integer> ticks = tickData.get(entityName);
-		Integer tick = (int)Math.round((System.currentTimeMillis() - timeOfCreation) / 50d);
 		if(!ticks.contains(tick)) {
 			ticks.add(tick);
 		}
@@ -67,7 +64,7 @@ public class SingleTickMoveData {
 				if(!tickData.containsKey(entityName)) {
 					return;
 				}
-				if(!tickData.get(entityName).contains(entityTracker.main.singlePlayerSettings.renderTickGNS.getter.get())) {
+				if(!tickData.get(entityName).contains(entityTracker.main.singlePlayerSettings.renderTickGNS.getter.get() + tickOffset)) {
 					return;
 				}
 			}
@@ -78,7 +75,7 @@ public class SingleTickMoveData {
 			if(!tickData.containsKey(entityName)) {
 				return;
 			}
-			if(!tickData.get(entityName).contains(entityTracker.main.multiPlayerSettings.renderTickGNS.getter.get())){
+			if(!tickData.get(entityName).contains(entityTracker.main.multiPlayerSettings.renderTickGNS.getter.get() + tickOffset)){
 				return;
 			}
 		}

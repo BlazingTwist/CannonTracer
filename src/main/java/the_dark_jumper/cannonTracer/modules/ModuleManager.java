@@ -47,6 +47,17 @@ public class ModuleManager {
 		activeModules.clear();
 	}
 	
+	public int getMaxDisplayTickSP() {
+		float max = 0;
+		for(TrackingData trackingData : main.entityTracker.observedEntityIDSP.values()) {
+			if(trackingData.timeGNS.getter.get() > max) {
+				max = trackingData.timeGNS.getter.get();
+			}
+		}
+		// + 1 as a safety net regarding truncating
+		return (int)((max + 1) * 20);
+	}
+	
 	public void registerSinglePlayerModules() {
 		if(tracerModeSP == null) {
 			tracerModeSP = new ModuleStateMachine("Tracer Mode", true, false, 3, 0, main.singlePlayerSettings.modeGNS.setter, main.keybindManagerSP.tracerBind1, main.keybindManagerSP.tracerBind2,"Timed Render", "Permanent Render", "Last 5 Seconds");
@@ -64,7 +75,7 @@ public class ModuleManager {
 			lastSecondSP = new ModuleOnOff("Last Second", false, false, false, main.singlePlayerSettings::lastSeconds, main.keybindManagerSP.lastSecond1, main.keybindManagerSP.lastSecond2);
 		}
 		if(displayTickSP == null) {
-			displayTickSP = new ModuleCounter("Display Tick", true, false, 0, 100, 1, main.singlePlayerSettings.renderTickGNS, main.keybindManagerSP.prevTick, main.keybindManagerSP.nextTick);
+			displayTickSP = new ModuleCounter("Display Tick", true, false, 0, this::getMaxDisplayTickSP, 1, main.singlePlayerSettings.renderTickGNS, main.keybindManagerSP.prevTick, main.keybindManagerSP.nextTick);
 		}
 		activeModules.add(tracerModeSP);
 		activeModules.add(xRayTracesSP);

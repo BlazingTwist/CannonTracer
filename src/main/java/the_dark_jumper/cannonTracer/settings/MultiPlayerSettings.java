@@ -78,7 +78,6 @@ public class MultiPlayerSettings {
 		if(b) {
 			main.entityTracker.tracingHistory.clear();
 			main.serverChatListener.requestTracingData();
-			//TODO pull data from server and fill to tracinghistory with tickdata
 		}else {
 			main.entityTracker.tracingHistory.clear();
 		}

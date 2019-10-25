@@ -95,7 +95,9 @@ public class SinglePlayerSettings {
 			}
 			main.entityTracker.tracingHistory.clear();
 			for(SingleTickMoveData moveData : main.entityTracker.lastSecond) {
-				main.entityTracker.tracingHistory.add(moveData.copy());
+				SingleTickMoveData copiedMoveData = moveData.copy();
+				copiedMoveData.tickOffset = main.entityTracker.currentTick - main.moduleManager.getMaxDisplayTickSP();
+				main.entityTracker.tracingHistory.add(copiedMoveData);
 			}
 		}else {
 			if(mode == 0) {

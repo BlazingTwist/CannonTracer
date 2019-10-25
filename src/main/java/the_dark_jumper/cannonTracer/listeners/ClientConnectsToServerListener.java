@@ -49,6 +49,7 @@ public class ClientConnectsToServerListener {
 		main.serverChatListener.isRegistered = false;
 		main.entityTracker.tracingHistory.clear();
 		main.entityTracker.lastSecond.clear();
+		main.entityTracker.currentTick = 0;
 		if(Minecraft.getInstance().world == null) {
 			main.moduleManager.clearModules();
 			main.moduleManager.state = ModuleManager.State.MENU;

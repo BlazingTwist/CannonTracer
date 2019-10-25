@@ -2,10 +2,11 @@ package the_dark_jumper.cannonTracer;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.lwjgl.opengl.GL11;
 
@@ -21,6 +22,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.TickEvent.WorldTickEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import the_dark_jumper.cannonTracer.modules.ModuleManager;
@@ -33,8 +36,9 @@ public class EntityTracker {
 	Set<Entity> trackedEntities = Sets.<Entity>newHashSet();
 	public HashMap<String, TrackingData> observedEntityIDSP = new HashMap<>();
 	public HashMap<String, TrackingData> observedEntityIDMP = new HashMap<>();
-	public ArrayList<SingleTickMoveData> tracingHistory = new ArrayList<>();
-	public ArrayList<SingleTickMoveData> lastSecond=new ArrayList<>();
+	public Queue<SingleTickMoveData> tracingHistory = new ConcurrentLinkedQueue<>();
+	public Queue<SingleTickMoveData> lastSecond=new ConcurrentLinkedQueue<>();
+	public int currentTick = 0;
 	
 	public EntityTracker(Main main){
 		this.main = main;
@@ -43,13 +47,16 @@ public class EntityTracker {
 	
 	@SubscribeEvent
 	public void entitySpawnEvent(EntityJoinWorldEvent event) {
+		//multiplayer tracking is handled by the companion plugin
 		if(main.moduleManager.state != ModuleManager.State.SINGLEPLAYER) {
 			return;
 		}
+		
 		Entity entity = event.getEntity();
 		if(entity == null) {
 			return;
 		}
+		
 		if(main.singlePlayerSettings.bLogGNS.getter.get()) {
 			try {
 				FileWriter out=new FileWriter("C:\\Users\\"+System.getProperty("user.name")+"\\Documents\\The_Dark_Jumper_Cannon_Tracer\\log.cue", true);
@@ -62,6 +69,7 @@ public class EntityTracker {
 				e.printStackTrace();
 			}
 		}
+		
 		if(observedEntityIDSP.containsKey(entity.getClass().getSimpleName()) && observedEntityIDSP.get(entity.getClass().getSimpleName()).getRender()) {
 			trackedEntities.add(entity);
 		}
@@ -71,7 +79,19 @@ public class EntityTracker {
 		trackedEntities.remove(entity);
 	}
 	
-	public void doSinglePlayerSpecificRender() {
+	@SubscribeEvent
+	public void onTick(WorldTickEvent event) {
+		if(event.phase != TickEvent.Phase.END) {
+			return;
+		}
+		if(main.moduleManager.state != ModuleManager.State.SINGLEPLAYER) {
+			return;
+		}
+		currentTick++;
+		doSinglePlayerSpecificTracking();
+	}
+	
+	public void doSinglePlayerSpecificTracking() {
 		if(main.singlePlayerSettings.modeGNS.getter.get() == 2) {
 			removeOutdatedEntities(lastSecond);
 		}else if(main.singlePlayerSettings.modeGNS.getter.get() == 0){
@@ -79,11 +99,12 @@ public class EntityTracker {
 		}
 		checkTrackedEntities();
 	}
-	//singleplayer
+	
 	public void checkTrackedEntities() {
 		if(trackedEntities == null || trackedEntities.size() <= 0) {
 			return;
 		}
+		
 		for(Iterator<Entity> it = trackedEntities.iterator(); it.hasNext(); ) {
 			Entity entity = it.next();
 			if(!entity.isAlive()) {
@@ -103,14 +124,16 @@ public class EntityTracker {
 			}
 		}
 	}
-	public void removeOutdatedEntities(ArrayList<SingleTickMoveData> source) {
+	
+	public void removeOutdatedEntities(Queue<SingleTickMoveData> source) {
 		for(Iterator<SingleTickMoveData> it = source.iterator(); it.hasNext(); ) {
 			SingleTickMoveData moveData = it.next();
 			for(Iterator<String> keyIT = moveData.tickData.keySet().iterator(); keyIT.hasNext(); ) {
 				String key = keyIT.next();
+				int maxTime = (int)(observedEntityIDSP.get(key).getTime() * 1000);
 				for(Iterator<Integer> tickIT = moveData.tickData.get(key).iterator(); tickIT.hasNext(); ) {
 					int tick = tickIT.next();
-					if(System.currentTimeMillis() - (moveData.timeOfCreation + (tick * 50)) >= 5000) {
+					if(((currentTick - tick) * 50) > maxTime) {
 						tickIT.remove();
 						continue;
 					}
@@ -126,18 +149,19 @@ public class EntityTracker {
 			}
 		}
 	}
-	public void checkNewEntities(ArrayList<SingleTickMoveData> source, SimpleLocation pos1, SimpleLocation pos2, String entityName) {
+	
+	public void checkNewEntities(Queue<SingleTickMoveData> source, SimpleLocation pos1, SimpleLocation pos2, String entityName) {
 		for(Iterator<SingleTickMoveData> it = source.iterator(); it.hasNext(); ) {
 			SingleTickMoveData moveData = it.next();
 			if(!moveData.isNewData(pos1,  pos2)) {
 				//is old data
-				moveData.addTick(entityName);
+				moveData.addTick(entityName, currentTick);
 				return;
 			}
 		}
 		//is new data
 		SingleTickMoveData newData = new SingleTickMoveData(this, pos1, pos2);
-		newData.addTick(entityName);
+		newData.addTick(entityName, currentTick);
 		source.add(newData);
 	}
 	
@@ -155,19 +179,18 @@ public class EntityTracker {
 		if(main.moduleManager.state == ModuleManager.State.MENU) {
 			return;
 		}
-		boolean singleplayer = false;
-		if(main.moduleManager.state == ModuleManager.State.SINGLEPLAYER) {
-			doSinglePlayerSpecificRender();
-			singleplayer = true;
-		}
+		boolean singleplayer = (main.moduleManager.state == ModuleManager.State.SINGLEPLAYER);
+		
 		if(tracingHistory == null || tracingHistory.size() <= 0) {
 			return;
 		}
+		
 		ClientPlayerEntity player = Minecraft.getInstance().player;
 		if(player == null) {
 			return;
 		}
 		Vec3d player_pos = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
+		
 		GlStateManager.pushMatrix();
 		GlStateManager.disableTexture();
 		GlStateManager.enableBlend();
@@ -180,21 +203,17 @@ public class EntityTracker {
 		final BufferBuilder bufferBuilder = tessellator.getBuffer();
 		bufferBuilder.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION_COLOR);
 		
-		for(SingleTickMoveData moveData : tracingHistory) {
-			for(String key : moveData.tickData.keySet()) {
-				if(singleplayer) {
-					TrackingData trackData = observedEntityIDSP.get(key);
-					if(trackData.renderGNS.getter.get()) {
-						moveData.setupDrawingBuffer(bufferBuilder, trackData, key);
-					}
-				}else {
-					TrackingData trackData = observedEntityIDMP.get(key);
-					if(trackData.renderGNS.getter.get()) {
-						moveData.setupDrawingBuffer(bufferBuilder, trackData, key);
-					}
+		for(Iterator<SingleTickMoveData> moveDataIT = tracingHistory.iterator(); moveDataIT.hasNext(); ) {
+			SingleTickMoveData moveData = moveDataIT.next();
+			for(Iterator<String> keyIT = moveData.tickData.keySet().iterator(); keyIT.hasNext(); ) {
+				String key = keyIT.next();
+				TrackingData trackData = singleplayer ? observedEntityIDSP.get(key) : observedEntityIDMP.get(key);
+				if(trackData.renderGNS.getter.get()) {
+					moveData.setupDrawingBuffer(bufferBuilder, trackData, key);
 				}
 			}
 		}
+		
 		tessellator.draw();
 		if(getXray()) {
 			GlStateManager.enableDepthTest();
