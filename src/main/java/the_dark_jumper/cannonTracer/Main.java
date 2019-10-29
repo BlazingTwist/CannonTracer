@@ -41,7 +41,11 @@ public class Main {
 	//keylib
 	public final KeyLibrary keyLibrary;
 	
+	private static Main instance;
+	public static Main getInstance() {return instance;}
+	
 	public Main() {
+		instance = this;
 		keybindManagerSP = new KeybindManagerSP(this);
 		keybindManagerMP = new KeybindManagerMP(this);
 		multiPlayerSettings = new MultiPlayerSettings(this);

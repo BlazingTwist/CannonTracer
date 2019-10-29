@@ -1,61 +1,38 @@
 package the_dark_jumper.cannonTracer.gui.guiElements;
 
 import net.minecraft.client.gui.screen.Screen;
-import the_dark_jumper.cannonTracer.Main;
-import the_dark_jumper.cannonTracer.gui.JumperGui;
-import the_dark_jumper.cannonTracer.gui.JumperGui.FrameConfig;
+import the_dark_jumper.cannonTracer.gui.JumperGUI;
+import the_dark_jumper.cannonTracer.gui.JumperGUI.FrameConfig;
 import the_dark_jumper.cannonTracer.gui.guiElements.interfaces.ClickableFrame;
 
-public abstract class DoubleSegmentFrame extends BasicTextFrame implements ClickableFrame{
+public class DoubleSegmentFrame extends BasicTextFrame implements ClickableFrame{
 	public int valueColor;
+	
 	public String value;
+	public String getValue() {return value;}
+	public void setValue(String value) {this.value = value;}
 	
-	//internal utility stuffs
-	public boolean ignoreInput = false, hovered = false;
+	public boolean isClicked = false;
+	@Override public boolean getIsClicked() {return isClicked;}
+	@Override public void setIsClicked(boolean isClicked) {this.isClicked = isClicked;}
 	
-	public DoubleSegmentFrame(Main main, JumperGui parent, String text, String value, int valueColor, FrameConfig config, FrameColors colors) {
-		super(main, parent, text, config, colors);
+	public boolean hovered = false;
+	@Override public boolean getHovered() {return hovered;}
+	@Override public void setHovered(boolean hovered) {this.hovered = hovered;}
+	
+	public DoubleSegmentFrame(JumperGUI parent, String text, String value, int valueColor, FrameConfig config, FrameColors colors) {
+		super(parent, text, config, colors);
 		init(value, valueColor);
 	}
 	
-	public DoubleSegmentFrame(Main main, JumperGui parent, String text, String value, FrameConfig config, FrameColors colors) {
-		super(main, parent, text, config, colors);
+	public DoubleSegmentFrame(JumperGUI parent, String text, String value, FrameConfig config, FrameColors colors) {
+		super(parent, text, config, colors);
 		init(value, colors.defaultValueColor);
 	}
 	
 	public void init(String value, int valueColor) {
 		this.value = value;
 		this.valueColor = valueColor;
-	}
-	
-	public void mouseOver(int x, int y, int scaledScreenWidth, int scaledScreenHeight, boolean mouseLeftDown) {
-		if(ignoreInput && !mouseLeftDown) {
-			ignoreInput = false;
-		}
-		int x1 = getPercentValue(scaledScreenWidth, this.config.x);
-		int x2 = getPercentValue(scaledScreenWidth, this.config.xEnd);
-		int y1 = getPercentValue(scaledScreenHeight, this.config.y);
-		int y2 = getPercentValue(scaledScreenHeight, this.config.yEnd);
-		if(x > x1 && x < x2 && y > y1 && y < y2) {
-			onHovered();
-			if(!ignoreInput && mouseLeftDown) {
-				onClicked();
-			}
-		}else if(hovered) {
-			onUnHovered();
-		}
-	}
-	
-	public void onHovered() {
-		hovered = true;
-	}
-	
-	public void onUnHovered() {
-		hovered = false;
-	}
-	
-	public void onClicked() {
-		ignoreInput = true;
 	}
 	
 	@Override
@@ -89,13 +66,5 @@ public abstract class DoubleSegmentFrame extends BasicTextFrame implements Click
 	
 	public int colorToFullAlpha(int color) {
 		return (0xff000000 | color);
-	}
-	
-	public int getInnerColor() {
-		return hovered ? colors.colorHover : colors.innerColor;
-	}
-	
-	public int getInnerColor2() {
-		return hovered ? colors.colorHover2 : colors.innerColor2;
 	}
 }

@@ -11,7 +11,7 @@ import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import the_dark_jumper.cannonTracer.Main;
-import the_dark_jumper.cannonTracer.gui.JumperGui;
+import the_dark_jumper.cannonTracer.gui.JumperGUI;
 
 public class KeyPressListener {
 	public final Main main;
@@ -33,7 +33,7 @@ public class KeyPressListener {
 			pressedKeys.clear();
 			return;
 		}
-		if(Minecraft.getInstance().currentScreen != null && !(Minecraft.getInstance().currentScreen instanceof JumperGui)) {
+		if(Minecraft.getInstance().currentScreen != null && !(Minecraft.getInstance().currentScreen instanceof JumperGUI)) {
 			//ignores keypresses when a screen is active
 			//prevents custom keybinds from firing when chat / anvil-text / inventory search / etc. is receing data
 			//clear pressed keys to prevent misinterpretations
@@ -47,7 +47,7 @@ public class KeyPressListener {
 			pressedKeys.remove(event.getScanCode());
 			main.moduleManager.keyReleased(event.getScanCode());
 		}
-		main.guiManager.configGUI.keyEvent(event);
+		main.guiManager.keyEvent(event);
 	}
 	
 	@SubscribeEvent
@@ -56,20 +56,20 @@ public class KeyPressListener {
 			return;
 		}
 		if(Minecraft.getInstance().world == null) {
-			main.guiManager.configGUI.mousePressEvent(false);
+			main.guiManager.mousePressEvent(false);
 			return;
 		}
-		if(Minecraft.getInstance().currentScreen != null && !(Minecraft.getInstance().currentScreen instanceof JumperGui)) {
-			main.guiManager.configGUI.mousePressEvent(false);
+		if(Minecraft.getInstance().currentScreen != null && !(Minecraft.getInstance().currentScreen instanceof JumperGUI)) {
+			main.guiManager.mousePressEvent(false);
 			return;
 		}
 		if(event.getAction() == GLFW.GLFW_PRESS) {
 			if(event.getButton() == GLFW.GLFW_MOUSE_BUTTON_1) {
-				main.guiManager.configGUI.mousePressEvent(true);
+				main.guiManager.mousePressEvent(true);
 			}
 		}else if(event.getAction() == GLFW.GLFW_RELEASE) {
 			if(event.getButton() == GLFW.GLFW_MOUSE_BUTTON_1) {
-				main.guiManager.configGUI.mousePressEvent(false);
+				main.guiManager.mousePressEvent(false);
 			}
 		}
 	}

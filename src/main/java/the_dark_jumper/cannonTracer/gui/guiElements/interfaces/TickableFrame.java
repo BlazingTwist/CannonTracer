@@ -1,7 +1,7 @@
 package the_dark_jumper.cannonTracer.gui.guiElements.interfaces;
 
-import the_dark_jumper.cannonTracer.gui.JumperGui;
+import the_dark_jumper.cannonTracer.gui.JumperGUI;
 
 public interface TickableFrame {
-	public void tick(JumperGui gui);
+	public void tick(JumperGUI gui);
 }
