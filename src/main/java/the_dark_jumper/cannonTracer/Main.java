@@ -1,22 +1,22 @@
-package the_dark_jumper.cannonTracer;
+package the_dark_jumper.cannontracer;
 
 import java.io.File;
 import java.io.IOException;
 
 import net.minecraftforge.fml.common.Mod;
-import the_dark_jumper.cannonTracer.configSaving.DataManager;
-import the_dark_jumper.cannonTracer.gui.GuiManager;
-import the_dark_jumper.cannonTracer.listeners.ClientConnectsToServerListener;
-import the_dark_jumper.cannonTracer.listeners.KeyPressListener;
-import the_dark_jumper.cannonTracer.listeners.RenderTickListener;
-import the_dark_jumper.cannonTracer.listeners.ServerChatListener;
-import the_dark_jumper.cannonTracer.modules.ModuleManager;
-import the_dark_jumper.cannonTracer.settings.KeybindManagerMP;
-import the_dark_jumper.cannonTracer.settings.KeybindManagerSP;
-import the_dark_jumper.cannonTracer.settings.MultiPlayerSettings;
-import the_dark_jumper.cannonTracer.settings.SinglePlayerSettings;
-import the_dark_jumper.cannonTracer.util.KeyLibrary;
-import the_dark_jumper.cannonTracer.util.TrackingData;
+import the_dark_jumper.cannontracer.configsaving.DataManager;
+import the_dark_jumper.cannontracer.gui.GuiManager;
+import the_dark_jumper.cannontracer.listeners.ClientConnectsToServerListener;
+import the_dark_jumper.cannontracer.listeners.KeyPressListener;
+import the_dark_jumper.cannontracer.listeners.RenderTickListener;
+import the_dark_jumper.cannontracer.listeners.ServerChatListener;
+import the_dark_jumper.cannontracer.modules.ModuleManager;
+import the_dark_jumper.cannontracer.settings.KeybindManagerMP;
+import the_dark_jumper.cannontracer.settings.KeybindManagerSP;
+import the_dark_jumper.cannontracer.settings.MultiPlayerSettings;
+import the_dark_jumper.cannontracer.settings.SinglePlayerSettings;
+import the_dark_jumper.cannontracer.util.KeyLibrary;
+import the_dark_jumper.cannontracer.util.TrackingData;
 
 @Mod("cannontracer")
 public class Main {

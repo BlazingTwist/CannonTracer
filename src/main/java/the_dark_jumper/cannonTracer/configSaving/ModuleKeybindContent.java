@@ -1,8 +1,8 @@
-package the_dark_jumper.cannonTracer.configSaving;
+package the_dark_jumper.cannontracer.configsaving;
 
 import java.util.LinkedHashMap;
 
-import the_dark_jumper.cannonTracer.util.KeybindAccessors;
+import the_dark_jumper.cannontracer.util.KeybindAccessors;
 
 public class ModuleKeybindContent implements Header.Content{
 	public String keybindName;

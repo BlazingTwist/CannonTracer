@@ -1,10 +1,10 @@
-package the_dark_jumper.cannonTracer.settings;
+package the_dark_jumper.cannontracer.settings;
 
 import java.util.LinkedHashMap;
 
-import the_dark_jumper.cannonTracer.Main;
-import the_dark_jumper.cannonTracer.modules.moduleElements.ModuleBase;
-import the_dark_jumper.cannonTracer.util.KeybindAccessors;
+import the_dark_jumper.cannontracer.Main;
+import the_dark_jumper.cannontracer.modules.moduleelements.ModuleBase;
+import the_dark_jumper.cannontracer.util.KeybindAccessors;
 
 public class KeybindManagerMP {
 	public final Main main;

@@ -1,4 +1,4 @@
-package the_dark_jumper.cannonTracer;
+package the_dark_jumper.cannontracer;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -26,10 +26,10 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.TickEvent.WorldTickEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import the_dark_jumper.cannonTracer.modules.ModuleManager;
-import the_dark_jumper.cannonTracer.util.SimpleLocation;
-import the_dark_jumper.cannonTracer.util.SingleTickMoveData;
-import the_dark_jumper.cannonTracer.util.TrackingData;
+import the_dark_jumper.cannontracer.modules.ModuleManager;
+import the_dark_jumper.cannontracer.util.SimpleLocation;
+import the_dark_jumper.cannontracer.util.SingleTickMoveData;
+import the_dark_jumper.cannontracer.util.TrackingData;
 
 public class EntityTracker {
 	public final Main main;

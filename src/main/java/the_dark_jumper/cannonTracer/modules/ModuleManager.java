@@ -1,14 +1,14 @@
-package the_dark_jumper.cannonTracer.modules;
+package the_dark_jumper.cannontracer.modules;
 
 import java.util.ArrayList;
 
-import the_dark_jumper.cannonTracer.Main;
-import the_dark_jumper.cannonTracer.modules.moduleElements.ModuleBase;
-import the_dark_jumper.cannonTracer.modules.moduleElements.ModuleCounter;
-import the_dark_jumper.cannonTracer.modules.moduleElements.ModuleOnOff;
-import the_dark_jumper.cannonTracer.modules.moduleElements.ModuleStateMachine;
-import the_dark_jumper.cannonTracer.modules.moduleElements.ModuleToggle;
-import the_dark_jumper.cannonTracer.util.TrackingData;
+import the_dark_jumper.cannontracer.Main;
+import the_dark_jumper.cannontracer.modules.moduleelements.ModuleBase;
+import the_dark_jumper.cannontracer.modules.moduleelements.ModuleCounter;
+import the_dark_jumper.cannontracer.modules.moduleelements.ModuleOnOff;
+import the_dark_jumper.cannontracer.modules.moduleelements.ModuleStateMachine;
+import the_dark_jumper.cannontracer.modules.moduleelements.ModuleToggle;
+import the_dark_jumper.cannontracer.util.TrackingData;
 
 public class ModuleManager {
 	Main main;

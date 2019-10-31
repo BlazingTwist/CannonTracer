@@ -1,15 +1,15 @@
-package the_dark_jumper.cannonTracer.gui;
+package the_dark_jumper.cannontracer.gui;
 
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
-import the_dark_jumper.cannonTracer.modules.moduleElements.ModuleBase;
-import the_dark_jumper.cannonTracer.modules.moduleElements.ModuleCounter;
-import the_dark_jumper.cannonTracer.modules.moduleElements.ModuleOnOff;
-import the_dark_jumper.cannonTracer.modules.moduleElements.ModuleStateMachine;
-import the_dark_jumper.cannonTracer.modules.moduleElements.ModuleToggle;
+import the_dark_jumper.cannontracer.modules.moduleelements.ModuleBase;
+import the_dark_jumper.cannontracer.modules.moduleelements.ModuleCounter;
+import the_dark_jumper.cannontracer.modules.moduleelements.ModuleOnOff;
+import the_dark_jumper.cannontracer.modules.moduleelements.ModuleStateMachine;
+import the_dark_jumper.cannontracer.modules.moduleelements.ModuleToggle;
 
 public class IngameGUI extends Screen{
 	public final GuiManager guiManager;

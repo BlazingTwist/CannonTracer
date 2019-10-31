@@ -1,4 +1,4 @@
-package the_dark_jumper.cannonTracer.gui;
+package the_dark_jumper.cannontracer.gui;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,22 +7,23 @@ import java.util.LinkedHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraftforge.client.event.InputEvent;
-import the_dark_jumper.cannonTracer.gui.guiElements.BasicTextFrame;
-import the_dark_jumper.cannonTracer.gui.guiElements.ButtonFrame;
-import the_dark_jumper.cannonTracer.gui.guiElements.FrameColors;
-import the_dark_jumper.cannonTracer.gui.guiElements.KeybindFrame;
-import the_dark_jumper.cannonTracer.gui.guiElements.ToggleValueFrame;
-import the_dark_jumper.cannonTracer.gui.guiElements.ValueFrame;
-import the_dark_jumper.cannonTracer.gui.guiElements.interfaces.ClickableFrame;
-import the_dark_jumper.cannonTracer.gui.guiElements.interfaces.FocusableFrame;
-import the_dark_jumper.cannonTracer.gui.guiElements.interfaces.RenderableFrame;
-import the_dark_jumper.cannonTracer.gui.guiElements.interfaces.TickableFrame;
-import the_dark_jumper.cannonTracer.util.KeybindAccessors;
-import the_dark_jumper.cannonTracer.util.TrackingData;
+import the_dark_jumper.cannontracer.gui.guielements.BasicTextFrame;
+import the_dark_jumper.cannontracer.gui.guielements.ButtonFrame;
+import the_dark_jumper.cannontracer.gui.guielements.KeybindFrame;
+import the_dark_jumper.cannontracer.gui.guielements.ToggleValueFrame;
+import the_dark_jumper.cannontracer.gui.guielements.ValueFrame;
+import the_dark_jumper.cannontracer.gui.guielements.interfaces.IClickableFrame;
+import the_dark_jumper.cannontracer.gui.guielements.interfaces.IFocusableFrame;
+import the_dark_jumper.cannontracer.gui.guielements.interfaces.IRenderableFrame;
+import the_dark_jumper.cannontracer.gui.guielements.interfaces.ITickableFrame;
+import the_dark_jumper.cannontracer.gui.utils.FrameColors;
+import the_dark_jumper.cannontracer.gui.utils.FrameConfig;
+import the_dark_jumper.cannontracer.util.KeybindAccessors;
+import the_dark_jumper.cannontracer.util.TrackingData;
 
-public class ConfigGUI extends Screen implements JumperGUI{	
+public class ConfigGUI extends Screen implements IJumperGUI{	
 	public final GuiManager guiManager;
-	public ArrayList<RenderableFrame> guiComponents = new ArrayList<>();
+	public ArrayList<IRenderableFrame> guiComponents = new ArrayList<>();
 	
 	public ConfigGUI(GuiManager guiManager) {
 		super(null);
@@ -145,12 +146,12 @@ public class ConfigGUI extends Screen implements JumperGUI{
 		int scaledScreenWidth = minecraft.mainWindow.getScaledWidth();
 		int scaledScreenHeight = minecraft.mainWindow.getScaledHeight();
 		int guiScale = minecraft.gameSettings.guiScale;
-		for(RenderableFrame renderable : guiComponents) {
-			if(renderable instanceof ClickableFrame) {
-				((ClickableFrame)renderable).mouseOver(mouseX, mouseY, scaledScreenWidth, scaledScreenHeight, this.leftDown, this.queueLeftUpdate);
+		for(IRenderableFrame renderable : guiComponents) {
+			if(renderable instanceof IClickableFrame) {
+				((IClickableFrame)renderable).mouseOver(mouseX, mouseY, scaledScreenWidth, scaledScreenHeight, this.leftDown, this.queueLeftUpdate);
 			}
-			if(renderable instanceof TickableFrame) {
-				((TickableFrame)renderable).tick(this);
+			if(renderable instanceof ITickableFrame) {
+				((ITickableFrame)renderable).tick(this);
 			}
 			renderable.render(scaledScreenWidth, scaledScreenHeight, guiScale);
 		}
@@ -158,10 +159,10 @@ public class ConfigGUI extends Screen implements JumperGUI{
 	}
 	
 	public void keyEvent(InputEvent.KeyInputEvent event) {
-		for(RenderableFrame renderable : guiComponents) {
-			if(renderable instanceof FocusableFrame) {
-				if(((FocusableFrame)renderable).getFocused()) {
-					((FocusableFrame)renderable).keyEvent(event);
+		for(IRenderableFrame renderable : guiComponents) {
+			if(renderable instanceof IFocusableFrame) {
+				if(((IFocusableFrame)renderable).getFocused()) {
+					((IFocusableFrame)renderable).keyEvent(event);
 				}
 			}
 		}
@@ -181,7 +182,7 @@ public class ConfigGUI extends Screen implements JumperGUI{
 	
 	@Override
 	public void onClose() {
-		if(minecraft.currentScreen != null && minecraft.currentScreen != this && minecraft.currentScreen instanceof JumperGUI) {
+		if(minecraft.currentScreen != null && minecraft.currentScreen != this && minecraft.currentScreen instanceof IJumperGUI) {
 			minecraft.currentScreen.onClose();
 		}
 		if(minecraft.currentScreen != null) {

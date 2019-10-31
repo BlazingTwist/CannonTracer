@@ -1,25 +1,26 @@
-package the_dark_jumper.cannonTracer.gui;
+package the_dark_jumper.cannontracer.gui;
 
 import java.util.ArrayList;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraftforge.client.event.InputEvent;
-import the_dark_jumper.cannonTracer.gui.guiElements.BasicTextFrame;
-import the_dark_jumper.cannonTracer.gui.guiElements.ButtonFrame;
-import the_dark_jumper.cannonTracer.gui.guiElements.FrameColors;
-import the_dark_jumper.cannonTracer.gui.guiElements.ScrollableTable;
-import the_dark_jumper.cannonTracer.gui.guiElements.ScrollableTable.FormatData;
-import the_dark_jumper.cannonTracer.gui.guiElements.interfaces.ClickableFrame;
-import the_dark_jumper.cannonTracer.gui.guiElements.interfaces.FocusableFrame;
-import the_dark_jumper.cannonTracer.gui.guiElements.interfaces.RenderableFrame;
-import the_dark_jumper.cannonTracer.gui.guiElements.interfaces.TickableFrame;
+import the_dark_jumper.cannontracer.gui.guielements.BasicTextFrame;
+import the_dark_jumper.cannontracer.gui.guielements.ButtonFrame;
+import the_dark_jumper.cannontracer.gui.guielements.ScrollableTable;
+import the_dark_jumper.cannontracer.gui.guielements.ScrollableTable.FormatData;
+import the_dark_jumper.cannontracer.gui.guielements.interfaces.IClickableFrame;
+import the_dark_jumper.cannontracer.gui.guielements.interfaces.IFocusableFrame;
+import the_dark_jumper.cannontracer.gui.guielements.interfaces.IRenderableFrame;
+import the_dark_jumper.cannontracer.gui.guielements.interfaces.ITickableFrame;
+import the_dark_jumper.cannontracer.gui.utils.FrameColors;
+import the_dark_jumper.cannontracer.gui.utils.FrameConfig;
 
 //TODO implement consistent datagrid and outsource scrollbars to via consumers
 
-public class HotkeyGUI extends Screen implements JumperGUI{	
+public class HotkeyGUI extends Screen implements IJumperGUI{	
 	public final GuiManager guiManager;
-	public ArrayList<RenderableFrame> guiComponents = new ArrayList<>();
+	public ArrayList<IRenderableFrame> guiComponents = new ArrayList<>();
 	
 	public HotkeyGUI(GuiManager guiManager) {
 		super(null);
@@ -65,47 +66,54 @@ public class HotkeyGUI extends Screen implements JumperGUI{
 		ScrollableTable table = new ScrollableTable(this, config.duplicate(), colors);
 		/*table.setUniformColFormat(false, new FormatData(6, 28));
 		table.setUniformRowFormat(false, new FormatData(20, 25));*/
-		table.setColFormat(false,
-				new FormatData(6, 27),
-				new FormatData(28, 49),
-				new FormatData(50, 71),
-				new FormatData(72, 93),
-				new FormatData(94, 116)
+		table.setColFormat(true,
+				new FormatData(0, 24),
+				new FormatData(25, 49),
+				new FormatData(50, 74),
+				new FormatData(75, 99),
+				new FormatData(100, 124)
 				);
-		table.setRowFormat(false,
-				new FormatData(20, 24),
-				new FormatData(25, 29),
-				new FormatData(30, 34),
-				new FormatData(35, 39)
+		table.setRowFormat(true,
+				new FormatData(0, 24),
+				new FormatData(25, 49),
+				new FormatData(50, 74),
+				new FormatData(75, 99),
+				new FormatData(100, 124)
 				);
 		table.addRow(
 				null,
-				new ButtonFrame(this, "Column1", config.duplicate().init(28, 20, 49, 24, 8), colors, null),
-				new ButtonFrame(this, "Column2", config.duplicate().init(50, 20, 71, 24, 8), colors, null),
-				new ButtonFrame(this, "Column3", config.duplicate().init(72, 20, 93, 24, 8), colors, null),
-				new ButtonFrame(this, "Column4", config.duplicate().init(94, 20, 116, 24, 8), colors, null)
+				new ButtonFrame(this, "Column1", null, colors, null),
+				new ButtonFrame(this, "Column2", null, colors, null),
+				new ButtonFrame(this, "Column3", null, colors, null),
+				new ButtonFrame(this, "Column4", null, colors, null)
 				);
 		table.addRow(
-				new ButtonFrame(this, "Row1", config.duplicate().init(6, 25, 27, 29, 8), colors, null),
-				new ButtonFrame(this, "Value1_1", config.duplicate().init(28, 25, 49, 29, 8), colors, null),
-				new ButtonFrame(this, "Value1_2", config.duplicate().init(50, 25, 71, 29, 8), colors, null),
-				new ButtonFrame(this, "Value1_3", config.duplicate().init(72, 25, 93, 29, 8), colors, null),
-				new ButtonFrame(this, "Value1_4", config.duplicate().init(94, 25, 116, 29, 8), colors, null)
+				new ButtonFrame(this, "Row1", null, colors, null),
+				new ButtonFrame(this, "Value1_1", null, colors, null),
+				new ButtonFrame(this, "Value1_2", null, colors, null),
+				new ButtonFrame(this, "Value1_3", null, colors, null),
+				new ButtonFrame(this, "Value1_4", null, colors, null)
 				);
 		table.addRow(
-				new ButtonFrame(this, "Row2", config.duplicate().init(6, 30, 27, 34, 8), colors, null),
-				new ButtonFrame(this, "Value2_1", config.duplicate().init(28, 30, 49, 34, 8), colors, null),
-				new ButtonFrame(this, "Value2_2", config.duplicate().init(50, 30, 71, 34, 8), colors, null),
-				new ButtonFrame(this, "Value2_3", config.duplicate().init(72, 30, 93, 34, 8), colors, null),
-				new ButtonFrame(this, "Value2_4", config.duplicate().init(94, 30, 116, 34, 8), colors, null)
+				new ButtonFrame(this, "Row2", null, colors, null),
+				new ButtonFrame(this, "Value2_1", null, colors, null),
+				new ButtonFrame(this, "Value2_2", null, colors, null),
+				new ButtonFrame(this, "Value2_3", null, colors, null),
+				new ButtonFrame(this, "Value2_4", null, colors, null)
 				);
 		table.addRow(
-
-				new ButtonFrame(this, "Row3", config.duplicate().init(6, 35, 27, 39, 8), colors, null),
-				new ButtonFrame(this, "Value3_1", config.duplicate().init(28, 35, 49, 39, 8), colors, null),
-				new ButtonFrame(this, "Value3_2", config.duplicate().init(50, 35, 71, 39, 8), colors, null),
-				new ButtonFrame(this, "Value3_3", config.duplicate().init(72, 35, 93, 39, 8), colors, null),
-				new ButtonFrame(this, "Value3_4", config.duplicate().init(94, 35, 116, 39, 8), colors, null)
+				new ButtonFrame(this, "Row3", null, colors, null),
+				new ButtonFrame(this, "Value3_1", null, colors, null),
+				new ButtonFrame(this, "Value3_2", null, colors, null),
+				new ButtonFrame(this, "Value3_3", null, colors, null),
+				new ButtonFrame(this, "Value3_4", null, colors, null)
+				);
+		table.addRow(
+				new ButtonFrame(this, "Row4", null, colors, null),
+				new ButtonFrame(this, "Value4_1", null, colors, null),
+				new ButtonFrame(this, "Value4_2", null, colors, null),
+				new ButtonFrame(this, "Value4_3", null, colors, null),
+				new ButtonFrame(this, "Value4_4", null, colors, null)
 				);
 		table.generateScrollbars(true, 3, true, table.matchWidthToHeight(3));
 		table.updateScrollbarRanges();
@@ -117,12 +125,12 @@ public class HotkeyGUI extends Screen implements JumperGUI{
 		int scaledScreenWidth = minecraft.mainWindow.getScaledWidth();
 		int scaledScreenHeight = minecraft.mainWindow.getScaledHeight();
 		int guiScale = minecraft.gameSettings.guiScale;
-		for(RenderableFrame renderable : guiComponents) {
-			if(renderable instanceof ClickableFrame) {
-				((ClickableFrame)renderable).mouseOver(mouseX, mouseY, scaledScreenWidth, scaledScreenHeight, this.leftDown, this.queueLeftUpdate);
+		for(IRenderableFrame renderable : guiComponents) {
+			if(renderable instanceof IClickableFrame) {
+				((IClickableFrame)renderable).mouseOver(mouseX, mouseY, scaledScreenWidth, scaledScreenHeight, this.leftDown, this.queueLeftUpdate);
 			}
-			if(renderable instanceof TickableFrame) {
-				((TickableFrame)renderable).tick(this);
+			if(renderable instanceof ITickableFrame) {
+				((ITickableFrame)renderable).tick(this);
 			}
 			renderable.render(scaledScreenWidth, scaledScreenHeight, guiScale);
 		}
@@ -130,10 +138,10 @@ public class HotkeyGUI extends Screen implements JumperGUI{
 	}
 	
 	public void keyEvent(InputEvent.KeyInputEvent event) {
-		for(RenderableFrame renderable : guiComponents) {
-			if(renderable instanceof FocusableFrame) {
-				if(((FocusableFrame)renderable).getFocused()) {
-					((FocusableFrame)renderable).keyEvent(event);
+		for(IRenderableFrame renderable : guiComponents) {
+			if(renderable instanceof IFocusableFrame) {
+				if(((IFocusableFrame)renderable).getFocused()) {
+					((IFocusableFrame)renderable).keyEvent(event);
 				}
 			}
 		}

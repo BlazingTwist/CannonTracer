@@ -1,9 +1,9 @@
-package the_dark_jumper.cannonTracer.gui.guiElements.interfaces;
+package the_dark_jumper.cannontracer.gui.guielements.interfaces;
 
 import net.minecraftforge.client.event.InputEvent;
-import the_dark_jumper.cannonTracer.Main;
+import the_dark_jumper.cannontracer.Main;
 
-public interface FocusableFrame extends ClickableFrame{	
+public interface IFocusableFrame extends IClickableFrame{	
 	@Override
 	public default void mouseOver(int x, int y, int scaledScreenWidth, int scaledScreenHeight, boolean mouseLeftDown, boolean queueLeftUpdate) {
 		if(getIsClicked() && !mouseLeftDown) {

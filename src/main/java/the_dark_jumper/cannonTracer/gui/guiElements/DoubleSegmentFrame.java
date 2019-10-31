@@ -1,11 +1,12 @@
-package the_dark_jumper.cannonTracer.gui.guiElements;
+package the_dark_jumper.cannontracer.gui.guielements;
 
 import net.minecraft.client.gui.screen.Screen;
-import the_dark_jumper.cannonTracer.gui.JumperGUI;
-import the_dark_jumper.cannonTracer.gui.JumperGUI.FrameConfig;
-import the_dark_jumper.cannonTracer.gui.guiElements.interfaces.ClickableFrame;
+import the_dark_jumper.cannontracer.gui.IJumperGUI;
+import the_dark_jumper.cannontracer.gui.guielements.interfaces.IClickableFrame;
+import the_dark_jumper.cannontracer.gui.utils.FrameColors;
+import the_dark_jumper.cannontracer.gui.utils.FrameConfig;
 
-public class DoubleSegmentFrame extends BasicTextFrame implements ClickableFrame{
+public class DoubleSegmentFrame extends BasicTextFrame implements IClickableFrame{
 	public int valueColor;
 	
 	public String value;
@@ -20,12 +21,12 @@ public class DoubleSegmentFrame extends BasicTextFrame implements ClickableFrame
 	@Override public boolean getHovered() {return hovered;}
 	@Override public void setHovered(boolean hovered) {this.hovered = hovered;}
 	
-	public DoubleSegmentFrame(JumperGUI parent, String text, String value, int valueColor, FrameConfig config, FrameColors colors) {
+	public DoubleSegmentFrame(IJumperGUI parent, String text, String value, int valueColor, FrameConfig config, FrameColors colors) {
 		super(parent, text, config, colors);
 		init(value, valueColor);
 	}
 	
-	public DoubleSegmentFrame(JumperGUI parent, String text, String value, FrameConfig config, FrameColors colors) {
+	public DoubleSegmentFrame(IJumperGUI parent, String text, String value, FrameConfig config, FrameColors colors) {
 		super(parent, text, config, colors);
 		init(value, colors.defaultValueColor);
 	}

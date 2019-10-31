@@ -1,10 +1,10 @@
-package the_dark_jumper.cannonTracer.gui;
+package the_dark_jumper.cannontracer.gui;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraftforge.client.event.InputEvent;
-import the_dark_jumper.cannonTracer.Main;
-import the_dark_jumper.cannonTracer.modules.ModuleManager;
+import the_dark_jumper.cannontracer.Main;
+import the_dark_jumper.cannontracer.modules.ModuleManager;
 
 public class GuiManager {
 	public final Main main;
@@ -29,15 +29,15 @@ public class GuiManager {
 	
 	public void keyEvent(InputEvent.KeyInputEvent event) {
 		Screen screen = Minecraft.getInstance().currentScreen;
-		if(screen != null && screen instanceof JumperGUI) {
-			((JumperGUI)screen).keyEvent(event);
+		if(screen != null && screen instanceof IJumperGUI) {
+			((IJumperGUI)screen).keyEvent(event);
 		}
 	}
 	
 	public void mousePressEvent(boolean isLeftDown) {
 		Screen screen = Minecraft.getInstance().currentScreen;
-		if(screen != null && screen instanceof JumperGUI) {
-			((JumperGUI)screen).mousePressEvent(isLeftDown);
+		if(screen != null && screen instanceof IJumperGUI) {
+			((IJumperGUI)screen).mousePressEvent(isLeftDown);
 		}
 	}
 }

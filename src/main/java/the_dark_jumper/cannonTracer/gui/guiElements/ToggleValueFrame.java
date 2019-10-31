@@ -1,13 +1,14 @@
-package the_dark_jumper.cannonTracer.gui.guiElements;
+package the_dark_jumper.cannontracer.gui.guielements;
 
-import the_dark_jumper.cannonTracer.gui.JumperGUI;
-import the_dark_jumper.cannonTracer.gui.JumperGUI.FrameConfig;
-import the_dark_jumper.cannonTracer.util.GetterAndSetter;
+import the_dark_jumper.cannontracer.gui.IJumperGUI;
+import the_dark_jumper.cannontracer.gui.utils.FrameColors;
+import the_dark_jumper.cannontracer.gui.utils.FrameConfig;
+import the_dark_jumper.cannontracer.util.GetterAndSetter;
 
 public class ToggleValueFrame extends DoubleSegmentFrame{
 	public final GetterAndSetter<Boolean> source;
 	
-	public ToggleValueFrame(JumperGUI parent, FrameConfig config, FrameColors colors, String text, GetterAndSetter<Boolean> source) {
+	public ToggleValueFrame(IJumperGUI parent, FrameConfig config, FrameColors colors, String text, GetterAndSetter<Boolean> source) {
 		super(parent, text, Boolean.toString(source.getter.get()), (source.getter.get() ? colors.colorOn : colors.colorOff), config, colors);
 		this.source = source;
 	}

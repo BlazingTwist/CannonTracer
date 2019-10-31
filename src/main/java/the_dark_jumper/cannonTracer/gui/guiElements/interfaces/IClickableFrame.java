@@ -1,6 +1,6 @@
-package the_dark_jumper.cannonTracer.gui.guiElements.interfaces;
+package the_dark_jumper.cannontracer.gui.guielements.interfaces;
 
-public interface ClickableFrame extends RenderableFrame{
+public interface IClickableFrame extends IRenderableFrame{
 	public boolean getIsClicked();
 	public void setIsClicked(boolean isClicked);
 	

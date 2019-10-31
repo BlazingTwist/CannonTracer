@@ -1,4 +1,4 @@
-package the_dark_jumper.cannonTracer.configSaving;
+package the_dark_jumper.cannontracer.configsaving;
 
 public class DataTypes {
 	public interface DataType{

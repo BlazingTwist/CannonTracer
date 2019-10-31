@@ -1,10 +1,10 @@
-package the_dark_jumper.cannonTracer.modules.moduleElements;
+package the_dark_jumper.cannontracer.modules.moduleelements;
 
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.function.Supplier;
 
-import the_dark_jumper.cannonTracer.util.GetterAndSetter;
+import the_dark_jumper.cannontracer.util.GetterAndSetter;
 
 public class ModuleCounter extends ModuleBase{
 	Timer timer;

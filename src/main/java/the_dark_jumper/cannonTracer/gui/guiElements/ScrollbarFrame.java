@@ -1,4 +1,4 @@
-package the_dark_jumper.cannonTracer.gui.guiElements;
+package the_dark_jumper.cannontracer.gui.guielements;
 
 import java.util.function.Consumer;
 
@@ -6,17 +6,19 @@ import javax.annotation.Nullable;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
-import the_dark_jumper.cannonTracer.gui.JumperGUI;
-import the_dark_jumper.cannonTracer.gui.JumperGUI.FrameConfig;
-import the_dark_jumper.cannonTracer.gui.guiElements.interfaces.ClickableFrame;
-import the_dark_jumper.cannonTracer.gui.guiElements.interfaces.RenderableFrame;
+import the_dark_jumper.cannontracer.gui.IJumperGUI;
+import the_dark_jumper.cannontracer.gui.guielements.interfaces.IClickableFrame;
+import the_dark_jumper.cannontracer.gui.guielements.interfaces.IRenderableFrame;
+import the_dark_jumper.cannontracer.gui.utils.FrameColors;
+import the_dark_jumper.cannontracer.gui.utils.FrameConfig;
 
-public class ScrollbarFrame implements RenderableFrame, ClickableFrame{
-	public final JumperGUI parent;
+public class ScrollbarFrame implements IRenderableFrame, IClickableFrame{
+	public final IJumperGUI parent;
 	public final Minecraft minecraft;
 	
 	public FrameConfig config;
 	@Override public FrameConfig getConfig() {return config;}
+	@Override public void setConfig(FrameConfig config) {this.config = config;}
 	
 	public FrameColors colors;
 	@Override public FrameColors getColors() {return colors;}
@@ -48,7 +50,7 @@ public class ScrollbarFrame implements RenderableFrame, ClickableFrame{
 		return scrollbarSize;
 	}
 	
-	public ScrollbarFrame(JumperGUI parent, FrameConfig config, FrameColors colors, @Nullable Consumer<Double> onDragged) {
+	public ScrollbarFrame(IJumperGUI parent, FrameConfig config, FrameColors colors, @Nullable Consumer<Double> onDragged) {
 		this.parent = parent;
 		this.minecraft = parent.getMinecraft();
 		this.config = config;
@@ -58,7 +60,7 @@ public class ScrollbarFrame implements RenderableFrame, ClickableFrame{
 	
 	@Override
 	public void mouseOver(int x, int y, int scaledScreenWidth, int scaledScreenHeight, boolean mouseLeftDown, boolean queueLeftUpdate) {
-		ClickableFrame.super.mouseOver(x, y, scaledScreenWidth, scaledScreenHeight, mouseLeftDown, queueLeftUpdate);
+		IClickableFrame.super.mouseOver(x, y, scaledScreenWidth, scaledScreenHeight, mouseLeftDown, queueLeftUpdate);
 		if(isClicked) {
 			double current;
 			double relative1;

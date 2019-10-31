@@ -1,10 +1,10 @@
-package the_dark_jumper.cannonTracer.listeners;
+package the_dark_jumper.cannontracer.listeners;
 
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent.RenderTickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import the_dark_jumper.cannonTracer.Main;
+import the_dark_jumper.cannontracer.Main;
 
 public class RenderTickListener {
 	public final Main main;

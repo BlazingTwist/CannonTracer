@@ -1,23 +1,25 @@
-package the_dark_jumper.cannonTracer.gui.guiElements;
+package the_dark_jumper.cannontracer.gui.guielements;
 
 import net.minecraft.client.Minecraft;
-import the_dark_jumper.cannonTracer.gui.JumperGUI;
-import the_dark_jumper.cannonTracer.gui.JumperGUI.FrameConfig;
-import the_dark_jumper.cannonTracer.gui.guiElements.interfaces.RenderableFrame;
+import the_dark_jumper.cannontracer.gui.IJumperGUI;
+import the_dark_jumper.cannontracer.gui.guielements.interfaces.IRenderableFrame;
+import the_dark_jumper.cannontracer.gui.utils.FrameColors;
+import the_dark_jumper.cannontracer.gui.utils.FrameConfig;
 
-public class BasicTextFrame implements RenderableFrame{
-	public final JumperGUI parent;
+public class BasicTextFrame implements IRenderableFrame{
+	public final IJumperGUI parent;
 	public final Minecraft minecraft;
 	public String text;
 	
 	public FrameConfig config;
 	@Override public FrameConfig getConfig() {return config;}
+	@Override public void setConfig(FrameConfig config) {this.config = config;}
 	
 	public FrameColors colors;
 	@Override public FrameColors getColors() {return colors;}
 	
 	//all values are percentages of the full screen
-	public BasicTextFrame(JumperGUI parent, String text, FrameConfig config, FrameColors colors) {
+	public BasicTextFrame(IJumperGUI parent, String text, FrameConfig config, FrameColors colors) {
 		this.parent = parent;
 		this.minecraft = parent.getMinecraft();
 		this.text = text;

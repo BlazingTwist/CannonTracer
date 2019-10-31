@@ -1,4 +1,4 @@
-package the_dark_jumper.cannonTracer.gui.guiElements;
+package the_dark_jumper.cannontracer.gui.utils;
 
 public class FrameColors {
 	public int borderColor = 0xff444444;

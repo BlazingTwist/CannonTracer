@@ -1,11 +1,12 @@
-package the_dark_jumper.cannonTracer.gui.guiElements.interfaces;
+package the_dark_jumper.cannontracer.gui.guielements.interfaces;
 
 import net.minecraft.client.gui.screen.Screen;
-import the_dark_jumper.cannonTracer.gui.JumperGUI.FrameConfig;
-import the_dark_jumper.cannonTracer.gui.guiElements.FrameColors;
+import the_dark_jumper.cannontracer.gui.utils.FrameColors;
+import the_dark_jumper.cannontracer.gui.utils.FrameConfig;
 
-public interface RenderableFrame {
+public interface IRenderableFrame {
 	public FrameConfig getConfig();
+	public void setConfig(FrameConfig config);
 	
 	public FrameColors getColors();
 	

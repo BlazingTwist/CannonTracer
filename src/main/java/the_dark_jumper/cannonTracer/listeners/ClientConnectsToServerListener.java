@@ -1,4 +1,4 @@
-package the_dark_jumper.cannonTracer.listeners;
+package the_dark_jumper.cannontracer.listeners;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -8,8 +8,8 @@ import net.minecraftforge.client.event.ClientPlayerNetworkEvent.LoggedInEvent;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent.LoggedOutEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import the_dark_jumper.cannonTracer.Main;
-import the_dark_jumper.cannonTracer.modules.ModuleManager;
+import the_dark_jumper.cannontracer.Main;
+import the_dark_jumper.cannontracer.modules.ModuleManager;
 
 //this must be the pinnacle of my quest to create the longest classnames
 public class ClientConnectsToServerListener {

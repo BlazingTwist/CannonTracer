@@ -1,4 +1,4 @@
-package the_dark_jumper.cannonTracer.listeners;
+package the_dark_jumper.cannontracer.listeners;
 
 import java.util.ArrayList;
 
@@ -6,10 +6,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import the_dark_jumper.cannonTracer.Main;
-import the_dark_jumper.cannonTracer.modules.ModuleManager;
-import the_dark_jumper.cannonTracer.util.SimpleLocation;
-import the_dark_jumper.cannonTracer.util.SingleTickMoveData;
+import the_dark_jumper.cannontracer.Main;
+import the_dark_jumper.cannontracer.modules.ModuleManager;
+import the_dark_jumper.cannontracer.util.SimpleLocation;
+import the_dark_jumper.cannontracer.util.SingleTickMoveData;
 
 public class ServerChatListener {
 	public final Main main;

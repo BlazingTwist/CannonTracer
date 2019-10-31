@@ -1,17 +1,18 @@
-package the_dark_jumper.cannonTracer.gui.guiElements;
+package the_dark_jumper.cannontracer.gui.guielements;
 
 import java.util.ArrayList;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraftforge.client.event.InputEvent;
-import the_dark_jumper.cannonTracer.gui.JumperGUI;
-import the_dark_jumper.cannonTracer.gui.JumperGUI.FrameConfig;
-import the_dark_jumper.cannonTracer.gui.guiElements.interfaces.ClickableFrame;
-import the_dark_jumper.cannonTracer.gui.guiElements.interfaces.FocusableFrame;
-import the_dark_jumper.cannonTracer.gui.guiElements.interfaces.RenderableFrame;
+import the_dark_jumper.cannontracer.gui.IJumperGUI;
+import the_dark_jumper.cannontracer.gui.guielements.interfaces.IClickableFrame;
+import the_dark_jumper.cannontracer.gui.guielements.interfaces.IFocusableFrame;
+import the_dark_jumper.cannontracer.gui.guielements.interfaces.IRenderableFrame;
+import the_dark_jumper.cannontracer.gui.utils.FrameColors;
+import the_dark_jumper.cannontracer.gui.utils.FrameConfig;
 
-public class ScrollableTable implements RenderableFrame, ClickableFrame, FocusableFrame{
+public class ScrollableTable implements IRenderableFrame, IClickableFrame, IFocusableFrame{
 	public static class FormatData{
 		public FormatData(){}
 		
@@ -24,11 +25,12 @@ public class ScrollableTable implements RenderableFrame, ClickableFrame, Focusab
 		public int end;
 	}
 	
-	public final JumperGUI parent;
+	public final IJumperGUI parent;
 	public final Minecraft minecraft;
 	
 	public FrameConfig config;
 	@Override public FrameConfig getConfig() {return config;}
+	@Override public void setConfig(FrameConfig config) {this.config = config;}
 	
 	public FrameColors colors;
 	@Override public FrameColors getColors() {return colors;}
@@ -55,9 +57,9 @@ public class ScrollableTable implements RenderableFrame, ClickableFrame, Focusab
 	private ArrayList<FormatData> rowFormat = new ArrayList<>();
 	//private ArrayList<RenderableFrame> headerRow = null;
 	//private ArrayList<RenderableFrame> headerCol = null;
-	private ArrayList<ArrayList<RenderableFrame>> rows = new ArrayList<>();
+	private ArrayList<ArrayList<IRenderableFrame>> rows = new ArrayList<>();
 	
-	public ScrollableTable(JumperGUI parent, FrameConfig config, FrameColors colors) {
+	public ScrollableTable(IJumperGUI parent, FrameConfig config, FrameColors colors) {
 		this.parent = parent;
 		this.minecraft = parent.getMinecraft();
 		this.config = config;
@@ -78,18 +80,18 @@ public class ScrollableTable implements RenderableFrame, ClickableFrame, Focusab
 	
 	public void generateScrollbars(boolean useHorizontal, int height, boolean useVertical, int width) {
 		if(useHorizontal) {
-			horizontalScrollbar = new ScrollbarFrame(parent, new FrameConfig().init(0, 100, 100, 100 + height, config.borderThickness), colors, this::onHorizontalScroll);
+			horizontalScrollbar = new ScrollbarFrame(parent, new FrameConfig().init(0, 100, 100, 100 + height, config.borderThickness), colors, null);
 			horizontalScrollbar.isVertical = false;
 		}
 		if(useVertical) {
-			verticalScrollbar = new ScrollbarFrame(parent, new FrameConfig().init(100, 0, 100 + width, 100, config.borderThickness), colors, this::onVerticalScroll);
+			verticalScrollbar = new ScrollbarFrame(parent, new FrameConfig().init(100, 0, 100 + width, 100, config.borderThickness), colors, null);
 			verticalScrollbar.isVertical = true;
 		}
 	}
 	
 	public int getAmountOfColumns() {
 		int amount = 0;
-		for(ArrayList<RenderableFrame> row : rows) {
+		for(ArrayList<IRenderableFrame> row : rows) {
 			if(row.size() > amount) {
 				amount = row.size();
 			}
@@ -203,24 +205,15 @@ public class ScrollableTable implements RenderableFrame, ClickableFrame, Focusab
 		}
 	}
 	
-	public void addRow(RenderableFrame... frames) {
-		ArrayList<RenderableFrame> row = new ArrayList<>();
-		for(RenderableFrame frame : frames) {
-			row.add(frame);
+	public void addRow(IRenderableFrame... frames) {
+		ArrayList<IRenderableFrame> row = new ArrayList<>();
+		for(int colIndex = 0; colIndex < frames.length; colIndex++) {
+			if(frames[colIndex] != null) {
+				frames[colIndex].setConfig(getFormatData(rows.size(), colIndex));
+			}
+			row.add(frames[colIndex]);
 		}
-		addRow(row);
-	}
-	
-	public void addRow(ArrayList<RenderableFrame> row) {
 		rows.add(row);
-	}
-	
-	public void onHorizontalScroll(double amount) {
-		
-	}
-	
-	public void onVerticalScroll(double amount) {
-		
 	}
 	
 	@Override
@@ -231,14 +224,18 @@ public class ScrollableTable implements RenderableFrame, ClickableFrame, Focusab
 		int relY2 = getPercentValue(scaledScreenHeight, config.yEnd);
 		int perceivedScreenWidth = relX2 - relX1;
 		int perceivedScreenHeight = relY2 - relY1;
+		double scrollOffsetX = horizontalScrollbar.scrollbarPos * (1 - horizontalScrollbar.getScrollbarSize());
+		double scrollOffsetY = verticalScrollbar.scrollbarPos * (1 - verticalScrollbar.getScrollbarSize());
+		scrollOffsetX *= (perceivedScreenWidth * horizontalScrollFactor);
+		scrollOffsetY *= (perceivedScreenHeight * verticalScrollFactor);
 		if(x >= relX1 && x <= relX2 && y >= relY1 && y <= relY2) {
 			//mouse is hovering over table
 			for(int i = 0; i < rows.size(); i++) {
-				ArrayList<RenderableFrame> row = rows.get(i);
+				ArrayList<IRenderableFrame> row = rows.get(i);
 				for(int i2 = 0; i2 < row.size(); i2++) {
-					RenderableFrame frame = row.get(i2);
-					if(frame instanceof ClickableFrame) {
-						((ClickableFrame)frame).mouseOver(x - relX1, y - relY1, perceivedScreenWidth, perceivedScreenHeight, mouseLeftDown, queueLeftUpdate);
+					IRenderableFrame frame = row.get(i2);
+					if(frame instanceof IClickableFrame) {
+						((IClickableFrame)frame).mouseOver((int)(x - relX1 + scrollOffsetX), (int)(y - relY1 + scrollOffsetY), perceivedScreenWidth, perceivedScreenHeight, mouseLeftDown, queueLeftUpdate);
 					}
 				}
 			}
@@ -268,9 +265,9 @@ public class ScrollableTable implements RenderableFrame, ClickableFrame, Focusab
 			renderTableFrame(verticalScrollbar, x1, y1, x2, y2, guiScale, verticalScrollbar.config, true);
 		}
 		for(int i = 0; i < rows.size(); i++) {
-			ArrayList<RenderableFrame> row = rows.get(i);
+			ArrayList<IRenderableFrame> row = rows.get(i);
 			for(int i2 = 0; i2 < row.size(); i2++) {
-				RenderableFrame frame = row.get(i2);
+				IRenderableFrame frame = row.get(i2);
 				if(frame != null) {
 					renderTableFrame(frame, x1, y1, x2, y2, guiScale, getFormatData(i, i2), false);
 				}
@@ -278,27 +275,37 @@ public class ScrollableTable implements RenderableFrame, ClickableFrame, Focusab
 		}
 	}
 	
-	public void renderTableFrame(RenderableFrame frame, int perceivedX1, int perceivedY1, int perceivedX2, int perceivedY2, int guiScale, FrameConfig config, boolean allowOutOfBounds) {
+	public void renderTableFrame(IRenderableFrame frame, int perceivedX1, int perceivedY1, int perceivedX2, int perceivedY2, int guiScale, FrameConfig config, boolean allowOutOfBounds) {
 		int width = perceivedX2 - perceivedX1;
 		int height = perceivedY2 - perceivedY1;
-		double scrollViewStartX = horizontalScrollbar.scrollbarPos * (1 - horizontalScrollbar.getScrollbarSize());
-		double scrollViewEndX = scrollViewStartX + horizontalScrollbar.getScrollbarSize();
-		double scrollViewStartY = verticalScrollbar.scrollbarPos * (1 - verticalScrollbar.getScrollbarSize());
-		double scrollViewEndY = scrollViewStartY + verticalScrollbar.getScrollbarSize();
-		scrollViewStartX *= width * horizontalScrollFactor;
-		scrollViewEndX *= width * horizontalScrollFactor;
-		scrollViewStartY *= height * verticalScrollFactor;
-		scrollViewEndY *= height * verticalScrollFactor;
 		int x1 = getPercentValue(width, config.x) + perceivedX1;
 		int x2 = getPercentValue(width, config.xEnd) + perceivedX1;
 		int y1 = getPercentValue(height, config.y) + perceivedY1;
 		int y2 = getPercentValue(height, config.yEnd) + perceivedY1;
-		System.out.println("horizscrollbarpos: "+horizontalScrollbar.scrollbarPos+" | horizscrollbarsize: "+horizontalScrollbar.getScrollbarSize()+" | vertscrollbarpos: "+verticalScrollbar.scrollbarPos+" | vertscrollbarsize: "+verticalScrollbar.getScrollbarSize()+" | width: "+width+" | height: "+height);
-		System.out.println("rendertableframe: "+x1+" | "+scrollViewStartX+" | "+x2+" | "+scrollViewEndX+" | "+y1+" | "+scrollViewStartY+" | "+y2+" | "+scrollViewEndY);
-		if(!allowOutOfBounds && (x1 <= scrollViewStartX || x2 >= scrollViewEndX || y1 <= scrollViewStartY || y2 >= scrollViewEndY)) {
+		if(allowOutOfBounds) {
+			//render without scrollbar shifting
+			frame.doFills(x1, y1, x2, y2, config.borderThickness / guiScale);
+			frame.drawTexts(x1, y1, x2, y2);
 			return;
 		}
-		
+		double scrollViewStartX = horizontalScrollbar.scrollbarPos * (1 - horizontalScrollbar.getScrollbarSize());
+		double scrollViewEndX = scrollViewStartX + horizontalScrollbar.getScrollbarSize();
+		double scrollViewStartY = verticalScrollbar.scrollbarPos * (1 - verticalScrollbar.getScrollbarSize());
+		double scrollViewEndY = scrollViewStartY + verticalScrollbar.getScrollbarSize();
+		scrollViewStartX = (scrollViewStartX * width * horizontalScrollFactor) + perceivedX1;
+		scrollViewEndX = (scrollViewEndX * width * horizontalScrollFactor) + perceivedX1;
+		scrollViewStartY = (scrollViewStartY * height * verticalScrollFactor) + perceivedY1;
+		scrollViewEndY = (scrollViewEndY * height * verticalScrollFactor) + perceivedY1;
+		//System.out.println("horizscrollbarpos: "+horizontalScrollbar.scrollbarPos+" | horizscrollbarsize: "+horizontalScrollbar.getScrollbarSize()+" | vertscrollbarpos: "+verticalScrollbar.scrollbarPos+" | vertscrollbarsize: "+verticalScrollbar.getScrollbarSize()+" | width: "+width+" | height: "+height);
+		//System.out.println("rendertableframe: "+x1+" | "+scrollViewStartX+" | "+x2+" | "+scrollViewEndX+" | "+y1+" | "+scrollViewStartY+" | "+y2+" | "+scrollViewEndY);
+		if(x1 < scrollViewStartX || x2 > scrollViewEndX || y1 < scrollViewStartY || y2 > scrollViewEndY) {
+			//frame would be outside of table
+			return;
+		}
+		x1 = (int)(x1 - scrollViewStartX + perceivedX1);
+		x2 = (int)(x2 - scrollViewStartX + perceivedX1);
+		y1 = (int)(y1 - scrollViewStartY + perceivedY1);
+		y2 = (int)(y2 - scrollViewStartY + perceivedY1);
 		frame.doFills(x1, y1, x2, y2, config.borderThickness / guiScale);
 		frame.drawTexts(x1, y1, x2, y2);
 	}
@@ -307,11 +314,11 @@ public class ScrollableTable implements RenderableFrame, ClickableFrame, Focusab
 	
 	@Override public void keyEvent(InputEvent.KeyInputEvent event) {
 		for(int i = 0; i < rows.size(); i++) {
-			ArrayList<RenderableFrame> row = rows.get(i);
+			ArrayList<IRenderableFrame> row = rows.get(i);
 			for(int i2 = 0; i2 < row.size(); i2++) {
-				RenderableFrame frame = row.get(i2);
-				if(frame instanceof FocusableFrame && ((FocusableFrame)frame).getFocused()) {
-					((FocusableFrame)frame).keyEvent(event);
+				IRenderableFrame frame = row.get(i2);
+				if(frame instanceof IFocusableFrame && ((IFocusableFrame)frame).getFocused()) {
+					((IFocusableFrame)frame).keyEvent(event);
 				}
 			}
 		}

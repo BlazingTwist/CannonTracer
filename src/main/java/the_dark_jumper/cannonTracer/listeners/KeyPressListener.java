@@ -1,4 +1,4 @@
-package the_dark_jumper.cannonTracer.listeners;
+package the_dark_jumper.cannontracer.listeners;
 
 import java.util.Set;
 
@@ -10,8 +10,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import the_dark_jumper.cannonTracer.Main;
-import the_dark_jumper.cannonTracer.gui.JumperGUI;
+import the_dark_jumper.cannontracer.Main;
+import the_dark_jumper.cannontracer.gui.IJumperGUI;
 
 public class KeyPressListener {
 	public final Main main;
@@ -33,7 +33,7 @@ public class KeyPressListener {
 			pressedKeys.clear();
 			return;
 		}
-		if(Minecraft.getInstance().currentScreen != null && !(Minecraft.getInstance().currentScreen instanceof JumperGUI)) {
+		if(Minecraft.getInstance().currentScreen != null && !(Minecraft.getInstance().currentScreen instanceof IJumperGUI)) {
 			//ignores keypresses when a screen is active
 			//prevents custom keybinds from firing when chat / anvil-text / inventory search / etc. is receing data
 			//clear pressed keys to prevent misinterpretations
@@ -59,7 +59,7 @@ public class KeyPressListener {
 			main.guiManager.mousePressEvent(false);
 			return;
 		}
-		if(Minecraft.getInstance().currentScreen != null && !(Minecraft.getInstance().currentScreen instanceof JumperGUI)) {
+		if(Minecraft.getInstance().currentScreen != null && !(Minecraft.getInstance().currentScreen instanceof IJumperGUI)) {
 			main.guiManager.mousePressEvent(false);
 			return;
 		}

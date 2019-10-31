@@ -1,8 +1,8 @@
-package the_dark_jumper.cannonTracer.configSaving;
+package the_dark_jumper.cannontracer.configsaving;
 
 import java.util.HashMap;
 
-import the_dark_jumper.cannonTracer.util.TrackingData;
+import the_dark_jumper.cannontracer.util.TrackingData;
 
 public class TrackingDataContent implements Header.Content{
 	public String entityID;

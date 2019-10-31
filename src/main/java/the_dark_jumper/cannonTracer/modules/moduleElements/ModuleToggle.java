@@ -1,4 +1,4 @@
-package the_dark_jumper.cannonTracer.modules.moduleElements;
+package the_dark_jumper.cannontracer.modules.moduleelements;
 
 import java.util.function.Consumer;
 

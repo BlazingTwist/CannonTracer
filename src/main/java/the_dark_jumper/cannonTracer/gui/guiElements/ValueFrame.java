@@ -1,18 +1,19 @@
-package the_dark_jumper.cannonTracer.gui.guiElements;
+package the_dark_jumper.cannontracer.gui.guielements;
 
 import javax.annotation.Nullable;
 
 import org.lwjgl.glfw.GLFW;
 
 import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
-import the_dark_jumper.cannonTracer.Main;
-import the_dark_jumper.cannonTracer.gui.JumperGUI;
-import the_dark_jumper.cannonTracer.gui.JumperGUI.FrameConfig;
-import the_dark_jumper.cannonTracer.gui.guiElements.interfaces.FocusableFrame;
-import the_dark_jumper.cannonTracer.util.GetterAndSetter;
-import the_dark_jumper.cannonTracer.util.KeyLibrary;
+import the_dark_jumper.cannontracer.Main;
+import the_dark_jumper.cannontracer.gui.IJumperGUI;
+import the_dark_jumper.cannontracer.gui.guielements.interfaces.IFocusableFrame;
+import the_dark_jumper.cannontracer.gui.utils.FrameColors;
+import the_dark_jumper.cannontracer.gui.utils.FrameConfig;
+import the_dark_jumper.cannontracer.util.GetterAndSetter;
+import the_dark_jumper.cannontracer.util.KeyLibrary;
 
-public class ValueFrame<T> extends DoubleSegmentFrame implements FocusableFrame{
+public class ValueFrame<T> extends DoubleSegmentFrame implements IFocusableFrame{
 	public boolean isFocused = false;
 	@Override public boolean getFocused() {return isFocused;}
 	@Override public void setFocused(boolean focused) {this.isFocused = focused;}
@@ -20,7 +21,7 @@ public class ValueFrame<T> extends DoubleSegmentFrame implements FocusableFrame{
 	public final GetterAndSetter<T> source;
 	public final Class<T> clazz;
 	
-	public ValueFrame(JumperGUI parent, FrameConfig config, FrameColors colors, String text, GetterAndSetter<T> source, Class<T> clazz) {
+	public ValueFrame(IJumperGUI parent, FrameConfig config, FrameColors colors, String text, GetterAndSetter<T> source, Class<T> clazz) {
 		super(parent, text, source.getter.get().toString(), config, colors);
 		this.source = source;
 		this.clazz = clazz;

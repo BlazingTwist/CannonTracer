@@ -1,4 +1,4 @@
-package the_dark_jumper.cannonTracer.configSaving;
+package the_dark_jumper.cannontracer.configsaving;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -10,9 +10,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
-import the_dark_jumper.cannonTracer.Main;
-import the_dark_jumper.cannonTracer.util.KeybindAccessors;
-import the_dark_jumper.cannonTracer.util.TrackingData;
+import the_dark_jumper.cannontracer.Main;
+import the_dark_jumper.cannontracer.util.KeybindAccessors;
+import the_dark_jumper.cannontracer.util.TrackingData;
 
 public class DataManager {
 	public final Main main;
