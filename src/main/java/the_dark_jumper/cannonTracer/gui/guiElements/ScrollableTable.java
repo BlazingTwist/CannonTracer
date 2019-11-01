@@ -8,23 +8,13 @@ import net.minecraftforge.client.event.InputEvent;
 import the_dark_jumper.cannontracer.gui.IJumperGUI;
 import the_dark_jumper.cannontracer.gui.guielements.interfaces.IClickableFrame;
 import the_dark_jumper.cannontracer.gui.guielements.interfaces.IFocusableFrame;
+import the_dark_jumper.cannontracer.gui.guielements.interfaces.IKeyEventRepeaterFrame;
 import the_dark_jumper.cannontracer.gui.guielements.interfaces.IRenderableFrame;
+import the_dark_jumper.cannontracer.gui.utils.FormatData;
 import the_dark_jumper.cannontracer.gui.utils.FrameColors;
 import the_dark_jumper.cannontracer.gui.utils.FrameConfig;
 
-public class ScrollableTable implements IRenderableFrame, IClickableFrame, IFocusableFrame{
-	public static class FormatData{
-		public FormatData(){}
-		
-		public FormatData(int start, int end){
-			this.start = start;
-			this.end = end;
-		}
-		
-		public int start;
-		public int end;
-	}
-	
+public class ScrollableTable implements IRenderableFrame, IClickableFrame, IKeyEventRepeaterFrame{	
 	public final IJumperGUI parent;
 	public final Minecraft minecraft;
 	
@@ -41,23 +31,17 @@ public class ScrollableTable implements IRenderableFrame, IClickableFrame, IFocu
 	@Override public boolean getHovered() {return false;}
 	@Override public void setHovered(boolean hovered) {}
 	
-	@Override public boolean getFocused() {return false;}
-	@Override public void setFocused(boolean focused) {}
-	
-	@Override public String getValue() {return "";}
-	@Override public void setValue(String value) {}
-	
 	private double horizontalScrollFactor = 1;
 	private ScrollbarFrame horizontalScrollbar = null;
 	private double verticalScrollFactor = 1;
 	private ScrollbarFrame verticalScrollbar = null;
 	private FormatData uniformColFormat = null;
 	private FormatData uniformRowFormat = null;
-	private ArrayList<FormatData> colFormat = new ArrayList<>();
-	private ArrayList<FormatData> rowFormat = new ArrayList<>();
-	//private ArrayList<RenderableFrame> headerRow = null;
-	//private ArrayList<RenderableFrame> headerCol = null;
+	private ArrayList<FormatData> colFormat = null;
+	private ArrayList<FormatData> rowFormat = null;
+	
 	private ArrayList<ArrayList<IRenderableFrame>> rows = new ArrayList<>();
+	public ArrayList<ArrayList<IRenderableFrame>> getRows(){return this.rows;}
 	
 	public ScrollableTable(IJumperGUI parent, FrameConfig config, FrameColors colors) {
 		this.parent = parent;
@@ -103,60 +87,83 @@ public class ScrollableTable implements IRenderableFrame, IClickableFrame, IFocu
 	 * Call this whenever you modified the visual size of the table
 	 * */
 	public void updateScrollbarRanges() {
+		if(horizontalScrollbar == null && verticalScrollbar == null){
+			//nothing to do here;
+			return;
+		}
+		FrameConfig lastConfig = getCellConfig(getAmountOfColumns() - 1, rows.size() - 1);
 		if(horizontalScrollbar != null) {
-			if(colFormat != null && !colFormat.isEmpty()) {
-				horizontalScrollbar.setScrollbarSize(100d / colFormat.get(colFormat.size() - 1).end);
-				horizontalScrollFactor = colFormat.get(colFormat.size() - 1).end / 100d;
-			}else {
-				int diff = uniformColFormat.end - uniformColFormat.start;
-				int endX = uniformColFormat.start + (getAmountOfColumns() * diff) - 1;
-				horizontalScrollbar.setScrollbarSize(100d / endX);
-			}
+			horizontalScrollbar.setScrollbarSize(100d / lastConfig.xEnd);
+			horizontalScrollFactor = lastConfig.xEnd / 100d;
 		}
 		if(verticalScrollbar != null) {
-			if(rowFormat != null && !rowFormat.isEmpty()) {
-				verticalScrollbar.setScrollbarSize(100d / rowFormat.get(rowFormat.size() - 1).end);
-				verticalScrollFactor = rowFormat.get(rowFormat.size() - 1).end / 100d;
-			}else {
-				int diff = uniformRowFormat.end - uniformRowFormat.start;
-				int endX = uniformRowFormat.start + (rows.size() * diff) - 1;
-				horizontalScrollbar.setScrollbarSize(100d / endX);
-			}
+			verticalScrollbar.setScrollbarSize(100d / lastConfig.yEnd);
+			verticalScrollFactor = lastConfig.yEnd / 100d;
 		}
 	}
 	
-	public FrameConfig getFormatData(int row, int col) {
-		int startX;
-		int endX;
-		if(uniformColFormat != null) {
-			int diff = uniformColFormat.end - uniformColFormat.start;
-			endX = uniformColFormat.start + (col * diff) - 1;
-			startX = endX - diff + 1;
+	private FormatData getColFormat(int col) {
+		if(colFormat != null && colFormat.size() > col && colFormat.get(col) != null){
+			//user defined format for this column
+			return colFormat.get(col);
+		}else if(uniformColFormat != null) {
+			//user did not define format for this column, however it can be substituted with uniform formats
+			return uniformColFormat;
 		}else {
-			startX = colFormat.get(col).start;
-			endX = colFormat.get(col).end;
+			System.out.println("couldn't determine colFormat");
+			return null;
 		}
-		int startY;
-		int endY;
-		if(uniformRowFormat != null) {
-			int diff = uniformRowFormat.end - uniformRowFormat.start;
-			endY = uniformRowFormat.start + (row * diff) - 1;
-			startY = endY - diff + 1;
-		}else {
-			startY = rowFormat.get(row).start;
-			endY = rowFormat.get(row).end;
-		}
-		return new FrameConfig().init(startX, startY, endX, endY, config.borderThickness);
 	}
 	
-	public void setUniformRowFormat(boolean isScaled, FormatData format) {
-		int tableHeight = config.yEnd - config.y;
+	private FormatData getRowFormat(int row) {
+		if(rowFormat != null && rowFormat.size() > row && rowFormat.get(row) != null){
+			//user defined format for this row
+			return rowFormat.get(row);
+		}else if(uniformRowFormat != null) {
+			//user did not define format for this row, however it can be substituted with uniform formats
+			return uniformRowFormat;
+		}else {
+			System.out.println("couldn't determine rowFormat");
+			return null;
+		}
+	}
+	
+	public FrameConfig getCellConfig(int col, int row) {
+		int startX = 0;
+		for(int c = 0; c < col; c++) {
+			FormatData format = getColFormat(c);
+			startX += (format.width + format.offset);
+		}
+		int endX = startX + getColFormat(col).width;
+		
+		int startY = 0;
+		for(int r = 0; r < row; r++) {
+			FormatData format = getRowFormat(r);
+			startY += (format.width + format.offset);
+		}
+		int endY = startY + getRowFormat(row).width;
+		
+		return new FrameConfig().init(startX, startY, endX, endY, this.config.borderThickness);
+	}
+	
+	public void clearUniformRowFormat() {
+		uniformRowFormat = null;
+	}
+	
+	public void setUniformRowFormat(boolean isScaled, int height, int offset) {
 		if(!isScaled) {
-			format.start = (format.start - config.y) * 100 / tableHeight;
-			format.end = (format.end - config.y) * 100 / tableHeight;
+			int tableHeight = config.yEnd - config.y;
+			height = (int)(height * 100d / tableHeight);
+			offset = (int)(offset * 100d / tableHeight);
+		}
+		uniformRowFormat = new FormatData(height, offset);
+	}
+	
+	public void clearNonUniformRowFormat() {
+		if(rowFormat != null) {
+			rowFormat.clear();
 		}
 		rowFormat = null;
-		uniformRowFormat = format;
 	}
 	
 	public void setRowFormat(boolean isScaled, FormatData... formats) {
@@ -165,26 +172,35 @@ public class ScrollableTable implements IRenderableFrame, IClickableFrame, IFocu
 		}else {
 			rowFormat.clear();
 		}
-		uniformRowFormat = null;
 		int tableHeight = config.yEnd - config.y;
 		for(int i = 0; i < formats.length; i++) {
 			FormatData formatData = formats[i];
 			if(!isScaled) {
-				formatData.start = (formatData.start - config.y) * 100 / tableHeight;
-				formatData.end = (formatData.end - config.y) * 100 / tableHeight;
+				formatData.width = (int)(formatData.width * 100d / tableHeight);
+				formatData.offset = (int)(formatData.offset * 100d / tableHeight);
 			}
 			rowFormat.add(formatData);
 		}
 	}
 	
-	public void setUniformColFormat(boolean isScaled, FormatData format) {
-		int tableWidth = config.xEnd - config.x;
+	public void clearUniformColFormat() {
+		uniformColFormat = null;
+	}
+	
+	public void setUniformColFormat(boolean isScaled, int width, int offset) {
 		if(!isScaled) {
-			format.start = (format.start - config.x) * 100 / tableWidth;
-			format.end = (format.end - config.x) * 100 / tableWidth;
+			int tableWidth = config.xEnd - config.x;
+			width = (int)(width * 100d / tableWidth);
+			offset = (int)(offset * 100d / tableWidth);
+		}
+		uniformColFormat = new FormatData(width, offset);
+	}
+	
+	public void clearNonUniformColFormat() {
+		if(colFormat != null) {
+			colFormat.clear();
 		}
 		colFormat = null;
-		uniformColFormat = format;
 	}
 	
 	public void setColFormat(boolean isScaled, FormatData... formats) {
@@ -193,13 +209,12 @@ public class ScrollableTable implements IRenderableFrame, IClickableFrame, IFocu
 		}else {
 			colFormat.clear();
 		}
-		uniformColFormat = null;
 		int tableWidth = config.xEnd - config.x;
 		for(int i = 0; i < formats.length; i++) {
 			FormatData formatData = formats[i];
 			if(!isScaled) {
-				formatData.start = (formatData.start - config.x) * 100 / tableWidth;
-				formatData.end = (formatData.end - config.x) * 100 / tableWidth;
+				formatData.width = (int)(formatData.width * 100d / tableWidth);
+				formatData.offset = (int)(formatData.offset * 100d / tableWidth);
 			}
 			colFormat.add(formatData);
 		}
@@ -209,11 +224,37 @@ public class ScrollableTable implements IRenderableFrame, IClickableFrame, IFocu
 		ArrayList<IRenderableFrame> row = new ArrayList<>();
 		for(int colIndex = 0; colIndex < frames.length; colIndex++) {
 			if(frames[colIndex] != null) {
-				frames[colIndex].setConfig(getFormatData(rows.size(), colIndex));
+				FrameConfig config = getCellConfig(colIndex, rows.size());
+				frames[colIndex].setConfig(config);
 			}
 			row.add(frames[colIndex]);
 		}
 		rows.add(row);
+	}
+	
+	public void setRow(int rowIndex, ArrayList<IRenderableFrame> frames) {
+		for(int colIndex = 0; colIndex < frames.size(); colIndex++) {
+			if(frames.get(colIndex) != null) {
+				frames.get(colIndex).setConfig(getCellConfig(colIndex, rowIndex));
+			}
+		}
+		rows.set(rowIndex, frames);
+	}
+	
+	public void deleteRow(int rowIndex) {
+		if(rowIndex >= rows.size()) {
+			return;
+		}
+		rows.remove(rowIndex);
+		for(int rIndex = rowIndex; rIndex < rows.size(); rIndex++) {
+			ArrayList<IRenderableFrame> row = rows.get(rIndex);
+			for(int cIndex = 0; cIndex < row.size(); cIndex++) {
+				IRenderableFrame frame = row.get(cIndex);
+				if(frame != null) {
+					frame.setConfig(getCellConfig(cIndex, rIndex));
+				}
+			}
+		}
 	}
 	
 	@Override
@@ -269,22 +310,22 @@ public class ScrollableTable implements IRenderableFrame, IClickableFrame, IFocu
 			for(int i2 = 0; i2 < row.size(); i2++) {
 				IRenderableFrame frame = row.get(i2);
 				if(frame != null) {
-					renderTableFrame(frame, x1, y1, x2, y2, guiScale, getFormatData(i, i2), false);
+					renderTableFrame(frame, x1, y1, x2, y2, guiScale, getCellConfig(i2, i), false);
 				}
 			}
 		}
 	}
 	
-	public void renderTableFrame(IRenderableFrame frame, int perceivedX1, int perceivedY1, int perceivedX2, int perceivedY2, int guiScale, FrameConfig config, boolean allowOutOfBounds) {
+	public void renderTableFrame(IRenderableFrame frame, int perceivedX1, int perceivedY1, int perceivedX2, int perceivedY2, int guiScale, FrameConfig frameConfig, boolean allowOutOfBounds) {
 		int width = perceivedX2 - perceivedX1;
 		int height = perceivedY2 - perceivedY1;
-		int x1 = getPercentValue(width, config.x) + perceivedX1;
-		int x2 = getPercentValue(width, config.xEnd) + perceivedX1;
-		int y1 = getPercentValue(height, config.y) + perceivedY1;
-		int y2 = getPercentValue(height, config.yEnd) + perceivedY1;
+		int x1 = getPercentValue(width, frameConfig.x) + perceivedX1;
+		int x2 = getPercentValue(width, frameConfig.xEnd) + perceivedX1;
+		int y1 = getPercentValue(height, frameConfig.y) + perceivedY1;
+		int y2 = getPercentValue(height, frameConfig.yEnd) + perceivedY1;
 		if(allowOutOfBounds) {
 			//render without scrollbar shifting
-			frame.doFills(x1, y1, x2, y2, config.borderThickness / guiScale);
+			frame.doFills(x1, y1, x2, y2, frameConfig.borderThickness / guiScale);
 			frame.drawTexts(x1, y1, x2, y2);
 			return;
 		}
@@ -296,21 +337,19 @@ public class ScrollableTable implements IRenderableFrame, IClickableFrame, IFocu
 		scrollViewEndX = (scrollViewEndX * width * horizontalScrollFactor) + perceivedX1;
 		scrollViewStartY = (scrollViewStartY * height * verticalScrollFactor) + perceivedY1;
 		scrollViewEndY = (scrollViewEndY * height * verticalScrollFactor) + perceivedY1;
-		//System.out.println("horizscrollbarpos: "+horizontalScrollbar.scrollbarPos+" | horizscrollbarsize: "+horizontalScrollbar.getScrollbarSize()+" | vertscrollbarpos: "+verticalScrollbar.scrollbarPos+" | vertscrollbarsize: "+verticalScrollbar.getScrollbarSize()+" | width: "+width+" | height: "+height);
-		//System.out.println("rendertableframe: "+x1+" | "+scrollViewStartX+" | "+x2+" | "+scrollViewEndX+" | "+y1+" | "+scrollViewStartY+" | "+y2+" | "+scrollViewEndY);
 		if(x1 < scrollViewStartX || x2 > scrollViewEndX || y1 < scrollViewStartY || y2 > scrollViewEndY) {
 			//frame would be outside of table
+			//System.out.println("horizscrollbarpos: "+horizontalScrollbar.scrollbarPos+" | horizscrollbarsize: "+horizontalScrollbar.getScrollbarSize()+" | horizscrollfactor: "+horizontalScrollFactor+" | vertscrollbarpos: "+verticalScrollbar.scrollbarPos+" | vertscrollbarsize: "+verticalScrollbar.getScrollbarSize()+" | vertscrollfactor: "+verticalScrollFactor+" | width: "+width+" | height: "+height);
+			//System.out.println("rendertableframe: "+x1+" | "+scrollViewStartX+" | "+x2+" | "+scrollViewEndX+" | "+y1+" | "+scrollViewStartY+" | "+y2+" | "+scrollViewEndY);
 			return;
 		}
 		x1 = (int)(x1 - scrollViewStartX + perceivedX1);
 		x2 = (int)(x2 - scrollViewStartX + perceivedX1);
 		y1 = (int)(y1 - scrollViewStartY + perceivedY1);
 		y2 = (int)(y2 - scrollViewStartY + perceivedY1);
-		frame.doFills(x1, y1, x2, y2, config.borderThickness / guiScale);
+		frame.doFills(x1, y1, x2, y2, frameConfig.borderThickness / guiScale);
 		frame.drawTexts(x1, y1, x2, y2);
 	}
-	
-	@Override public void parseInput(){}
 	
 	@Override public void keyEvent(InputEvent.KeyInputEvent event) {
 		for(int i = 0; i < rows.size(); i++) {
@@ -318,6 +357,7 @@ public class ScrollableTable implements IRenderableFrame, IClickableFrame, IFocu
 			for(int i2 = 0; i2 < row.size(); i2++) {
 				IRenderableFrame frame = row.get(i2);
 				if(frame instanceof IFocusableFrame && ((IFocusableFrame)frame).getFocused()) {
+					System.out.println("sending keyevent to "+frame.getClass());
 					((IFocusableFrame)frame).keyEvent(event);
 				}
 			}

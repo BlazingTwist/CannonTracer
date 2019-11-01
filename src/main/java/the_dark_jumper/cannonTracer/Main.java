@@ -6,6 +6,7 @@ import java.io.IOException;
 import net.minecraftforge.fml.common.Mod;
 import the_dark_jumper.cannontracer.configsaving.DataManager;
 import the_dark_jumper.cannontracer.gui.GuiManager;
+import the_dark_jumper.cannontracer.hotkey.HotkeyManager;
 import the_dark_jumper.cannontracer.listeners.ClientConnectsToServerListener;
 import the_dark_jumper.cannontracer.listeners.KeyPressListener;
 import the_dark_jumper.cannontracer.listeners.RenderTickListener;
@@ -26,6 +27,7 @@ public class Main {
 	public final KeybindManagerMP keybindManagerMP;
 	public final ModuleManager moduleManager;
 	public final GuiManager guiManager;
+	public final HotkeyManager hotkeyManager;
 	
 	//settings
 	public final MultiPlayerSettings multiPlayerSettings;
@@ -53,6 +55,7 @@ public class Main {
 		moduleManager = new ModuleManager(this);
 		dataManager = new DataManager(this);
 		guiManager = new GuiManager(this);
+		hotkeyManager = new HotkeyManager(this);
 		entityTracker = new EntityTracker(this);
 		clientConnectsToServerListener = new ClientConnectsToServerListener(this);
 		keyPressListener = new KeyPressListener(this);

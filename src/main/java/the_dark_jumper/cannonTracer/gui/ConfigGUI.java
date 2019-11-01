@@ -31,6 +31,13 @@ public class ConfigGUI extends Screen implements IJumperGUI{
 		this.guiManager = guiManager;
 	}
 	
+	public void openHotkeyScreen(boolean isPressed) {
+		if(isPressed) {
+			guiManager.hotkeyGUI.generateScreenComponents();
+			Minecraft.getInstance().displayGuiScreen(guiManager.hotkeyGUI);
+		}
+	}
+	
 	public void generateSingleplayerScreenComponents() {
 		guiComponents.clear();
 		FrameConfig config = new FrameConfig();
@@ -48,21 +55,16 @@ public class ConfigGUI extends Screen implements IJumperGUI{
 		config.init(72, 10, 94, 14, 8);
 		guiComponents.add(new ToggleValueFrame(this, config.duplicate(), colors, "logIDs", guiManager.main.singlePlayerSettings.bLogGNS));
 		//keybinds
-		config.init(6, 20, 94, 24, 8);
+		config.init(6, 20, 49, 24, 8);
 		guiComponents.add(new BasicTextFrame(this, "Keybinds", config.duplicate(), colors));
+		config.init(50, 20, 94, 24, 8);
+		guiComponents.add(new ButtonFrame(this, "open Hotkey Menu", config.duplicate(), colors, this::openHotkeyScreen));
 		generateKeybindScreenComponents(guiManager.main.keybindManagerSP.variables, 0, config, colors, 6, 25, 94, 29, 8);
 		generateKeybindScreenComponents(guiManager.main.keybindManagerSP.variables, 1, config, colors, 6, 30, 94, 34, 8);
 		//tracing entries
 		config.init(6, 40, 94, 44, 8);
 		guiComponents.add(new BasicTextFrame(this, "Tracked Entities", config.duplicate(), colors));
 		generateTrackingScreenComponents(guiManager.main.entityTracker.observedEntityIDSP, config, colors, 6, 45, 94, 5, 8);		
-	}
-	
-	public void openHotkeyScreenMP(boolean isPressed) {
-		if(isPressed) {
-			guiManager.hotkeyGUI.generateMultiplayerScreenComponents();
-			Minecraft.getInstance().displayGuiScreen(guiManager.hotkeyGUI);
-		}
 	}
 	
 	public void generateMultiplayerScreenComponents() {
@@ -85,7 +87,7 @@ public class ConfigGUI extends Screen implements IJumperGUI{
 		config.init(6, 20, 49, 24, 8);
 		guiComponents.add(new BasicTextFrame(this, "Keybinds", config.duplicate(), colors));
 		config.init(50, 20, 94, 24, 8);
-		guiComponents.add(new ButtonFrame(this, "open Hotkey Menu", config.duplicate(), colors, this::openHotkeyScreenMP));
+		guiComponents.add(new ButtonFrame(this, "open Hotkey Menu", config.duplicate(), colors, this::openHotkeyScreen));
 		generateKeybindScreenComponents(guiManager.main.keybindManagerMP.variables, 0, config, colors, 6, 25, 94, 29, 8);
 		generateKeybindScreenComponents(guiManager.main.keybindManagerMP.variables, 1, config, colors, 6, 30, 94, 34, 8);
 		//tracing entries
@@ -160,10 +162,8 @@ public class ConfigGUI extends Screen implements IJumperGUI{
 	
 	public void keyEvent(InputEvent.KeyInputEvent event) {
 		for(IRenderableFrame renderable : guiComponents) {
-			if(renderable instanceof IFocusableFrame) {
-				if(((IFocusableFrame)renderable).getFocused()) {
-					((IFocusableFrame)renderable).keyEvent(event);
-				}
+			if(renderable instanceof IFocusableFrame && ((IFocusableFrame)renderable).getFocused()) {
+				((IFocusableFrame)renderable).keyEvent(event);
 			}
 		}
 	}

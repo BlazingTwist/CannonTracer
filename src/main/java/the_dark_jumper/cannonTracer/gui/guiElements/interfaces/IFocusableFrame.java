@@ -35,6 +35,7 @@ public interface IFocusableFrame extends IClickableFrame{
 	public void setValue(String value);
 	
 	public default void onFocusChange(boolean isFocused) {
+		System.out.println("Focus Changed!");
 		if(isFocused == getFocused()) {
 			return;
 		}

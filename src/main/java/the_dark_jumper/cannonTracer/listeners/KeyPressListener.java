@@ -47,6 +47,7 @@ public class KeyPressListener {
 			pressedKeys.remove(event.getScanCode());
 			main.moduleManager.keyReleased(event.getScanCode());
 		}
+		main.hotkeyManager.onPressedKeysChanged();
 		main.guiManager.keyEvent(event);
 	}
 	

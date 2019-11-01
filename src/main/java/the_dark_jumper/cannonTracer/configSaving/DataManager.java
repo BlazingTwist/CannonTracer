@@ -11,6 +11,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 
 import the_dark_jumper.cannontracer.Main;
+import the_dark_jumper.cannontracer.hotkey.Hotkey;
+import the_dark_jumper.cannontracer.hotkey.HotkeyManager;
 import the_dark_jumper.cannontracer.util.KeybindAccessors;
 import the_dark_jumper.cannontracer.util.TrackingData;
 
@@ -28,7 +30,8 @@ public class DataManager {
 					"\\Documents\\The_Dark_Jumper_Cannon_Tracer\\tracer.config");
 			BufferedWriter bwout = new BufferedWriter(out);
 			writeSinglePlayerConfig(bwout);			
-			writeMultiPlayerConfig(bwout);		
+			writeMultiPlayerConfig(bwout);
+			writeHotkeys(bwout);
 			bwout.close();
 		}catch(Exception e){
 			System.out.println("thrown error while saving");
@@ -42,6 +45,18 @@ public class DataManager {
 	
 	public void writeMultiPlayerConfig(BufferedWriter bwout) {
 		writeServerSpecificConfig(bwout, "MultiPlayer", main.entityTracker.observedEntityIDMP, main.keybindManagerMP.variables);
+	}
+	
+	public void writeHotkeys(BufferedWriter bwout) {
+		Header header = new Header("Hotkeys", "", 1);
+		header.write(bwout);
+		//output hotkeys
+		//command | trigger , keycode | trigger , keycode ...
+		header.init("Hotkey Entry", "", 2);
+		for(Hotkey hotkey : Main.getInstance().hotkeyManager.getHotkeys()) {
+			header.content = new HotkeyContent().setCommand(hotkey.command).setKeybinds(hotkey.keybinds).buildContent();
+			header.write(bwout);
+		}
 	}
 	
 	public void writeServerSpecificConfig(BufferedWriter bwout, String headerName,
@@ -75,6 +90,7 @@ public class DataManager {
 			}
 			loadServerSpecificConfig(lines, "SinglePlayer", main.entityTracker.observedEntityIDSP, main.keybindManagerSP.variables);
 			loadServerSpecificConfig(lines, "MultiPlayer", main.entityTracker.observedEntityIDMP, main.keybindManagerMP.variables);
+			loadHotkeys(lines);
 			br.close();
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -92,11 +108,10 @@ public class DataManager {
 			if(!header.readHeader(line)) {
 				continue;
 			}
-			if(!foundSection && header.level == 1 && header.name.equals(headerName)) {
-				foundSection = true;
-				continue;
-			}
 			if(!foundSection) {
+				if(header.level == 1 && header.name.equals(headerName)) {
+					foundSection = true;
+				}
 				continue;
 			}
 			if(header.level == 1) {
@@ -116,6 +131,39 @@ public class DataManager {
 					//unknown header, next
 				}
 				continue;
+			}
+		}
+	}
+	
+	public void loadHotkeys(ArrayList<String> lines) {
+		HotkeyManager hotkeyManager = Main.getInstance().hotkeyManager;
+		Header header = new Header(null, null, 0);
+		HotkeyContent hotkeyContent = new HotkeyContent();
+		boolean foundSection = false;
+		for(Iterator<String> it = lines.iterator(); it.hasNext(); ) {
+			String line = it.next();
+			if(!header.readHeader(line)) {
+				continue;
+			}
+			if(!foundSection) {
+				if(header.level == 1 && header.name.equals("Hotkeys")) {
+					foundSection = true;
+				}
+				continue;
+			}
+			if(header.level == 1) {
+				//reached next section, read (past tense) all lines of current section
+				return;
+			}
+			if(header.level == 2 && header.content != null) {
+				if(header.name.equals("Hotkey Entry")) {
+					if(!hotkeyContent.readContent(header.content)) {
+						//couldn't read hotkey... okay then, guess we're ignoring this one?
+					}else {
+						hotkeyManager.addHotkey(new Hotkey(hotkeyContent.command, hotkeyContent.keybinds));
+						hotkeyContent = new HotkeyContent();
+					}
+				}
 			}
 		}
 	}
