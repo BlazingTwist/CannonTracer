@@ -92,7 +92,7 @@ public class Update {
 		messagePlayer(MOD_NAME, STARTED_MSG, true);
 		try {
 			File file = new File("C:\\Users\\" + System.getProperty("user.name") + "\\AppData\\Roaming\\.minecraft\\mods\\cannontracer.jar");
-			writeToFile(file, new BufferedInputStream(new URL("https://github.com/BlazingTwist/CannonTracer_1.14.4/releases/latest/download/cannontracer-"+ getGithubVersionTag() +".jar").openStream()));
+			writeToFile(file, new BufferedInputStream(new URL("https://github.com/BlazingTwist/CannonTracer_1.14.4/releases/latest/download/cannontracer.jar").openStream()));
 			messagePlayer(MOD_NAME, SUCCESS_MSG, true);
 		}catch(IOException e) {
 			e.printStackTrace();
