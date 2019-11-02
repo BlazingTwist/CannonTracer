@@ -37,7 +37,7 @@ public class HotkeyGUI extends Screen implements IJumperGUI{
 	public void addCommandButtonPressed(boolean isPressed) {
 		if(isPressed) {
 			Hotkey hotkey = new Hotkey();
-			HotkeyTableEntry hotkeyTableEntry = new HotkeyTableEntry(this, hotkey, hotkeyTable, hotkeyTable.getRows().size());
+			HotkeyTableEntry hotkeyTableEntry = new HotkeyTableEntry(this, hotkey, hotkeyTable, hotkeys.size());
 			Main.getInstance().hotkeyManager.addHotkey(hotkey);
 			hotkeys.add(hotkeyTableEntry);
 			hotkeyTable.addRow(hotkeyTableEntry.generateRow());
