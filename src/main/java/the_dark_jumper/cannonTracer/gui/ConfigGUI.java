@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraftforge.client.event.InputEvent;
+import the_dark_jumper.cannontracer.Update;
 import the_dark_jumper.cannontracer.gui.guielements.BasicTextFrame;
 import the_dark_jumper.cannontracer.gui.guielements.ButtonFrame;
 import the_dark_jumper.cannontracer.gui.guielements.KeybindFrame;
@@ -38,6 +39,12 @@ public class ConfigGUI extends Screen implements IJumperGUI{
 		}
 	}
 	
+	public void onUpdateButton(boolean isPressed) {
+		if(isPressed) {
+			Update.updateMod();
+		}
+	}
+	
 	public void generateSingleplayerScreenComponents() {
 		guiComponents.clear();
 		FrameConfig config = new FrameConfig();
@@ -47,9 +54,11 @@ public class ConfigGUI extends Screen implements IJumperGUI{
 		backGroundColors.innerColor = backGroundColors.borderColor = 0x55000000;
 		guiComponents.add(new BasicTextFrame(this, "", config.duplicate(), backGroundColors));
 		//headline
-		config.init(6, 10, 49, 14, 8);
+		config.init(6, 10, 34, 14, 8);
 		FrameColors colors = new FrameColors();
 		guiComponents.add(new BasicTextFrame(this, "Config-Screen", config.duplicate(), colors));
+		config.init(35, 10, 49, 14, 8);
+		guiComponents.add(new ButtonFrame(this, "Update", config.duplicate(), colors, this::onUpdateButton));
 		config.init(50, 10, 71, 14, 8);
 		guiComponents.add(new ValueFrame(this, config.duplicate(), colors, "displayTick", guiManager.main.singlePlayerSettings.renderTickGNS, Integer.class));
 		config.init(72, 10, 94, 14, 8);
@@ -76,9 +85,11 @@ public class ConfigGUI extends Screen implements IJumperGUI{
 		backGroundColors.innerColor = backGroundColors.borderColor = 0x55000000;
 		guiComponents.add(new BasicTextFrame(this, "", config.duplicate(), backGroundColors));
 		//headline
-		config.init(6, 10, 49, 14, 8);
+		config.init(6, 10, 34, 14, 8);
 		FrameColors colors = new FrameColors();
 		guiComponents.add(new BasicTextFrame(this, "Config-Screen", config.duplicate(), colors));
+		config.init(35, 10, 49, 14, 8);
+		guiComponents.add(new ButtonFrame(this, "Update", config.duplicate(), colors, this::onUpdateButton));
 		config.init(50, 10, 71, 14, 8);
 		guiComponents.add(new ValueFrame(this, config.duplicate(), colors, "displayTick", guiManager.main.multiPlayerSettings.renderTickGNS, Integer.class));
 		config.init(72, 10, 94, 14, 8);

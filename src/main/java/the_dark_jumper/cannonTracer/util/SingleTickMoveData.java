@@ -52,9 +52,15 @@ public class SingleTickMoveData {
 	public void setupDrawingBuffer(BufferBuilder bufferBuilder, TrackingData td, String entityName) {
 		GlStateManager.lineWidth(td.getThickness());
 		//y1->y2 | x1->x2 | z1->z2
+		//always y1->y2 first
 		bufferBuilder.pos(pos1.x, pos1.y, pos1.z).color(0,0,0,0).endVertex();
 		bufferBuilder.pos(pos1.x, pos2.y, pos1.z).color(td.getRed(), td.getGreen(), td.getBlue(), td.getAlpha()).endVertex();
-		bufferBuilder.pos(pos2.x, pos2.y, pos1.z).color(td.getRed(), td.getGreen(), td.getBlue(), td.getAlpha()).endVertex();
+		//x1->x2 next if difference is greater, otherwise z1->z2
+		if((pos2.x - pos1.x) >= (pos2.z - pos1.z)) {
+			bufferBuilder.pos(pos2.x, pos2.y, pos1.z).color(td.getRed(), td.getGreen(), td.getBlue(), td.getAlpha()).endVertex();
+		}else {
+			bufferBuilder.pos(pos1.x, pos2.y, pos2.z).color(td.getRed(), td.getGreen(), td.getBlue(), td.getAlpha()).endVertex();
+		}
 		bufferBuilder.pos(pos2.x, pos2.y, pos2.z).color(td.getRed(), td.getGreen(), td.getBlue(), td.getAlpha()).endVertex();
 		if(entityTracker.main.moduleManager.state == ModuleManager.State.SINGLEPLAYER) {
 			if(!entityTracker.main.singlePlayerSettings.renderBoxesGNS.getter.get()) {
