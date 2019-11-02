@@ -12,13 +12,11 @@ public class Hotkey {
 	
 	public LinkedList<KeybindData> keybinds = new LinkedList<>();
 	private boolean ignoreInput;
-	public int keybindCount = 0;
 	
 	public Hotkey() {}
 	public Hotkey(String command, LinkedList<KeybindData> keybinds) {
 		this.command = command;
 		this.keybinds = keybinds;
-		this.keybindCount = keybinds.size();
 	}
 	
 	public Hotkey setKeybinds(LinkedList<KeybindData> keybinds) {
@@ -43,10 +41,6 @@ public class Hotkey {
 		}
 	}
 	
-	/*
-	*returns true if the key is pressed and the triggerState is true
-	*or if the key is not pressed and the trigger state is false
-	*/
 	private boolean isConditionSatisfied(int keycode, boolean triggerState) {
 		return Main.getInstance().keyPressListener.pressedKeys.contains(keycode) == triggerState;
 	}

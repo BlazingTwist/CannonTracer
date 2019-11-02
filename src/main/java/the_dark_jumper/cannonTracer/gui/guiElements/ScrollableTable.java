@@ -222,23 +222,29 @@ public class ScrollableTable implements IRenderableFrame, IClickableFrame, IKeyE
 	
 	public void addRow(IRenderableFrame... frames) {
 		ArrayList<IRenderableFrame> row = new ArrayList<>();
-		for(int colIndex = 0; colIndex < frames.length; colIndex++) {
-			if(frames[colIndex] != null) {
-				FrameConfig config = getCellConfig(colIndex, rows.size());
-				frames[colIndex].setConfig(config);
-			}
-			row.add(frames[colIndex]);
+		for(IRenderableFrame frame : frames) {
+			row.add(frame);
 		}
+		generateConfigsForRow(rows.size(), row);
 		rows.add(row);
 	}
 	
+	public void addRow(ArrayList<IRenderableFrame> frames) {
+		generateConfigsForRow(rows.size(), frames);
+		rows.add(frames);
+	}
+	
 	public void setRow(int rowIndex, ArrayList<IRenderableFrame> frames) {
+		generateConfigsForRow(rowIndex, frames);
+		rows.set(rowIndex, frames);
+	}
+	
+	public void generateConfigsForRow(int rowIndex, ArrayList<IRenderableFrame> frames) {
 		for(int colIndex = 0; colIndex < frames.size(); colIndex++) {
 			if(frames.get(colIndex) != null) {
 				frames.get(colIndex).setConfig(getCellConfig(colIndex, rowIndex));
 			}
 		}
-		rows.set(rowIndex, frames);
 	}
 	
 	public void deleteRow(int rowIndex) {
