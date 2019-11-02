@@ -7,7 +7,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 
@@ -23,7 +22,7 @@ public class Update {
 	public static final String OUTDATED_MSG = "is outdated, please update using the button on the config screen!";
 	public static final String MOD_NAME = "CannonTracer ";
 	
-	public static final String VERSION = "0.9.5";
+	public static final String VERSION = "0.9.6";
 	
 	public static final TextFormatting HIGHLIGHT_COLOR = TextFormatting.AQUA;
 	public static final TextFormatting POSITIVE_COLOR = TextFormatting.GREEN;
@@ -92,13 +91,9 @@ public class Update {
 	private static void doModUpdate() {
 		messagePlayer(MOD_NAME, STARTED_MSG, true);
 		try {
-			File file = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+			File file = new File("C:\\Users\\" + System.getProperty("user.name") + "\\AppData\\Roaming\\.minecraft\\mods\\cannontracer.jar");
 			writeToFile(file, new BufferedInputStream(new URL("https://github.com/BlazingTwist/CannonTracer_1.14.4/releases/latest/download/cannontracer-"+ getGithubVersionTag() +".jar").openStream()));
 			messagePlayer(MOD_NAME, SUCCESS_MSG, true);
-		}catch(URISyntaxException e) {
-			e.printStackTrace();
-			messagePlayer(MOD_NAME, FAILED_MSG, false);
-			return;
 		}catch(IOException e) {
 			e.printStackTrace();
 			messagePlayer(MOD_NAME, FAILED_MSG, false);
