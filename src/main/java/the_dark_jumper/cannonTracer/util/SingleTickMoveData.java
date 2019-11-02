@@ -56,7 +56,7 @@ public class SingleTickMoveData {
 		bufferBuilder.pos(pos1.x, pos1.y, pos1.z).color(0,0,0,0).endVertex();
 		bufferBuilder.pos(pos1.x, pos2.y, pos1.z).color(td.getRed(), td.getGreen(), td.getBlue(), td.getAlpha()).endVertex();
 		//x1->x2 next if difference is greater, otherwise z1->z2
-		if((pos2.x - pos1.x) >= (pos2.z - pos1.z)) {
+		if(Math.abs(pos2.x - pos1.x) >= Math.abs(pos2.z - pos1.z)) {
 			bufferBuilder.pos(pos2.x, pos2.y, pos1.z).color(td.getRed(), td.getGreen(), td.getBlue(), td.getAlpha()).endVertex();
 		}else {
 			bufferBuilder.pos(pos1.x, pos2.y, pos2.z).color(td.getRed(), td.getGreen(), td.getBlue(), td.getAlpha()).endVertex();
