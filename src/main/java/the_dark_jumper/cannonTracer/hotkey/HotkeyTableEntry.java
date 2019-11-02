@@ -16,14 +16,14 @@ public class HotkeyTableEntry {
 	private HotkeyGUI parent;
 	public Hotkey hotkey;
 	public ScrollableTable table;
-	public int rowIndex;
+	public int hotkeyIndex;
 	public LinkedList<KeybindHotkeyEntry> keybinds = new LinkedList<>();
 	
-	public HotkeyTableEntry(HotkeyGUI parent, Hotkey hotkey, ScrollableTable table, int rowIndex) {
+	public HotkeyTableEntry(HotkeyGUI parent, Hotkey hotkey, ScrollableTable table, int hotkeyIndex) {
 		this.parent = parent;
 		this.hotkey = hotkey;
 		this.table = table;
-		this.rowIndex = rowIndex;
+		this.hotkeyIndex = hotkeyIndex;
 	}
 	
 	public HotkeyTableEntry setKeybinds(LinkedList<KeybindData> keybinds2) {
@@ -38,7 +38,7 @@ public class HotkeyTableEntry {
 		if(isPressed) {
 			KeybindHotkeyEntry keybindHotkeyEntry = new KeybindHotkeyEntry(this);
 			keybinds.add(keybindHotkeyEntry);
-			table.setRow(rowIndex, generateRow());
+			table.setRow(hotkeyIndex, generateRow());
 			table.updateScrollbarRanges();
 		}
 	}
@@ -60,7 +60,7 @@ public class HotkeyTableEntry {
 	
 	public void onDelPressed(boolean isPressed) {
 		if(isPressed) {
-			parent.removeHotkey(rowIndex);
+			parent.removeHotkey(hotkeyIndex);
 		}
 	}
 }

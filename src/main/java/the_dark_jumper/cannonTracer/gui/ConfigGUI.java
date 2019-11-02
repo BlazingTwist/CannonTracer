@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.client.event.InputEvent;
 import the_dark_jumper.cannontracer.Update;
 import the_dark_jumper.cannontracer.gui.guielements.BasicTextFrame;
@@ -149,16 +150,24 @@ public class ConfigGUI extends Screen implements IJumperGUI{
 		}
 	}
 	
+	boolean detectedAutoGUI = false;
+	
 	@Override
 	public void render(int mouseX, int mouseY, float partialTicks) {
-				/*" | guiscale: " + minecraft.gameSettings.guiScale +
-				" | mainwindow width: " + minecraft.mainWindow.getWidth() +
-				" | mainwindow height: " + minecraft.mainWindow.getHeight() +
-				" | mainwindow scaled width: " + minecraft.mainWindow.getScaledWidth() +
-				" | mainwindow scaled height: " + minecraft.mainWindow.getScaledHeight());*/
 		int scaledScreenWidth = minecraft.mainWindow.getScaledWidth();
 		int scaledScreenHeight = minecraft.mainWindow.getScaledHeight();
 		int guiScale = minecraft.gameSettings.guiScale;
+		if(guiScale == 0) {
+			if(!detectedAutoGUI) {
+				detectedAutoGUI = true;
+				Minecraft.getInstance().player.sendMessage(new TranslationTextComponent("please don't use 'auto' as a gui-scale, I don't have internal access to it"));
+			}
+			return;
+		}
+		if(detectedAutoGUI) {
+			detectedAutoGUI = false;
+			Minecraft.getInstance().player.sendMessage(new TranslationTextComponent("thank you for your cooperation."));
+		}
 		for(IRenderableFrame renderable : guiComponents) {
 			if(renderable instanceof IClickableFrame) {
 				((IClickableFrame)renderable).mouseOver(mouseX, mouseY, scaledScreenWidth, scaledScreenHeight, this.leftDown, this.queueLeftUpdate);

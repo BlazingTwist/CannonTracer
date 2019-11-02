@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.client.event.InputEvent;
 import the_dark_jumper.cannontracer.Main;
 import the_dark_jumper.cannontracer.gui.guielements.BasicTextFrame;
@@ -44,16 +45,22 @@ public class HotkeyGUI extends Screen implements IJumperGUI{
 		}
 	}
 	
-	public void removeHotkey(int rowIndex) {
-		hotkeyTable.deleteRow(rowIndex);
+	public void removeHotkey(int hotkeyIndex) {
+		if(hotkeyIndex + 1 >= hotkeyTable.getRows().size()) {
+			Minecraft.getInstance().player.sendMessage(new TranslationTextComponent("Couldn't delete Hotkey, stop spamming that button."));
+			return;
+		}
+		
+		//+1 to account for header row
+		hotkeyTable.deleteRow(hotkeyIndex + 1);
 		hotkeyTable.updateScrollbarRanges();
 		
-		hotkeys.remove(rowIndex);
-		Main.getInstance().hotkeyManager.activeHotkeys.remove(rowIndex);
+		hotkeys.remove(hotkeyIndex);
+		Main.getInstance().hotkeyManager.activeHotkeys.remove(hotkeyIndex);
 		
 		for(HotkeyTableEntry hotkeyTableEntry : hotkeys) {
-			if(hotkeyTableEntry.rowIndex > rowIndex) {
-				hotkeyTableEntry.rowIndex--;
+			if(hotkeyTableEntry.hotkeyIndex > hotkeyIndex) {
+				hotkeyTableEntry.hotkeyIndex--;
 			}
 		}
 	}
@@ -106,17 +113,30 @@ public class HotkeyGUI extends Screen implements IJumperGUI{
 	public void generateHotkeys(ScrollableTable table, ArrayList<Hotkey> hotkeys2) {
 		for(int i = 0; i < hotkeys2.size(); i++) {
 			Hotkey hotkey = hotkeys2.get(i);
-			HotkeyTableEntry hotkeyEntry = new HotkeyTableEntry(this, hotkey, table, i + 1).setKeybinds(hotkey.keybinds);
+			HotkeyTableEntry hotkeyEntry = new HotkeyTableEntry(this, hotkey, table, i).setKeybinds(hotkey.keybinds);
 			hotkeys.add(hotkeyEntry);
 			table.addRow(hotkeyEntry.generateRow());
 		}
 	}
+	
+	boolean detectedAutoGUI = false;
 	
 	@Override
 	public void render(int mouseX, int mouseY, float partialTicks) {
 		int scaledScreenWidth = minecraft.mainWindow.getScaledWidth();
 		int scaledScreenHeight = minecraft.mainWindow.getScaledHeight();
 		int guiScale = minecraft.gameSettings.guiScale;
+		if(guiScale == 0) {
+			if(!detectedAutoGUI) {
+				detectedAutoGUI = true;
+				Minecraft.getInstance().player.sendMessage(new TranslationTextComponent("please don't use 'auto' as a gui-scale, I don't have internal access to it"));
+			}
+			return;
+		}
+		if(detectedAutoGUI) {
+			detectedAutoGUI = false;
+			Minecraft.getInstance().player.sendMessage(new TranslationTextComponent("thank you for your cooperation."));
+		}
 		for(IRenderableFrame renderable : guiComponents) {
 			if(renderable instanceof IClickableFrame) {
 				((IClickableFrame)renderable).mouseOver(mouseX, mouseY, scaledScreenWidth, scaledScreenHeight, this.leftDown, this.queueLeftUpdate);
