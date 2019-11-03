@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.client.event.InputEvent;
+import the_dark_jumper.cannontracer.Main;
 import the_dark_jumper.cannontracer.Update;
 import the_dark_jumper.cannontracer.gui.guielements.BasicTextFrame;
 import the_dark_jumper.cannontracer.gui.guielements.ButtonFrame;
@@ -20,6 +21,7 @@ import the_dark_jumper.cannontracer.gui.guielements.interfaces.IRenderableFrame;
 import the_dark_jumper.cannontracer.gui.guielements.interfaces.ITickableFrame;
 import the_dark_jumper.cannontracer.gui.utils.FrameColors;
 import the_dark_jumper.cannontracer.gui.utils.FrameConfig;
+import the_dark_jumper.cannontracer.modules.ModuleManager.State;
 import the_dark_jumper.cannontracer.util.KeybindAccessors;
 import the_dark_jumper.cannontracer.util.TrackingData;
 
@@ -64,17 +66,24 @@ public class ConfigGUI extends Screen implements IJumperGUI{
 		guiComponents.add(new ValueFrame(this, config.duplicate(), colors, "displayTick", guiManager.main.singlePlayerSettings.renderTickGNS, Integer.class));
 		config.init(72, 10, 94, 14, 8);
 		guiComponents.add(new ToggleValueFrame(this, config.duplicate(), colors, "logIDs", guiManager.main.singlePlayerSettings.bLogGNS));
+		//onscreen gui
+		config.init(6, 20, 34, 24, 8);
+		guiComponents.add(new BasicTextFrame(this, "Ingame GUI", config.duplicate(), colors));
+		config.init(35, 20, 44, 24, 8);
+		guiComponents.add(new ValueFrame(this, config.duplicate(), colors, "x-offset", guiManager.ingameGUI.xOffsetGNS, Double.class));
+		config.init(45, 20, 54, 24, 8);
+		guiComponents.add(new ValueFrame(this, config.duplicate(), colors, "y-offset", guiManager.ingameGUI.yOffsetGNS, Double.class));
 		//keybinds
-		config.init(6, 20, 49, 24, 8);
+		config.init(6, 30, 49, 34, 8);
 		guiComponents.add(new BasicTextFrame(this, "Keybinds", config.duplicate(), colors));
-		config.init(50, 20, 94, 24, 8);
+		config.init(50, 30, 94, 34, 8);
 		guiComponents.add(new ButtonFrame(this, "open Hotkey Menu", config.duplicate(), colors, this::openHotkeyScreen));
-		generateKeybindScreenComponents(guiManager.main.keybindManagerSP.variables, 0, config, colors, 6, 25, 94, 29, 8);
-		generateKeybindScreenComponents(guiManager.main.keybindManagerSP.variables, 1, config, colors, 6, 30, 94, 34, 8);
+		generateKeybindScreenComponents(guiManager.main.keybindManagerSP.variables, 0, config, colors, 6, 35, 94, 39, 8);
+		generateKeybindScreenComponents(guiManager.main.keybindManagerSP.variables, 1, config, colors, 6, 40, 94, 44, 8);
 		//tracing entries
-		config.init(6, 40, 94, 44, 8);
+		config.init(6, 50, 94, 54, 8);
 		guiComponents.add(new BasicTextFrame(this, "Tracked Entities", config.duplicate(), colors));
-		generateTrackingScreenComponents(guiManager.main.entityTracker.observedEntityIDSP, config, colors, 6, 45, 94, 5, 8);		
+		generateTrackingScreenComponents(guiManager.main.entityTracker.observedEntityIDSP, config, colors, 6, 55, 94, 5, 8);		
 	}
 	
 	public void generateMultiplayerScreenComponents() {
@@ -181,6 +190,14 @@ public class ConfigGUI extends Screen implements IJumperGUI{
 	}
 	
 	public void keyEvent(InputEvent.KeyInputEvent event) {
+		if(Main.getInstance().keyPressListener.pressedKeys.contains(1)) {
+			if(Main.getInstance().moduleManager.state == State.MULTIPLAYER) {
+				Main.getInstance().moduleManager.menuMP.toggle();
+			}else if(Main.getInstance().moduleManager.state == State.SINGLEPLAYER) {
+				Main.getInstance().moduleManager.menuSP.toggle();
+			}
+			return;
+		}
 		for(IRenderableFrame renderable : guiComponents) {
 			if(renderable instanceof IFocusableFrame && ((IFocusableFrame)renderable).getFocused()) {
 				((IFocusableFrame)renderable).keyEvent(event);

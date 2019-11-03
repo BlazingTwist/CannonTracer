@@ -38,7 +38,8 @@ public class HotkeyTableEntry {
 		if(isPressed) {
 			KeybindHotkeyEntry keybindHotkeyEntry = new KeybindHotkeyEntry(this);
 			keybinds.add(keybindHotkeyEntry);
-			table.setRow(hotkeyIndex, generateRow());
+			hotkey.keybinds.add(keybindHotkeyEntry.keybindData);
+			table.setRow(hotkeyIndex + 1, generateRow());
 			table.updateScrollbarRanges();
 		}
 	}

@@ -150,6 +150,10 @@ public class HotkeyGUI extends Screen implements IJumperGUI{
 	}
 	
 	public void keyEvent(InputEvent.KeyInputEvent event) {
+		if(Main.getInstance().keyPressListener.pressedKeys.contains(1)) {
+			closeButtonPressed(true);
+			return;
+		}
 		for(IRenderableFrame renderable : guiComponents) {
 			if(renderable instanceof IFocusableFrame) {
 				if(((IFocusableFrame)renderable).getFocused()) {

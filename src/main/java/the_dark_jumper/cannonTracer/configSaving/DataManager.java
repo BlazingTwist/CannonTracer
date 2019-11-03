@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 
 import the_dark_jumper.cannontracer.Main;
+import the_dark_jumper.cannontracer.gui.IngameGUI;
 import the_dark_jumper.cannontracer.hotkey.Hotkey;
 import the_dark_jumper.cannontracer.hotkey.HotkeyManager;
 import the_dark_jumper.cannontracer.util.KeybindAccessors;
@@ -32,6 +33,7 @@ public class DataManager {
 			writeSinglePlayerConfig(bwout);			
 			writeMultiPlayerConfig(bwout);
 			writeHotkeys(bwout);
+			writeIngameConfig(bwout);
 			bwout.close();
 		}catch(Exception e){
 			System.out.println("thrown error while saving");
@@ -50,13 +52,21 @@ public class DataManager {
 	public void writeHotkeys(BufferedWriter bwout) {
 		Header header = new Header("Hotkeys", "", 1);
 		header.write(bwout);
-		//output hotkeys
 		//command | trigger , keycode | trigger , keycode ...
 		header.init("Hotkey Entry", "", 2);
 		for(Hotkey hotkey : Main.getInstance().hotkeyManager.getHotkeys()) {
 			header.content = new HotkeyContent().setCommand(hotkey.command).setKeybinds(hotkey.keybinds).buildContent();
 			header.write(bwout);
 		}
+	}
+	
+	public void writeIngameConfig(BufferedWriter bwout) {
+		Header header = new Header("IngameConfig", "", 1);
+		header.write(bwout);
+		header.init("Offsets", "", 2);
+		IngameGUI ingameGUI = Main.getInstance().guiManager.ingameGUI;
+		header.content = new IngameOffsetContent().setXOffset(ingameGUI.getXOffset()).setYOffset(ingameGUI.getYOffset()).buildContent();
+		header.write(bwout);
 	}
 	
 	public void writeServerSpecificConfig(BufferedWriter bwout, String headerName,
@@ -162,6 +172,39 @@ public class DataManager {
 					}else {
 						hotkeyManager.addHotkey(new Hotkey(hotkeyContent.command, hotkeyContent.keybinds));
 						hotkeyContent = new HotkeyContent();
+					}
+				}
+			}
+		}
+	}
+	
+	public void loadIngameConfig(ArrayList<String> lines) {
+		IngameGUI ingameGUI = Main.getInstance().guiManager.ingameGUI;
+		Header header = new Header(null, null, 0);
+		IngameOffsetContent offsetContent = new IngameOffsetContent();
+		boolean foundSection = false;
+		for(Iterator<String> it = lines.iterator(); it.hasNext(); ) {
+			String line = it.next();
+			if(!header.readHeader(line)) {
+				continue;
+			}
+			if(!foundSection) {
+				if(header.level == 1 && header.name.equals("IngameConfig")) {
+					foundSection = true;
+				}
+				continue;
+			}
+			if(header.level == 1) {
+				//reached next section, read (past tense) all lines of current section
+				return;
+			}
+			if(header.level == 2 && header.content != null) {
+				if(header.name.equals("Offsets")) {
+					if(!offsetContent.readContent(header.content)) {
+						//couldn't read offsets... okay then, guess we're ignoring this one?
+					}else {
+						ingameGUI.setXOffset(offsetContent.xOffset);
+						ingameGUI.setYOffset(offsetContent.yOffset);
 					}
 				}
 			}
