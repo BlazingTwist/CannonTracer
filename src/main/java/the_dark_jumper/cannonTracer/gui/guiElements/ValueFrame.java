@@ -22,7 +22,7 @@ public class ValueFrame<T> extends DoubleSegmentFrame implements IFocusableFrame
 	public final Class<T> clazz;
 	
 	public ValueFrame(IJumperGUI parent, FrameConfig config, FrameColors colors, String text, GetterAndSetter<T> source, Class<T> clazz) {
-		super(parent, text, source.getter.get().toString(), config, colors);
+		super(parent, text, source.get().toString(), config, colors);
 		this.source = source;
 		this.clazz = clazz;
 	}
@@ -30,24 +30,24 @@ public class ValueFrame<T> extends DoubleSegmentFrame implements IFocusableFrame
 	@Override
 	public void parseInput() {
 		if(this.value.equals("")) {
-			this.value = source.getter.get().toString();
+			this.value = source.get().toString();
 		}else {
 			try {
 				this.value.replace(',', '.');
 				if(clazz == Integer.class) {
-					source.setter.accept((T)new Integer(this.value));
+					source.set((T)new Integer(this.value));
 				}else if(clazz == Float.class) {
-					source.setter.accept((T)new Float(this.value));
+					source.set((T)new Float(this.value));
 				}else if(clazz == Double.class) {
-					source.setter.accept((T)new Double(this.value));
+					source.set((T)new Double(this.value));
 				}else if(clazz == String.class) {
-					source.setter.accept((T)this.value);
+					source.set((T)this.value);
 				}else if(clazz == Long.class) {
-					source.setter.accept((T)new Long(this.value));
+					source.set((T)new Long(this.value));
 				}
 			}catch(NumberFormatException e) {
 				//user inputted faulty data
-				this.value = source.getter.get().toString();
+				this.value = source.get().toString();
 			}
 		}
 	}

@@ -57,19 +57,19 @@ public class TrackingDataContent implements Header.Content{
 			if(configString.name.equals("EntityID")) {
 				entityID = configString.value;
 			}else if(configString.name.equals("render")) {
-				trackingData.renderGNS.setter.accept(Boolean.parseBoolean(configString.value));
+				trackingData.renderGNS.set(Boolean.parseBoolean(configString.value));
 			}else if(configString.name.equals("time")) {
-				trackingData.timeGNS.setter.accept(Float.parseFloat(configString.value));
+				trackingData.timeGNS.set(Float.parseFloat(configString.value));
 			}else if(configString.name.equals("thickness")) {
-				trackingData.thicknessGNS.setter.accept(Float.parseFloat(configString.value));
+				trackingData.thicknessGNS.set(Float.parseFloat(configString.value));
 			}else if(configString.name.equals("red")) {
-				trackingData.redGNS.setter.accept(Integer.parseInt(configString.value));
+				trackingData.redGNS.set(Integer.parseInt(configString.value));
 			}else if(configString.name.equals("green")) {
-				trackingData.greenGNS.setter.accept(Integer.parseInt(configString.value));
+				trackingData.greenGNS.set(Integer.parseInt(configString.value));
 			}else if(configString.name.equals("blue")) {
-				trackingData.blueGNS.setter.accept(Integer.parseInt(configString.value));
+				trackingData.blueGNS.set(Integer.parseInt(configString.value));
 			}else if(configString.name.equals("alpha")) {
-				trackingData.alphaGNS.setter.accept(Integer.parseInt(configString.value));
+				trackingData.alphaGNS.set(Integer.parseInt(configString.value));
 			}
 		}
 		if(entityID == null) {

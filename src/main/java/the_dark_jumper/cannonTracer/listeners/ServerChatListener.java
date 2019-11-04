@@ -87,12 +87,12 @@ public class ServerChatListener {
 		}
 		//target message: [JumperCannonTracer][Config]"key"="value"|"key"="value;value2;value3"|...
 		String message = "[JumperCannonTracer][Config]logIDs=";
-		message += Boolean.toString(main.multiPlayerSettings.bLogGNS.getter.get());
+		message += Boolean.toString(main.multiPlayerSettings.bLogGNS.get());
 		for(String key : main.entityTracker.observedEntityIDMP.keySet()) {
-			if(!main.entityTracker.observedEntityIDMP.get(key).renderGNS.getter.get()) {
+			if(!main.entityTracker.observedEntityIDMP.get(key).renderGNS.get()) {
 				continue;
 			}
-			message += ("|[entity]=" + key + ";" + Float.toString(main.entityTracker.observedEntityIDMP.get(key).timeGNS.getter.get()));
+			message += ("|[entity]=" + key + ";" + Float.toString(main.entityTracker.observedEntityIDMP.get(key).timeGNS.get()));
 		}
 		Minecraft.getInstance().player.sendChatMessage(message);
 	}

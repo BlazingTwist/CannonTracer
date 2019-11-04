@@ -5,12 +5,19 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraftforge.client.event.InputEvent;
 import the_dark_jumper.cannontracer.Main;
 import the_dark_jumper.cannontracer.modules.ModuleManager;
+import the_dark_jumper.cannontracer.util.GetterAndSetter;
 
 public class GuiManager {
 	public final Main main;
 	public final IngameGUI ingameGUI;
 	public final ConfigGUI configGUI;
 	public final HotkeyGUI hotkeyGUI;
+	
+	public GetterAndSetter<Integer> fontHeightGNS;
+	
+	{
+		fontHeightGNS = new GetterAndSetter<Integer>(0);
+	}
 	
 	public GuiManager(Main main) {
 		this.main = main;

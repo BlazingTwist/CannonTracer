@@ -76,7 +76,7 @@ public class ModuleCounter extends ModuleBase{
 	}
 	
 	public void increment() {
-		int value = valueGNS.getter.get();
+		int value = valueGNS.get();
 		if(value == max.get()) {
 			return;
 		}
@@ -84,11 +84,11 @@ public class ModuleCounter extends ModuleBase{
 		if(value > max.get()) {
 			value = max.get();
 		}
-		valueGNS.setter.accept(value);
+		valueGNS.set(value);
 	}
 	
 	public void decrement() {
-		int value = valueGNS.getter.get();
+		int value = valueGNS.get();
 		if(value == min.get()) {
 			return;
 		}
@@ -96,7 +96,7 @@ public class ModuleCounter extends ModuleBase{
 		if(value < min.get()) {
 			value = min.get();
 		}
-		valueGNS.setter.accept(value);
+		valueGNS.set(value);
 	}
 	
 	public void onIncrementLoop() {

@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 
 import the_dark_jumper.cannontracer.Main;
+import the_dark_jumper.cannontracer.gui.GuiManager;
 import the_dark_jumper.cannontracer.gui.IngameGUI;
 import the_dark_jumper.cannontracer.hotkey.Hotkey;
 import the_dark_jumper.cannontracer.hotkey.HotkeyManager;
@@ -33,7 +34,7 @@ public class DataManager {
 			writeSinglePlayerConfig(bwout);			
 			writeMultiPlayerConfig(bwout);
 			writeHotkeys(bwout);
-			writeIngameConfig(bwout);
+			writeGUIConfig(bwout);
 			bwout.close();
 		}catch(Exception e){
 			System.out.println("thrown error while saving");
@@ -60,12 +61,17 @@ public class DataManager {
 		}
 	}
 	
-	public void writeIngameConfig(BufferedWriter bwout) {
-		Header header = new Header("IngameConfig", "", 1);
+	public void writeGUIConfig(BufferedWriter bwout) {
+		Header header = new Header("guiConfig", "", 1);
 		header.write(bwout);
-		header.init("Offsets", "", 2);
+		header.init("configEntry", "", 2);
 		IngameGUI ingameGUI = Main.getInstance().guiManager.ingameGUI;
-		header.content = new IngameOffsetContent().setXOffset(ingameGUI.getXOffset()).setYOffset(ingameGUI.getYOffset()).buildContent();
+		GuiManager guiManager = Main.getInstance().guiManager;
+		header.content = new DataTypes.ConfigDouble("xOffset", ingameGUI.xOffsetGNS.get()).buildString();
+		header.write(bwout);
+		header.content = new DataTypes.ConfigDouble("yOffset", ingameGUI.yOffsetGNS.get()).buildString();
+		header.write(bwout);
+		header.content = new DataTypes.ConfigInteger("fontHeight", guiManager.fontHeightGNS.get()).buildString();
 		header.write(bwout);
 	}
 	
@@ -178,10 +184,11 @@ public class DataManager {
 		}
 	}
 	
-	public void loadIngameConfig(ArrayList<String> lines) {
+	public void loadGUIConfig(ArrayList<String> lines) {
+		GuiManager guiManager = Main.getInstance().guiManager;
 		IngameGUI ingameGUI = Main.getInstance().guiManager.ingameGUI;
 		Header header = new Header(null, null, 0);
-		IngameOffsetContent offsetContent = new IngameOffsetContent();
+		DataTypes.ConfigString configString = new DataTypes.ConfigString();
 		boolean foundSection = false;
 		for(Iterator<String> it = lines.iterator(); it.hasNext(); ) {
 			String line = it.next();
@@ -189,7 +196,7 @@ public class DataManager {
 				continue;
 			}
 			if(!foundSection) {
-				if(header.level == 1 && header.name.equals("IngameConfig")) {
+				if(header.level == 1 && header.name.equals("guiConfig")) {
 					foundSection = true;
 				}
 				continue;
@@ -199,12 +206,17 @@ public class DataManager {
 				return;
 			}
 			if(header.level == 2 && header.content != null) {
-				if(header.name.equals("Offsets")) {
-					if(!offsetContent.readContent(header.content)) {
+				if(header.name.equals("configEntry")) {
+					if(!configString.readValue(header.content)) {
 						//couldn't read offsets... okay then, guess we're ignoring this one?
 					}else {
-						ingameGUI.setXOffset(offsetContent.xOffset);
-						ingameGUI.setYOffset(offsetContent.yOffset);
+						if(configString.name.equals("xOffset")) {
+							ingameGUI.xOffsetGNS.set(Double.parseDouble(configString.value));
+						}else if(configString.name.equals("yOffset")) {
+							ingameGUI.yOffsetGNS.set(Double.parseDouble(configString.value));
+						}else if(configString.name.equals("fontHeight")) {
+							guiManager.fontHeightGNS.set(Integer.parseInt(configString.value));
+						}
 					}
 				}
 			}

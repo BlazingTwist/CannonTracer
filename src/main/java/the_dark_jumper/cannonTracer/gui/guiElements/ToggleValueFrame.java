@@ -9,15 +9,15 @@ public class ToggleValueFrame extends DoubleSegmentFrame{
 	public final GetterAndSetter<Boolean> source;
 	
 	public ToggleValueFrame(IJumperGUI parent, FrameConfig config, FrameColors colors, String text, GetterAndSetter<Boolean> source) {
-		super(parent, text, Boolean.toString(source.getter.get()), (source.getter.get() ? colors.colorOn : colors.colorOff), config, colors);
+		super(parent, text, Boolean.toString(source.get()), (source.get() ? colors.colorOn : colors.colorOff), config, colors);
 		this.source = source;
 	}
 	
 	@Override
 	public void setIsClicked(boolean isClicked) {
 		if(isClicked) {
-			boolean result = !source.getter.get();
-			source.setter.accept(result);
+			boolean result = !source.get();
+			source.set(result);
 			super.valueColor = (result ? colors.colorOn : colors.colorOff);
 			super.value = Boolean.toString(result);
 		}

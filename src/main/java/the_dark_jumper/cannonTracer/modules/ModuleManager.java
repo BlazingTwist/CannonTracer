@@ -50,8 +50,8 @@ public class ModuleManager {
 	public int getMaxDisplayTickSP() {
 		float max = 0;
 		for(TrackingData trackingData : main.entityTracker.observedEntityIDSP.values()) {
-			if(trackingData.timeGNS.getter.get() > max) {
-				max = trackingData.timeGNS.getter.get();
+			if(trackingData.timeGNS.get() > max) {
+				max = trackingData.timeGNS.get();
 			}
 		}
 		// + 1 as a safety net regarding truncating
@@ -88,8 +88,8 @@ public class ModuleManager {
 	public int getMaxDisplayTickMP() {
 		float max = 0;
 		for(TrackingData trackingData : main.entityTracker.observedEntityIDMP.values()) {
-			if(trackingData.timeGNS.getter.get() > max) {
-				max = trackingData.timeGNS.getter.get();
+			if(trackingData.timeGNS.get() > max) {
+				max = trackingData.timeGNS.get();
 			}
 		}
 		// + 1 as a safety net regarding truncating

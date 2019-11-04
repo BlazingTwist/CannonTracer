@@ -22,7 +22,7 @@ public class Update {
 	public static final String OUTDATED_MSG = "is outdated, please update using the button on the config screen!";
 	public static final String MOD_NAME = "CannonTracer ";
 	
-	public static final String VERSION = "0.9.7";
+	public static final String VERSION = "0.9.8";
 	
 	public static final TextFormatting HIGHLIGHT_COLOR = TextFormatting.AQUA;
 	public static final TextFormatting POSITIVE_COLOR = TextFormatting.GREEN;
@@ -97,6 +97,7 @@ public class Update {
 		}catch(IOException e) {
 			e.printStackTrace();
 			messagePlayer(MOD_NAME, FAILED_MSG, false);
+			messagePlayer("Update ", "failed due to IOException", false);
 			return;
 		}
 	}

@@ -57,7 +57,7 @@ public class EntityTracker {
 			return;
 		}
 		
-		if(main.singlePlayerSettings.bLogGNS.getter.get()) {
+		if(main.singlePlayerSettings.bLogGNS.get()) {
 			try {
 				FileWriter out=new FileWriter("C:\\Users\\"+System.getProperty("user.name")+"\\Documents\\The_Dark_Jumper_Cannon_Tracer\\log.cue", true);
 				BufferedWriter BWout=new BufferedWriter(out);
@@ -92,9 +92,9 @@ public class EntityTracker {
 	}
 	
 	public void doSinglePlayerSpecificTracking() {
-		if(main.singlePlayerSettings.modeGNS.getter.get() == 2) {
+		if(main.singlePlayerSettings.modeGNS.get() == 2) {
 			removeOutdatedEntities(lastSecond);
-		}else if(main.singlePlayerSettings.modeGNS.getter.get() == 0){
+		}else if(main.singlePlayerSettings.modeGNS.get() == 0){
 			removeOutdatedEntities(tracingHistory);
 		}
 		checkTrackedEntities();
@@ -117,7 +117,7 @@ public class EntityTracker {
 			String entityName = entity.getClass().getSimpleName();
 			SimpleLocation pos1 = new SimpleLocation(entity.prevPosX, entity.prevPosY + 0.49, entity.prevPosZ);
 			SimpleLocation pos2 = new SimpleLocation(entity.posX, entity.posY + 0.49, entity.posZ);
-			if(main.singlePlayerSettings.modeGNS.getter.get() == 2) {
+			if(main.singlePlayerSettings.modeGNS.get() == 2) {
 				checkNewEntities(lastSecond, pos1, pos2, entityName);
 			}else {
 				checkNewEntities(tracingHistory, pos1, pos2, entityName);
@@ -167,9 +167,9 @@ public class EntityTracker {
 	
 	public boolean getXray() {
 		if(main.moduleManager.state == ModuleManager.State.SINGLEPLAYER) {
-			return main.singlePlayerSettings.xRayTraceGNS.getter.get();
+			return main.singlePlayerSettings.xRayTraceGNS.get();
 		}else if(main.moduleManager.state == ModuleManager.State.MULTIPLAYER) {
-			return main.multiPlayerSettings.xRayTraceGNS.getter.get();
+			return main.multiPlayerSettings.xRayTraceGNS.get();
 		}
 		return false;
 	}
@@ -208,7 +208,7 @@ public class EntityTracker {
 			for(Iterator<String> keyIT = moveData.tickData.keySet().iterator(); keyIT.hasNext(); ) {
 				String key = keyIT.next();
 				TrackingData trackData = singleplayer ? observedEntityIDSP.get(key) : observedEntityIDMP.get(key);
-				if(trackData.renderGNS.getter.get()) {
+				if(trackData.renderGNS.get()) {
 					moveData.setupDrawingBuffer(bufferBuilder, trackData, key);
 				}
 			}

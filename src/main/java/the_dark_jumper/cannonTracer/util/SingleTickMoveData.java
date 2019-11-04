@@ -63,25 +63,25 @@ public class SingleTickMoveData {
 		}
 		bufferBuilder.pos(pos2.x, pos2.y, pos2.z).color(td.getRed(), td.getGreen(), td.getBlue(), td.getAlpha()).endVertex();
 		if(entityTracker.main.moduleManager.state == ModuleManager.State.SINGLEPLAYER) {
-			if(!entityTracker.main.singlePlayerSettings.renderBoxesGNS.getter.get()) {
+			if(!entityTracker.main.singlePlayerSettings.renderBoxesGNS.get()) {
 				return;
 			}
-			if(entityTracker.main.singlePlayerSettings.modeGNS.getter.get() == 2) {
+			if(entityTracker.main.singlePlayerSettings.modeGNS.get() == 2) {
 				if(!tickData.containsKey(entityName)) {
 					return;
 				}
-				if(!tickData.get(entityName).contains(entityTracker.main.singlePlayerSettings.renderTickGNS.getter.get() + tickOffset)) {
+				if(!tickData.get(entityName).contains(entityTracker.main.singlePlayerSettings.renderTickGNS.get() + tickOffset)) {
 					return;
 				}
 			}
 		}else if(entityTracker.main.moduleManager.state == ModuleManager.State.MULTIPLAYER) {
-			if(!entityTracker.main.multiPlayerSettings.renderBoxesGNS.getter.get()) {
+			if(!entityTracker.main.multiPlayerSettings.renderBoxesGNS.get()) {
 				return;
 			}
 			if(!tickData.containsKey(entityName)) {
 				return;
 			}
-			if(!tickData.get(entityName).contains(entityTracker.main.multiPlayerSettings.renderTickGNS.getter.get() + tickOffset)){
+			if(!tickData.get(entityName).contains(entityTracker.main.multiPlayerSettings.renderTickGNS.get() + tickOffset)){
 				return;
 			}
 		}

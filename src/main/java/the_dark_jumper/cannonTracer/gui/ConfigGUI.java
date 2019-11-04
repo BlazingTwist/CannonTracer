@@ -51,14 +51,11 @@ public class ConfigGUI extends Screen implements IJumperGUI{
 	public void generateSingleplayerScreenComponents() {
 		guiComponents.clear();
 		FrameConfig config = new FrameConfig();
-		//alpha outliner
-		config.init(5, 5, 95, 95, 8);
-		FrameColors backGroundColors = new FrameColors();
-		backGroundColors.innerColor = backGroundColors.borderColor = 0x55000000;
-		guiComponents.add(new BasicTextFrame(this, "", config.duplicate(), backGroundColors));
+		FrameColors colors = new FrameColors();
+		generateCommonScreenComponents(config, colors);
+		
 		//headline
 		config.init(6, 10, 34, 14, 8);
-		FrameColors colors = new FrameColors();
 		guiComponents.add(new BasicTextFrame(this, "Config-Screen", config.duplicate(), colors));
 		config.init(35, 10, 49, 14, 8);
 		guiComponents.add(new ButtonFrame(this, "Update", config.duplicate(), colors, this::onUpdateButton));
@@ -66,13 +63,7 @@ public class ConfigGUI extends Screen implements IJumperGUI{
 		guiComponents.add(new ValueFrame(this, config.duplicate(), colors, "displayTick", guiManager.main.singlePlayerSettings.renderTickGNS, Integer.class));
 		config.init(72, 10, 94, 14, 8);
 		guiComponents.add(new ToggleValueFrame(this, config.duplicate(), colors, "logIDs", guiManager.main.singlePlayerSettings.bLogGNS));
-		//onscreen gui
-		config.init(6, 20, 34, 24, 8);
-		guiComponents.add(new BasicTextFrame(this, "Ingame GUI", config.duplicate(), colors));
-		config.init(35, 20, 44, 24, 8);
-		guiComponents.add(new ValueFrame(this, config.duplicate(), colors, "x-offset", guiManager.ingameGUI.xOffsetGNS, Double.class));
-		config.init(45, 20, 54, 24, 8);
-		guiComponents.add(new ValueFrame(this, config.duplicate(), colors, "y-offset", guiManager.ingameGUI.yOffsetGNS, Double.class));
+		
 		//keybinds
 		config.init(6, 30, 49, 34, 8);
 		guiComponents.add(new BasicTextFrame(this, "Keybinds", config.duplicate(), colors));
@@ -80,23 +71,21 @@ public class ConfigGUI extends Screen implements IJumperGUI{
 		guiComponents.add(new ButtonFrame(this, "open Hotkey Menu", config.duplicate(), colors, this::openHotkeyScreen));
 		generateKeybindScreenComponents(guiManager.main.keybindManagerSP.variables, 0, config, colors, 6, 35, 94, 39, 8);
 		generateKeybindScreenComponents(guiManager.main.keybindManagerSP.variables, 1, config, colors, 6, 40, 94, 44, 8);
+		
 		//tracing entries
 		config.init(6, 50, 94, 54, 8);
 		guiComponents.add(new BasicTextFrame(this, "Tracked Entities", config.duplicate(), colors));
-		generateTrackingScreenComponents(guiManager.main.entityTracker.observedEntityIDSP, config, colors, 6, 55, 94, 5, 8);		
+		generateTrackingScreenComponents(guiManager.main.entityTracker.observedEntityIDSP, config, colors, 6, 55, 94, 5, 8);
 	}
 	
 	public void generateMultiplayerScreenComponents() {
 		guiComponents.clear();
 		FrameConfig config = new FrameConfig();
-		//alpha outliner
-		config.init(5, 5, 95, 95, 8);
-		FrameColors backGroundColors = new FrameColors();
-		backGroundColors.innerColor = backGroundColors.borderColor = 0x55000000;
-		guiComponents.add(new BasicTextFrame(this, "", config.duplicate(), backGroundColors));
+		FrameColors colors = new FrameColors();
+		generateCommonScreenComponents(config, colors);
+		
 		//headline
 		config.init(6, 10, 34, 14, 8);
-		FrameColors colors = new FrameColors();
 		guiComponents.add(new BasicTextFrame(this, "Config-Screen", config.duplicate(), colors));
 		config.init(35, 10, 49, 14, 8);
 		guiComponents.add(new ButtonFrame(this, "Update", config.duplicate(), colors, this::onUpdateButton));
@@ -104,17 +93,37 @@ public class ConfigGUI extends Screen implements IJumperGUI{
 		guiComponents.add(new ValueFrame(this, config.duplicate(), colors, "displayTick", guiManager.main.multiPlayerSettings.renderTickGNS, Integer.class));
 		config.init(72, 10, 94, 14, 8);
 		guiComponents.add(new ToggleValueFrame(this, config.duplicate(), colors, "logIDs", guiManager.main.multiPlayerSettings.bLogGNS));
+		
 		//keybinds
-		config.init(6, 20, 49, 24, 8);
+		config.init(6, 30, 49, 34, 8);
 		guiComponents.add(new BasicTextFrame(this, "Keybinds", config.duplicate(), colors));
-		config.init(50, 20, 94, 24, 8);
+		config.init(50, 30, 94, 34, 8);
 		guiComponents.add(new ButtonFrame(this, "open Hotkey Menu", config.duplicate(), colors, this::openHotkeyScreen));
-		generateKeybindScreenComponents(guiManager.main.keybindManagerMP.variables, 0, config, colors, 6, 25, 94, 29, 8);
-		generateKeybindScreenComponents(guiManager.main.keybindManagerMP.variables, 1, config, colors, 6, 30, 94, 34, 8);
+		generateKeybindScreenComponents(guiManager.main.keybindManagerMP.variables, 0, config, colors, 6, 35, 94, 39, 8);
+		generateKeybindScreenComponents(guiManager.main.keybindManagerMP.variables, 1, config, colors, 6, 40, 94, 44, 8);
+		
 		//tracing entries
-		config.init(6, 40, 94, 44, 8);
+		config.init(6, 50, 94, 54, 8);
 		guiComponents.add(new BasicTextFrame(this, "Tracked Entities", config.duplicate(), colors));
-		generateTrackingScreenComponents(guiManager.main.entityTracker.observedEntityIDMP, config, colors, 6, 45, 94, 5, 8);
+		generateTrackingScreenComponents(guiManager.main.entityTracker.observedEntityIDMP, config, colors, 6, 55, 94, 5, 8);
+	}
+	
+	private void generateCommonScreenComponents(FrameConfig config, FrameColors colors) {
+		//alpha outliner
+		config.init(5, 5, 95, 95, 8);
+		FrameColors backGroundColors = new FrameColors();
+		backGroundColors.innerColor = backGroundColors.borderColor = 0x55000000;
+		guiComponents.add(new BasicTextFrame(this, "", config.duplicate(), backGroundColors));
+		
+		//gui config
+		config.init(6, 20, 34, 24, 8);
+		guiComponents.add(new BasicTextFrame(this, "GUI Config", config.duplicate(), colors));
+		config.init(35, 20, 44, 24, 8);
+		guiComponents.add(new ValueFrame(this, config.duplicate(), colors, "x-offset", guiManager.ingameGUI.xOffsetGNS, Double.class));
+		config.init(45, 20, 54, 24, 8);
+		guiComponents.add(new ValueFrame(this, config.duplicate(), colors, "y-offset", guiManager.ingameGUI.yOffsetGNS, Double.class));
+		config.init(55, 20, 64, 24, 8);
+		guiComponents.add(new ValueFrame(this, config.duplicate(), colors, "fontHeight", guiManager.fontHeightGNS, Integer.class));
 	}
 	
 	public void generateKeybindScreenComponents(LinkedHashMap<String, KeybindAccessors> keybindVariables, int accessorIndex, FrameConfig config, FrameColors colors, int x1, int y1, int x2, int y2, int border) {

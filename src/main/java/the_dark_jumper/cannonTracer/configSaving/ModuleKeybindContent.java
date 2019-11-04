@@ -23,9 +23,9 @@ public class ModuleKeybindContent implements Header.Content{
 	
 	public String buildContent() {
 		String out = new DataTypes.ConfigString(keybindName,
-				keybindSource.get(keybindName).accessors[0].getter.get() +
+				keybindSource.get(keybindName).accessors[0].get() +
 				" , " +
-				keybindSource.get(keybindName).accessors[1].getter.get()).buildString();
+				keybindSource.get(keybindName).accessors[1].get()).buildString();
 		return out;
 	}
 	
@@ -37,8 +37,8 @@ public class ModuleKeybindContent implements Header.Content{
 		String keybindName = configString.name;
 		String keys[] = configString.value.split(" , ");
 		this.keybindName = keybindName;
-		keybindSource.get(keybindName).accessors[0].setter.accept(Integer.parseInt(keys[0]));
-		keybindSource.get(keybindName).accessors[1].setter.accept(Integer.parseInt(keys[1]));
+		keybindSource.get(keybindName).accessors[0].set(Integer.parseInt(keys[0]));
+		keybindSource.get(keybindName).accessors[1].set(Integer.parseInt(keys[1]));
 		return true;
 	}
 }

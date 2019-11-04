@@ -18,14 +18,14 @@ public class KeybindFrame extends DoubleSegmentFrame implements IFocusableFrame{
 	@Override public void setFocused(boolean isFocused) {this.isFocused = isFocused;}
 	
 	public KeybindFrame(IJumperGUI parent, FrameConfig config, FrameColors colors, String keybindName, GetterAndSetter<Integer> keybind) {
-		super(parent, keybindName, Main.getInstance().keyLibrary.getKeyContent(keybind.getter.get().intValue()).keyName, config, colors);
+		super(parent, keybindName, Main.getInstance().keyLibrary.getKeyContent(keybind.get().intValue()).keyName, config, colors);
 		this.keybind = keybind;
 	}
 	
 	@Override
 	public void parseInput() {
 		if(this.value.equals("")) {
-			this.value = Main.getInstance().keyLibrary.getKeyContent(keybind.getter.get().intValue()).keyName;
+			this.value = Main.getInstance().keyLibrary.getKeyContent(keybind.get().intValue()).keyName;
 		}
 	}
 	
@@ -38,7 +38,7 @@ public class KeybindFrame extends DoubleSegmentFrame implements IFocusableFrame{
 				return;
 			}
 			this.value = Main.getInstance().keyLibrary.getKeyContent(event.getScanCode()).keyName;
-			keybind.setter.accept(event.getScanCode());
+			keybind.set(event.getScanCode());
 			onFocusChange(false);
 		}
 	}
