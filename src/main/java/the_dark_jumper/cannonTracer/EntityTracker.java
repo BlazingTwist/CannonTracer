@@ -1,7 +1,5 @@
 package the_dark_jumper.cannontracer;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Queue;
@@ -20,6 +18,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
@@ -58,7 +57,8 @@ public class EntityTracker {
 		}
 		
 		if(main.singlePlayerSettings.bLogGNS.get()) {
-			try {
+			Minecraft.getInstance().player.sendMessage(new TranslationTextComponent("Entity detected! ClassName: '"+entity.getClass().getSimpleName()+"'"));
+			/*try {
 				FileWriter out=new FileWriter("C:\\Users\\"+System.getProperty("user.name")+"\\Documents\\The_Dark_Jumper_Cannon_Tracer\\log.cue", true);
 				BufferedWriter BWout=new BufferedWriter(out);
 				BWout.write("Entity detected! ClassName: "+entity.getClass().getSimpleName());
@@ -67,7 +67,7 @@ public class EntityTracker {
 			}catch(Exception e){
 				System.out.println("thrown error while saving");
 				e.printStackTrace();
-			}
+			}*/
 		}
 		
 		if(observedEntityIDSP.containsKey(entity.getClass().getSimpleName()) && observedEntityIDSP.get(entity.getClass().getSimpleName()).getRender()) {

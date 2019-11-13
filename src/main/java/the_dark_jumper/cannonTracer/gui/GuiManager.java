@@ -13,11 +13,7 @@ public class GuiManager {
 	public final ConfigGUI configGUI;
 	public final HotkeyGUI hotkeyGUI;
 	
-	public GetterAndSetter<Integer> fontHeightGNS;
-	
-	{
-		fontHeightGNS = new GetterAndSetter<Integer>(0);
-	}
+	public GetterAndSetter<Double> fontHeightGNS = new GetterAndSetter<Double>(1d);
 	
 	public GuiManager(Main main) {
 		this.main = main;

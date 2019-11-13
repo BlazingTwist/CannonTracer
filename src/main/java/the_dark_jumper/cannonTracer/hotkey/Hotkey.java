@@ -4,18 +4,18 @@ import java.util.LinkedList;
 
 import net.minecraft.client.Minecraft;
 import the_dark_jumper.cannontracer.Main;
+import the_dark_jumper.cannontracer.util.GetterAndSetter;
+import the_dark_jumper.cannontracer.util.KeybindData;
 
-public class Hotkey {	
-	public String command = "";
-	public void setCommand(String command) {this.command = command;}
-	public String getCommand() {return this.command;}
+public class Hotkey {
+	public GetterAndSetter<String> commandGNS = new GetterAndSetter<String>("");
 	
 	public LinkedList<KeybindData> keybinds = new LinkedList<>();
 	private boolean ignoreInput;
 	
 	public Hotkey() {}
 	public Hotkey(String command, LinkedList<KeybindData> keybinds) {
-		this.command = command;
+		commandGNS.set(command);
 		this.keybinds = keybinds;
 	}
 	
@@ -24,8 +24,8 @@ public class Hotkey {
 		return this;
 	}
 	
-	public Hotkey addKeybind(int keycode, boolean triggerState) {
-		keybinds.add(new KeybindData(keycode, triggerState));
+	public Hotkey addKeybind(boolean triggerState, int keycode) {
+		keybinds.add(new KeybindData(triggerState, keycode));
 		return this;
 	}
 	
@@ -47,7 +47,7 @@ public class Hotkey {
 	
 	private boolean allKeysSatisfied() {
 		for(KeybindData keybind : keybinds) {
-			if(!isConditionSatisfied(keybind.keycode, keybind.triggerState)) {
+			if(!isConditionSatisfied(keybind.keycodeGNS.get(), keybind.triggerGNS.get())) {
 				return false;
 			}
 		}
@@ -57,7 +57,7 @@ public class Hotkey {
 	private void onTriggeredChanged(boolean isTriggered) {
 		ignoreInput = isTriggered;
 		if(isTriggered) {
-			Minecraft.getInstance().player.sendChatMessage(command);
+			Minecraft.getInstance().player.sendChatMessage(commandGNS.get());
 		}
 	}
 }

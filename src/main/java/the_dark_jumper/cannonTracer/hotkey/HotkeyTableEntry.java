@@ -1,7 +1,6 @@
 package the_dark_jumper.cannontracer.hotkey;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 
 import the_dark_jumper.cannontracer.gui.HotkeyGUI;
 import the_dark_jumper.cannontracer.gui.guielements.ButtonFrame;
@@ -10,14 +9,13 @@ import the_dark_jumper.cannontracer.gui.guielements.ScrollableTable;
 import the_dark_jumper.cannontracer.gui.guielements.ToggleValueFrame;
 import the_dark_jumper.cannontracer.gui.guielements.ValueFrame;
 import the_dark_jumper.cannontracer.gui.guielements.interfaces.IRenderableFrame;
-import the_dark_jumper.cannontracer.util.GetterAndSetter;
+import the_dark_jumper.cannontracer.util.KeybindData;
 
 public class HotkeyTableEntry {
 	private HotkeyGUI parent;
 	public Hotkey hotkey;
 	public ScrollableTable table;
 	public int hotkeyIndex;
-	public LinkedList<KeybindHotkeyEntry> keybinds = new LinkedList<>();
 	
 	public HotkeyTableEntry(HotkeyGUI parent, Hotkey hotkey, ScrollableTable table, int hotkeyIndex) {
 		this.parent = parent;
@@ -26,19 +24,10 @@ public class HotkeyTableEntry {
 		this.hotkeyIndex = hotkeyIndex;
 	}
 	
-	public HotkeyTableEntry setKeybinds(LinkedList<KeybindData> keybinds2) {
-		keybinds.clear();
-		for(KeybindData keybindData : keybinds2) {
-			keybinds.add(new KeybindHotkeyEntry(this, keybindData));
-		}
-		return this;
-	}
-	
 	public void onAddKeybindPressed(boolean isPressed) {
 		if(isPressed) {
-			KeybindHotkeyEntry keybindHotkeyEntry = new KeybindHotkeyEntry(this);
-			keybinds.add(keybindHotkeyEntry);
-			hotkey.keybinds.add(keybindHotkeyEntry.keybindData);
+			KeybindData keybindData = new KeybindData();
+			hotkey.keybinds.add(keybindData);
 			table.setRow(hotkeyIndex + 1, generateRow());
 			table.updateScrollbarRanges();
 		}
@@ -47,10 +36,10 @@ public class HotkeyTableEntry {
 	public ArrayList<IRenderableFrame> generateRow(){
 		ArrayList<IRenderableFrame> row = new ArrayList<>();
 		row.add(new ButtonFrame(parent, "X", null, table.colors, this::onDelPressed));
-		row.add(new ValueFrame(parent, null, table.colors, "cmd", new GetterAndSetter<String>(hotkey::getCommand, hotkey::setCommand), String.class));
+		row.add(new ValueFrame(parent, null, table.colors, "cmd", hotkey.commandGNS, String.class));
 		
-		for(int i = 0; i < keybinds.size(); i++) {
-			KeybindHotkeyEntry keybind = keybinds.get(i);
+		for(int i = 0; i < hotkey.keybinds.size(); i++) {
+			KeybindData keybind = hotkey.keybinds.get(i);
 			row.add(new ToggleValueFrame(parent, null, table.colors, "trigger_"+i, keybind.triggerGNS));
 			row.add(new KeybindFrame(parent, null, table.colors, "keycode_"+i, keybind.keycodeGNS));
 		}

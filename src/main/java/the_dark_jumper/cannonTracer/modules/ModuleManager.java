@@ -3,31 +3,36 @@ package the_dark_jumper.cannontracer.modules;
 import java.util.ArrayList;
 
 import the_dark_jumper.cannontracer.Main;
+import the_dark_jumper.cannontracer.modules.moduleelements.ButtonBehaviour;
+import the_dark_jumper.cannontracer.modules.moduleelements.CounterBehaviour;
+import the_dark_jumper.cannontracer.modules.moduleelements.IModule;
+import the_dark_jumper.cannontracer.modules.moduleelements.ModuleAxis;
 import the_dark_jumper.cannontracer.modules.moduleelements.ModuleBase;
-import the_dark_jumper.cannontracer.modules.moduleelements.ModuleCounter;
-import the_dark_jumper.cannontracer.modules.moduleelements.ModuleOnOff;
-import the_dark_jumper.cannontracer.modules.moduleelements.ModuleStateMachine;
-import the_dark_jumper.cannontracer.modules.moduleelements.ModuleToggle;
+import the_dark_jumper.cannontracer.modules.moduleelements.StateMachineBehaviour;
+import the_dark_jumper.cannontracer.modules.moduleelements.ToggleBehaviour;
 import the_dark_jumper.cannontracer.util.TrackingData;
 
 public class ModuleManager {
 	Main main;
-	
-	public ArrayList<ModuleBase> activeModules = new ArrayList<ModuleBase>();
 	public State state = State.MENU;
 	
-	public ModuleStateMachine tracerModeSP = null;
-	public ModuleToggle xRayTracesSP = null;
-	public ModuleToggle menuSP = null;
-	public ModuleToggle renderBoxesSP = null;
-	public ModuleOnOff lastSecondSP = null;
-	public ModuleCounter displayTickSP = null;
+	public ArrayList<IModule> singlePlayerModules = new ArrayList<IModule>();
+	public ArrayList<IModule> multiPlayerModules = new ArrayList<IModule>();
 	
-	public ModuleToggle xRayTracesMP = null;
-	public ModuleToggle menuMP = null;
-	public ModuleToggle renderBoxesMP = null;
-	public ModuleOnOff pullDataMP = null;
-	public ModuleCounter displayTickMP = null;
+	public ModuleBase tracerModeSP;
+	public ModuleBase xRayTracesSP;
+	public ModuleBase menuSP;
+	public ModuleBase renderBoxesSP;
+	public ModuleBase loadLastSecondSP;
+	public ModuleBase clearHistorySP;
+	public ModuleAxis displayTickSP;
+	
+	public ModuleBase xRayTracesMP;
+	public ModuleBase menuMP;
+	public ModuleBase renderBoxesMP;
+	public ModuleBase pullDataMP;
+	public ModuleBase clearDataMP;
+	public ModuleAxis displayTickMP;
 	
 	public enum State{
 		SINGLEPLAYER,
@@ -37,14 +42,86 @@ public class ModuleManager {
 	
 	public ModuleManager(Main main) {
 		this.main = main;
+		generateSinglePlayerModules();
+		generateMultiPlayerModules();
 	}
 	
-	public ArrayList<ModuleBase> getModules(){
-		return activeModules;
+	public void generateSinglePlayerModules() {
+		tracerModeSP = new ModuleBase("TracerModeSP", true, false);
+		tracerModeSP.setBehaviour(new StateMachineBehaviour(tracerModeSP, 0, new String[] {"Timed Render", "Permanent Render", "Last x Seconds"}, main.singlePlayerSettings.modeGNS.setter));
+		tracerModeSP.addKeybind(true, 20).addKeybind(true, 42);
+		singlePlayerModules.add(tracerModeSP);
+		
+		xRayTracesSP = new ModuleBase("XRayTracesSP", true, false);
+		xRayTracesSP.setBehaviour(new ToggleBehaviour(xRayTracesSP, false, main.singlePlayerSettings.xRayTraceGNS.setter));
+		xRayTracesSP.addKeybind(true, 45).addKeybind(true, 42);
+		singlePlayerModules.add(xRayTracesSP);
+		
+		menuSP = new ModuleBase("MenuSP", false, true);
+		menuSP.setBehaviour(new ToggleBehaviour(menuSP, false, main.singlePlayerSettings.renderMenuGNS.setter));
+		menuSP.addKeybind(true, 46).addKeybind(true, 42);
+		singlePlayerModules.add(menuSP);
+		
+		renderBoxesSP = new ModuleBase("RenderBoxesSP", true, false);
+		renderBoxesSP.setBehaviour(new ToggleBehaviour(renderBoxesSP, false, main.singlePlayerSettings.renderBoxesGNS.setter));
+		renderBoxesSP.addKeybind(true, 48).addKeybind(true, 42);
+		singlePlayerModules.add(renderBoxesSP);
+		
+		loadLastSecondSP = new ModuleBase("LoadLastSecondSP", false, false);
+		loadLastSecondSP.setBehaviour(new ButtonBehaviour(loadLastSecondSP, false, main.singlePlayerSettings::loadLastSeconds));
+		loadLastSecondSP.addKeybind(true, 19).addKeybind(false, 42);
+		singlePlayerModules.add(loadLastSecondSP);
+		
+		clearHistorySP = new ModuleBase("ClearLastSecondSP", false, false);
+		clearHistorySP.setBehaviour(new ButtonBehaviour(clearHistorySP, false, main.singlePlayerSettings::clearHistory));
+		clearHistorySP.addKeybind(true, 19).addKeybind(true, 42);
+		singlePlayerModules.add(clearHistorySP);
+		
+		displayTickSP = new ModuleAxis("DisplayTickSP", true, false);
+		displayTickSP.setBehaviour(new CounterBehaviour(displayTickSP, 1, main.singlePlayerSettings.renderTickGNS).setMax(this::getMaxDisplayTickSP));
+		displayTickSP.addPositiveKeybind(true, 333).addNegativeKeybind(true, 331);
+		singlePlayerModules.add(displayTickSP);
 	}
 	
-	public void clearModules() {
-		activeModules.clear();
+	public void generateMultiPlayerModules() {
+		xRayTracesMP = new ModuleBase("XRayTracesMP", true, false);
+		xRayTracesMP.setBehaviour(new ToggleBehaviour(xRayTracesMP, false, main.multiPlayerSettings.xRayTraceGNS.setter));
+		xRayTracesMP.addKeybind(true, 45).addKeybind(true, 42);
+		multiPlayerModules.add(xRayTracesMP);
+		
+		menuMP = new ModuleBase("MenuMP", false, true);
+		menuMP.setBehaviour(new ToggleBehaviour(menuMP, false, main.multiPlayerSettings.renderMenuGNS.setter));
+		menuMP.addKeybind(true, 46).addKeybind(true, 42);
+		multiPlayerModules.add(menuMP);
+		
+		renderBoxesMP = new ModuleBase("RenderBoxesMP", true, false);
+		renderBoxesMP.setBehaviour(new ToggleBehaviour(renderBoxesMP, false, main.multiPlayerSettings.renderBoxesGNS.setter));
+		renderBoxesMP.addKeybind(true, 48).addKeybind(true, 42);
+		multiPlayerModules.add(renderBoxesMP);
+		
+		pullDataMP = new ModuleBase("PullDataMP", false, false);
+		pullDataMP.setBehaviour(new ButtonBehaviour(pullDataMP, false, main.multiPlayerSettings::pullData));
+		pullDataMP.addKeybind(true, 19).addKeybind(false, 42);
+		multiPlayerModules.add(pullDataMP);
+		
+		clearDataMP = new ModuleBase("ClearDataMP", false, false);
+		clearDataMP.setBehaviour(new ButtonBehaviour(clearDataMP, false, main.multiPlayerSettings::clearData));
+		clearDataMP.addKeybind(true, 19).addKeybind(true, 42);
+		multiPlayerModules.add(clearDataMP);
+		
+		displayTickMP = new ModuleAxis("DisplayTickMP", true, false);
+		displayTickMP.setBehaviour(new CounterBehaviour(displayTickMP, 1, main.multiPlayerSettings.renderTickGNS).setMax(this::getMaxDisplayTickMP));
+		displayTickMP.addPositiveKeybind(true, 333).addNegativeKeybind(true, 331);
+		multiPlayerModules.add(displayTickMP);
+	}
+	
+	public ArrayList<IModule> getModules(){
+		if(state == State.SINGLEPLAYER) {
+			return singlePlayerModules;
+		}else if(state == State.MULTIPLAYER) {
+			return multiPlayerModules;
+		}
+		return null;
 	}
 	
 	public int getMaxDisplayTickSP() {
@@ -58,18 +135,9 @@ public class ModuleManager {
 		return (int)((max + 1) * 20);
 	}
 	
-	public void registerSinglePlayerModules() {
-		if(tracerModeSP == null) {
-			tracerModeSP = new ModuleStateMachine("Tracer Mode", true, false, 3, 0, main.singlePlayerSettings.modeGNS.setter, main.keybindManagerSP.tracerBind1, main.keybindManagerSP.tracerBind2,"Timed Render", "Permanent Render", "Last 5 Seconds");
-		}
-		if(xRayTracesSP == null) {
-			xRayTracesSP = new ModuleToggle("XRay Traces", true, false, false, main.singlePlayerSettings.xRayTraceGNS.setter, main.keybindManagerSP.xRayTraces1, main.keybindManagerSP.xRayTraces2);
-		}
-		if(menuSP == null) {
-			menuSP = new ModuleToggle("Menu", false, true, false, main.singlePlayerSettings.renderMenuGNS.setter, main.keybindManagerSP.menu1, main.keybindManagerSP.menu2);
-		}
-		if(renderBoxesSP == null) {
-			renderBoxesSP = new ModuleToggle("Render Boxes", true, false, false, main.singlePlayerSettings.renderBoxesGNS.setter, main.keybindManagerSP.rendBox1, main.keybindManagerSP.rendBox2);
+	/*synchronized public void registerSinglePlayerModules() {
+		if(activeModules.size() != 0) {
+			return;
 		}
 		if(lastSecondSP == null) {
 			lastSecondSP = new ModuleOnOff("Last Second", false, false, false, main.singlePlayerSettings::lastSeconds, main.keybindManagerSP.lastSecond1, main.keybindManagerSP.lastSecond2);
@@ -83,7 +151,7 @@ public class ModuleManager {
 		activeModules.add(renderBoxesSP);
 		activeModules.add(lastSecondSP);
 		activeModules.add(displayTickSP);
-	}
+	}*/
 	
 	public int getMaxDisplayTickMP() {
 		float max = 0;
@@ -96,7 +164,10 @@ public class ModuleManager {
 		return (int)((max + 1) * 20);
 	}
 	
-	public void registerMultiplayerModules() {
+	/*synchronized public void registerMultiplayerModules() {
+		if(activeModules.size() != 0) {
+			return;
+		}
 		if(xRayTracesMP == null) {
 			xRayTracesMP = new ModuleToggle("XRay Traces", true, false, false, main.multiPlayerSettings.xRayTraceGNS.setter, main.keybindManagerMP.xRayTraces1, main.keybindManagerMP.xRayTraces2);
 		}
@@ -117,20 +188,20 @@ public class ModuleManager {
 		activeModules.add(renderBoxesMP);
 		activeModules.add(pullDataMP);
 		activeModules.add(displayTickMP);
-	}
+	}*/
 	
 	public void keyPressed(int key, boolean screenActive) {
-		for(ModuleBase module : activeModules) {
-			if(screenActive && !module.isGlobal) {
+		for(IModule module : getModules()) {
+			if(screenActive && !module.getIsGlobal()) {
 				continue;
 			}
-			module.keyPressed(key);
+			module.onKeyEvent(key);
 		}
 	}
 	
 	public void keyReleased(int key) {
-		for(ModuleBase module : activeModules) {
-			module.keyReleased(key);
+		for(IModule module : getModules()) {
+			module.onKeyEvent(key);
 		}
 	}
 }

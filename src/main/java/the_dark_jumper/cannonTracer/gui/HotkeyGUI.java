@@ -2,7 +2,10 @@ package the_dark_jumper.cannontracer.gui;
 
 import java.util.ArrayList;
 
+import com.mojang.blaze3d.platform.GlStateManager;
+
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.client.event.InputEvent;
@@ -113,7 +116,7 @@ public class HotkeyGUI extends Screen implements IJumperGUI{
 	public void generateHotkeys(ScrollableTable table, ArrayList<Hotkey> hotkeys2) {
 		for(int i = 0; i < hotkeys2.size(); i++) {
 			Hotkey hotkey = hotkeys2.get(i);
-			HotkeyTableEntry hotkeyEntry = new HotkeyTableEntry(this, hotkey, table, i).setKeybinds(hotkey.keybinds);
+			HotkeyTableEntry hotkeyEntry = new HotkeyTableEntry(this, hotkey, table, i);
 			hotkeys.add(hotkeyEntry);
 			table.addRow(hotkeyEntry.generateRow());
 		}
@@ -125,7 +128,7 @@ public class HotkeyGUI extends Screen implements IJumperGUI{
 	public void render(int mouseX, int mouseY, float partialTicks) {
 		int scaledScreenWidth = minecraft.mainWindow.getScaledWidth();
 		int scaledScreenHeight = minecraft.mainWindow.getScaledHeight();
-		int guiScale = minecraft.gameSettings.guiScale;
+		int guiScale = minecraft.gameSettings.guiScale;		
 		if(guiScale == 0) {
 			if(!detectedAutoGUI) {
 				detectedAutoGUI = true;
@@ -137,6 +140,7 @@ public class HotkeyGUI extends Screen implements IJumperGUI{
 			detectedAutoGUI = false;
 			Minecraft.getInstance().player.sendMessage(new TranslationTextComponent("thank you for your cooperation."));
 		}
+		
 		for(IRenderableFrame renderable : guiComponents) {
 			if(renderable instanceof IClickableFrame) {
 				((IClickableFrame)renderable).mouseOver(mouseX, mouseY, scaledScreenWidth, scaledScreenHeight, this.leftDown, this.queueLeftUpdate);
@@ -146,6 +150,7 @@ public class HotkeyGUI extends Screen implements IJumperGUI{
 			}
 			renderable.render(scaledScreenWidth, scaledScreenHeight, guiScale);
 		}
+		
 		queueLeftUpdate = false;
 	}
 	
@@ -175,6 +180,22 @@ public class HotkeyGUI extends Screen implements IJumperGUI{
 			this.leftDown = leftDown;
 			queueLeftUpdate = true;
 		}
+	}
+	
+	@Override
+	public void drawCenteredString(FontRenderer fontRenderer, String text, int xPos, int height, int color) {
+		double configFontHeight = guiManager.fontHeightGNS.get();
+		if(configFontHeight == 0) {
+			return;
+		}
+		height -= (fontRenderer.FONT_HEIGHT * configFontHeight) / 2;
+		xPos /= configFontHeight;
+		height /= configFontHeight;
+		
+		GlStateManager.pushMatrix();
+		GlStateManager.scaled(configFontHeight, configFontHeight, configFontHeight);
+		super.drawCenteredString(fontRenderer, text, xPos, height, color);
+		GlStateManager.popMatrix();
 	}
 	
 	@Override

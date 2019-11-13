@@ -52,7 +52,7 @@ public class DoubleSegmentFrame extends BasicTextFrame implements IClickableFram
 	@Override
 	public void drawTexts(int x1, int y1, int x2, int y2) {
 		int valueEdge = getEstimateValueBorder(x1, x2);
-		int height = (y2 + y1 - minecraft.fontRenderer.FONT_HEIGHT) / 2;
+		int height = (y2 + y1) / 2;
 		parent.drawCenteredString(minecraft.fontRenderer, text, (x1 + valueEdge) / 2, height, 0xfff1f1f1);
 		parent.drawCenteredString(minecraft.fontRenderer, value, (x2 + valueEdge) / 2, height, valueColor);
 	}

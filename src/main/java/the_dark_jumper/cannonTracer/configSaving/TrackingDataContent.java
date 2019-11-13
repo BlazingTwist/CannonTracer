@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import the_dark_jumper.cannontracer.util.TrackingData;
 
-public class TrackingDataContent implements Header.Content{
+public class TrackingDataContent{
 	public String entityID;
 	public TrackingData trackingData;
 	public HashMap<String, TrackingData> sourceMap;

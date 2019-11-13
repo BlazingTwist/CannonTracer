@@ -8,18 +8,24 @@ import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
+import java.util.prefs.Preferences;
 
 import the_dark_jumper.cannontracer.Main;
 import the_dark_jumper.cannontracer.gui.GuiManager;
 import the_dark_jumper.cannontracer.gui.IngameGUI;
 import the_dark_jumper.cannontracer.hotkey.Hotkey;
 import the_dark_jumper.cannontracer.hotkey.HotkeyManager;
-import the_dark_jumper.cannontracer.util.KeybindAccessors;
+import the_dark_jumper.cannontracer.modules.moduleelements.IModule;
+import the_dark_jumper.cannontracer.modules.moduleelements.ModuleAxis;
+import the_dark_jumper.cannontracer.modules.moduleelements.ModuleBase;
+import the_dark_jumper.cannontracer.util.GetterAndSetter;
 import the_dark_jumper.cannontracer.util.TrackingData;
 
 public class DataManager {
 	public final Main main;
+	
+	public GetterAndSetter<String> configPathGNS = new GetterAndSetter<String>("");
+	public GetterAndSetter<String> updatePathGNS = new GetterAndSetter<String>(""); 
 	
 	public DataManager(Main main) {
 		this.main = main;
@@ -27,9 +33,18 @@ public class DataManager {
 	
 	//C:\Users\Admin\Documents\The_Dark_Jumper_Cannon_Tracer
 	public void Save() {
+		if(configPathGNS.get().equals("")) {
+			return;
+		}
+		
+		Preferences prefs = Preferences.userNodeForPackage(DataManager.class);
+		prefs.put("TracerConfigPath", configPathGNS.get());
+		prefs.put("TracerUpdatePath", updatePathGNS.get());
+		
 		try {		
-			FileWriter out = new FileWriter("C:\\Users\\" + System.getProperty("user.name") +
-					"\\Documents\\The_Dark_Jumper_Cannon_Tracer\\tracer.config");
+			/*FileWriter out = new FileWriter("C:\\Users\\" + System.getProperty("user.name") +
+					"\\Documents\\The_Dark_Jumper_Cannon_Tracer\\tracer.config");*/
+			FileWriter out = new FileWriter(configPathGNS.get());
 			BufferedWriter bwout = new BufferedWriter(out);
 			writeSinglePlayerConfig(bwout);			
 			writeMultiPlayerConfig(bwout);
@@ -43,11 +58,11 @@ public class DataManager {
 	}
 	
 	public void writeSinglePlayerConfig(BufferedWriter bwout) {
-		writeServerSpecificConfig(bwout, "SinglePlayer", main.entityTracker.observedEntityIDSP, main.keybindManagerSP.variables);
+		writeServerSpecificConfig(bwout, "SinglePlayer", main.entityTracker.observedEntityIDSP, main.moduleManager.singlePlayerModules);
 	}
 	
 	public void writeMultiPlayerConfig(BufferedWriter bwout) {
-		writeServerSpecificConfig(bwout, "MultiPlayer", main.entityTracker.observedEntityIDMP, main.keybindManagerMP.variables);
+		writeServerSpecificConfig(bwout, "MultiPlayer", main.entityTracker.observedEntityIDMP, main.moduleManager.multiPlayerModules);
 	}
 	
 	public void writeHotkeys(BufferedWriter bwout) {
@@ -56,7 +71,7 @@ public class DataManager {
 		//command | trigger , keycode | trigger , keycode ...
 		header.init("Hotkey Entry", "", 2);
 		for(Hotkey hotkey : Main.getInstance().hotkeyManager.getHotkeys()) {
-			header.content = new HotkeyContent().setCommand(hotkey.command).setKeybinds(hotkey.keybinds).buildContent();
+			header.content = new KeybindContent().setCommand(hotkey.commandGNS.get()).setKeybinds(hotkey.keybinds).buildContent();
 			header.write(bwout);
 		}
 	}
@@ -71,12 +86,12 @@ public class DataManager {
 		header.write(bwout);
 		header.content = new DataTypes.ConfigDouble("yOffset", ingameGUI.yOffsetGNS.get()).buildString();
 		header.write(bwout);
-		header.content = new DataTypes.ConfigInteger("fontHeight", guiManager.fontHeightGNS.get()).buildString();
+		header.content = new DataTypes.ConfigDouble("fontHeight", guiManager.fontHeightGNS.get()).buildString();
 		header.write(bwout);
 	}
 	
 	public void writeServerSpecificConfig(BufferedWriter bwout, String headerName,
-			HashMap<String, TrackingData> observerList, LinkedHashMap<String, KeybindAccessors> keybindList) {
+			HashMap<String, TrackingData> observerList, ArrayList<IModule> keybindList) {
 		Header header = new Header(headerName, "", 1);
 		header.write(bwout);
 		//output observed entities
@@ -90,22 +105,38 @@ public class DataManager {
 		}
 		//output singleplayer keybinds
 		header.init("Keybind", "", 2);
-		for(Iterator<String> it = keybindList.keySet().iterator(); it.hasNext();) {
+		for(IModule module : keybindList) {
+			if(module instanceof ModuleBase) {
+				ModuleBase moduleBase = (ModuleBase)module;
+				header.content = new KeybindContent().setCommand(moduleBase.name).setKeybinds(moduleBase.keybinds).buildContent();
+				header.write(bwout);
+			}else if(module instanceof ModuleAxis) {
+				ModuleAxis moduleAxis = (ModuleAxis)module;
+				header.content = new KeybindContent().setCommand(moduleAxis.name + "+").setKeybinds(moduleAxis.positiveKeybinds).buildContent();
+				header.write(bwout);
+				header.content = new KeybindContent().setCommand(moduleAxis.name + "-").setKeybinds(moduleAxis.negativeKeybinds).buildContent();
+				header.write(bwout);
+			}
+		}
+		/*for(Iterator<String> it = keybindList.keySet().iterator(); it.hasNext();) {
 			String key = it.next();
 			header.content = new ModuleKeybindContent(key, keybindList).buildContent();
 			header.write(bwout);
-		}
+		}*/
 	}
 	
 	public void Load() {
+		Preferences prefs = Preferences.userNodeForPackage(DataManager.class);
+		configPathGNS.set(prefs.get("TracerConfigPath", ""));
+		updatePathGNS.set(prefs.get("TracerUpdatePath", ""));
 		try{
-			BufferedReader br=new BufferedReader(new FileReader(new File("C:\\Users\\"+System.getProperty("user.name")+"\\Documents\\The_Dark_Jumper_Cannon_Tracer\\tracer.config")));
+			BufferedReader br = new BufferedReader(new FileReader(new File(configPathGNS.get())));
 			ArrayList<String> lines = new ArrayList<>();
 			for(String line; (line = br.readLine())!=null;) {
 				lines.add(line);
 			}
-			loadServerSpecificConfig(lines, "SinglePlayer", main.entityTracker.observedEntityIDSP, main.keybindManagerSP.variables);
-			loadServerSpecificConfig(lines, "MultiPlayer", main.entityTracker.observedEntityIDMP, main.keybindManagerMP.variables);
+			loadServerSpecificConfig(lines, "SinglePlayer", main.entityTracker.observedEntityIDSP, main.moduleManager.singlePlayerModules);
+			loadServerSpecificConfig(lines, "MultiPlayer", main.entityTracker.observedEntityIDMP, main.moduleManager.multiPlayerModules);
 			loadHotkeys(lines);
 			br.close();
 		}catch(Exception e) {
@@ -114,10 +145,10 @@ public class DataManager {
 	}
 	
 	public void loadServerSpecificConfig(ArrayList<String> lines, String headerName,
-			HashMap<String, TrackingData> observerList, LinkedHashMap<String, KeybindAccessors> keybindList) {
+			HashMap<String, TrackingData> observerList, ArrayList<IModule> keybindList) {
 		Header header = new Header(null, null, 0);
 		TrackingDataContent trackingDataContent = new TrackingDataContent(observerList);
-		ModuleKeybindContent mkContent = new ModuleKeybindContent(keybindList);
+		KeybindContent keybindContent = new KeybindContent();
 		boolean foundSection = false;
 		for(Iterator<String> it = lines.iterator(); it.hasNext();) {
 			String line = it.next();
@@ -140,8 +171,10 @@ public class DataManager {
 						//couldn't read tracking data... okay then, guess we're ignoring this one?
 					}
 				}else if(header.name.equals("Keybind")) {
-					if(!mkContent.readContent(header.content)) {
+					if(!keybindContent.readContent(header.content)) {
 						//couldn't read keybind data... okay then, guess we're ignoring this one?
+					}else {
+						updateModule(keybindList, keybindContent);
 					}
 				}else {
 					//unknown header, next
@@ -151,10 +184,39 @@ public class DataManager {
 		}
 	}
 	
+	public void updateModule(ArrayList<IModule> modules, KeybindContent keybindContent) {
+		for(IModule module : modules) {
+			String command = keybindContent.command;
+			char lastChar = command.charAt(command.length() - 1);
+			if(lastChar == '+') {
+				if(!(module.getName() + '+').equals(keybindContent.command)) {
+					continue;
+				}
+				if(module instanceof ModuleAxis) {
+					((ModuleAxis)module).setPositiveKeybinds(keybindContent.keybinds);
+				}
+			}else if(lastChar == '-') {
+				if(!(module.getName() + '-').equals(keybindContent.command)) {
+					continue;
+				}
+				if(module instanceof ModuleAxis) {
+					((ModuleAxis)module).setNegativeKeybinds(keybindContent.keybinds);
+				}
+			}else {
+				if(!module.getName().equals(keybindContent.command)) {
+					continue;
+				}
+				if(module instanceof ModuleBase) {
+					((ModuleBase)module).setKeybinds(keybindContent.keybinds);
+				}
+			}
+		}
+	}
+	
 	public void loadHotkeys(ArrayList<String> lines) {
 		HotkeyManager hotkeyManager = Main.getInstance().hotkeyManager;
 		Header header = new Header(null, null, 0);
-		HotkeyContent hotkeyContent = new HotkeyContent();
+		KeybindContent hotkeyContent = new KeybindContent();
 		boolean foundSection = false;
 		for(Iterator<String> it = lines.iterator(); it.hasNext(); ) {
 			String line = it.next();
@@ -177,7 +239,7 @@ public class DataManager {
 						//couldn't read hotkey... okay then, guess we're ignoring this one?
 					}else {
 						hotkeyManager.addHotkey(new Hotkey(hotkeyContent.command, hotkeyContent.keybinds));
-						hotkeyContent = new HotkeyContent();
+						hotkeyContent = new KeybindContent();
 					}
 				}
 			}
@@ -215,7 +277,7 @@ public class DataManager {
 						}else if(configString.name.equals("yOffset")) {
 							ingameGUI.yOffsetGNS.set(Double.parseDouble(configString.value));
 						}else if(configString.name.equals("fontHeight")) {
-							guiManager.fontHeightGNS.set(Integer.parseInt(configString.value));
+							guiManager.fontHeightGNS.set(Double.parseDouble(configString.value));
 						}
 					}
 				}

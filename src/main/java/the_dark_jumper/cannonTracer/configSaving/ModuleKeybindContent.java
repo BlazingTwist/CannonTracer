@@ -1,27 +1,29 @@
 package the_dark_jumper.cannontracer.configsaving;
 
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
 
-import the_dark_jumper.cannontracer.util.KeybindAccessors;
+import the_dark_jumper.cannontracer.modules.moduleelements.ModuleBase;
 
-public class ModuleKeybindContent implements Header.Content{
+@Deprecated
+public class ModuleKeybindContent{
 	public String keybindName;
-	public LinkedHashMap<String, KeybindAccessors> keybindSource;
+	public ArrayList<ModuleBase> keybindSource;
 	
-	public ModuleKeybindContent(LinkedHashMap<String, KeybindAccessors> keybindSource) {
+	public ModuleKeybindContent(ArrayList<ModuleBase> keybindSource) {
 		init(null, keybindSource);
 	}
 	
-	public ModuleKeybindContent(String bind1, LinkedHashMap<String, KeybindAccessors> keybindSource) {
+	public ModuleKeybindContent(String bind1, ArrayList<ModuleBase> keybindSource) {
 		init(bind1, keybindSource);
 	}
 	
-	public void init(String bind, LinkedHashMap<String, KeybindAccessors> keybindSource) {
+	public void init(String bind, ArrayList<ModuleBase> keybindSource) {
 		this.keybindName = bind;
 		this.keybindSource = keybindSource;
 	}
 	
-	public String buildContent() {
+	/*public String buildContent() {
+		//target: 
 		String out = new DataTypes.ConfigString(keybindName,
 				keybindSource.get(keybindName).accessors[0].get() +
 				" , " +
@@ -40,5 +42,5 @@ public class ModuleKeybindContent implements Header.Content{
 		keybindSource.get(keybindName).accessors[0].set(Integer.parseInt(keys[0]));
 		keybindSource.get(keybindName).accessors[1].set(Integer.parseInt(keys[1]));
 		return true;
-	}
+	}*/
 }

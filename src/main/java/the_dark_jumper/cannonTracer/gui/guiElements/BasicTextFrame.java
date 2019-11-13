@@ -41,7 +41,7 @@ public class BasicTextFrame implements IRenderableFrame{
 	}
 	
 	public void drawTexts(int x1, int y1, int x2, int y2) {
-		int height = (y2 + y1 - minecraft.fontRenderer.FONT_HEIGHT) / 2;
+		int height = (y2 + y1) / 2;
 		parent.drawCenteredString(minecraft.fontRenderer, text, (x2 + x1) / 2, height, 0xfff1f1f1);
 	}
 }

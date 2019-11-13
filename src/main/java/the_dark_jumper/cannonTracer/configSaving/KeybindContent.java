@@ -2,18 +2,18 @@ package the_dark_jumper.cannontracer.configsaving;
 
 import java.util.LinkedList;
 
-import the_dark_jumper.cannontracer.hotkey.KeybindData;
+import the_dark_jumper.cannontracer.util.KeybindData;
 
-public class HotkeyContent implements Header.Content{
+public class KeybindContent{
 	public String command;
 	public LinkedList<KeybindData> keybinds;
 	
-	public HotkeyContent setCommand(String command) {
+	public KeybindContent setCommand(String command) {
 		this.command = command;
 		return this;
 	}
 	
-	public HotkeyContent setKeybinds(LinkedList<KeybindData> keybinds) {
+	public KeybindContent setKeybinds(LinkedList<KeybindData> keybinds) {
 		this.keybinds = keybinds;
 		return this;
 	}
@@ -21,7 +21,7 @@ public class HotkeyContent implements Header.Content{
 	public String buildContent() {
 		String out = new DataTypes.ConfigString("command", command).buildString();
 		for(KeybindData keybind : keybinds) {
-			out += " | " + new DataTypes.ConfigString("keybind", keybind.triggerState + " , " + keybind.keycode).buildString();
+			out += " | " + new DataTypes.ConfigString("keybind", keybind.triggerGNS.get() + " , " + keybind.keycodeGNS.get()).buildString();
 		}
 		return out;
 	}
@@ -39,7 +39,7 @@ public class HotkeyContent implements Header.Content{
 				command = configString.value;
 			}else if(configString.name.equals("keybind")) {
 				String keys[] = configString.value.split(" , ");
-				keybinds.add(new KeybindData(Integer.parseInt(keys[1]), Boolean.parseBoolean(keys[0])));
+				keybinds.add(new KeybindData(Boolean.parseBoolean(keys[0]), Integer.parseInt(keys[1])));
 			}
 		}
 		if(command == null) {

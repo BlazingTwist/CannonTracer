@@ -9,30 +9,20 @@ public class SinglePlayerSettings {
 	public final Main main;
 	
 	private int mode = 0;
-	public GetterAndSetter<Integer> modeGNS;
+	public GetterAndSetter<Integer> modeGNS = new GetterAndSetter<Integer>(this::getMode, this::setMode);
 	private int renderTick = 0;
-	public GetterAndSetter<Integer> renderTickGNS;
+	public GetterAndSetter<Integer> renderTickGNS = new GetterAndSetter<Integer>(this::getRenderTick, this::setRenderTick);
 	private boolean xRayTrace = false;
-	public GetterAndSetter<Boolean> xRayTraceGNS;
+	public GetterAndSetter<Boolean> xRayTraceGNS = new GetterAndSetter<Boolean>(this::getXRayTrace, this::setXRayTrace);
 	private boolean renderBoxes = false;
-	public GetterAndSetter<Boolean> renderBoxesGNS;
+	public GetterAndSetter<Boolean> renderBoxesGNS = new GetterAndSetter<Boolean>(this::getRenderBoxes, this::setRenderBoxes);
 	private boolean renderMenu = false;
-	public GetterAndSetter<Boolean> renderMenuGNS;
+	public GetterAndSetter<Boolean> renderMenuGNS = new GetterAndSetter<Boolean>(this::getRenderMenu, this::setRenderMenu);
 	private boolean bLog = false;
-	public GetterAndSetter<Boolean> bLogGNS;
+	public GetterAndSetter<Boolean> bLogGNS = new GetterAndSetter<Boolean>(this::getBLog, this::setBLog);
 	
 	public SinglePlayerSettings(Main main) {
 		this.main = main;
-		setupAccessors();
-	}
-	
-	private void setupAccessors() {
-		modeGNS = new GetterAndSetter<Integer>(this::getMode, this::setMode);
-		renderTickGNS = new GetterAndSetter<Integer>(this::getRenderTick, this::setRenderTick);
-		xRayTraceGNS = new GetterAndSetter<Boolean>(this::getXRayTrace, this::setXRayTrace);
-		renderBoxesGNS = new GetterAndSetter<Boolean>(this::getRenderBoxes, this::setRenderBoxes);
-		renderMenuGNS = new GetterAndSetter<Boolean>(this::getRenderMenu, this::setRenderMenu);
-		bLogGNS = new GetterAndSetter<Boolean>(this::getBLog, this::setBLog);
 	}
 	
 	private int getMode() {
@@ -88,22 +78,28 @@ public class SinglePlayerSettings {
 		this.bLog = b;
 	}
 	
-	public void lastSeconds(boolean b) {
-		if(b) {
-			if(mode != 2) {
-				return;
-			}
-			main.entityTracker.tracingHistory.clear();
-			for(SingleTickMoveData moveData : main.entityTracker.lastSecond) {
-				SingleTickMoveData copiedMoveData = moveData.copy();
-				copiedMoveData.tickOffset = main.entityTracker.currentTick - main.moduleManager.getMaxDisplayTickSP();
-				main.entityTracker.tracingHistory.add(copiedMoveData);
-			}
-		}else {
-			if(mode == 0) {
-				return;
-			}
-			main.entityTracker.tracingHistory.clear();
+	public void loadLastSeconds(boolean b) {
+		if(!b) {
+			return;
 		}
+		if(mode != 2) {
+			return;
+		}
+		main.entityTracker.tracingHistory.clear();
+		for(SingleTickMoveData moveData : main.entityTracker.lastSecond) {
+			SingleTickMoveData copiedMoveData = moveData.copy();
+			copiedMoveData.tickOffset = main.entityTracker.currentTick - main.moduleManager.getMaxDisplayTickSP();
+			main.entityTracker.tracingHistory.add(copiedMoveData);
+		}
+	}
+	
+	public void clearHistory(boolean b) {
+		if(!b) {
+			return;
+		}
+		if(mode != 1 && mode != 2) {
+			return;
+		}
+		main.entityTracker.tracingHistory.clear();
 	}
 }

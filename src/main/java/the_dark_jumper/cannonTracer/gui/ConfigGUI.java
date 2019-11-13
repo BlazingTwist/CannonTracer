@@ -2,9 +2,11 @@ package the_dark_jumper.cannontracer.gui;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+
+import com.mojang.blaze3d.platform.GlStateManager;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.client.event.InputEvent;
@@ -12,7 +14,6 @@ import the_dark_jumper.cannontracer.Main;
 import the_dark_jumper.cannontracer.Update;
 import the_dark_jumper.cannontracer.gui.guielements.BasicTextFrame;
 import the_dark_jumper.cannontracer.gui.guielements.ButtonFrame;
-import the_dark_jumper.cannontracer.gui.guielements.KeybindFrame;
 import the_dark_jumper.cannontracer.gui.guielements.ToggleValueFrame;
 import the_dark_jumper.cannontracer.gui.guielements.ValueFrame;
 import the_dark_jumper.cannontracer.gui.guielements.interfaces.IClickableFrame;
@@ -22,7 +23,6 @@ import the_dark_jumper.cannontracer.gui.guielements.interfaces.ITickableFrame;
 import the_dark_jumper.cannontracer.gui.utils.FrameColors;
 import the_dark_jumper.cannontracer.gui.utils.FrameConfig;
 import the_dark_jumper.cannontracer.modules.ModuleManager.State;
-import the_dark_jumper.cannontracer.util.KeybindAccessors;
 import the_dark_jumper.cannontracer.util.TrackingData;
 
 public class ConfigGUI extends Screen implements IJumperGUI{	
@@ -65,17 +65,17 @@ public class ConfigGUI extends Screen implements IJumperGUI{
 		guiComponents.add(new ToggleValueFrame(this, config.duplicate(), colors, "logIDs", guiManager.main.singlePlayerSettings.bLogGNS));
 		
 		//keybinds
-		config.init(6, 30, 49, 34, 8);
+		config.init(6, 35, 49, 39, 8);
 		guiComponents.add(new BasicTextFrame(this, "Keybinds", config.duplicate(), colors));
-		config.init(50, 30, 94, 34, 8);
+		config.init(50, 35, 94, 39, 8);
 		guiComponents.add(new ButtonFrame(this, "open Hotkey Menu", config.duplicate(), colors, this::openHotkeyScreen));
-		generateKeybindScreenComponents(guiManager.main.keybindManagerSP.variables, 0, config, colors, 6, 35, 94, 39, 8);
-		generateKeybindScreenComponents(guiManager.main.keybindManagerSP.variables, 1, config, colors, 6, 40, 94, 44, 8);
+		//generateKeybindScreenComponents(guiManager.main.keybindManagerSP.variables, 0, config, colors, 6, 40, 94, 44, 8);
+		//generateKeybindScreenComponents(guiManager.main.keybindManagerSP.variables, 1, config, colors, 6, 45, 94, 49, 8);
 		
 		//tracing entries
-		config.init(6, 50, 94, 54, 8);
+		config.init(6, 55, 94, 59, 8);
 		guiComponents.add(new BasicTextFrame(this, "Tracked Entities", config.duplicate(), colors));
-		generateTrackingScreenComponents(guiManager.main.entityTracker.observedEntityIDSP, config, colors, 6, 55, 94, 5, 8);
+		generateTrackingScreenComponents(guiManager.main.entityTracker.observedEntityIDSP, config, colors, 6, 60, 94, 5, 8);
 	}
 	
 	public void generateMultiplayerScreenComponents() {
@@ -95,17 +95,17 @@ public class ConfigGUI extends Screen implements IJumperGUI{
 		guiComponents.add(new ToggleValueFrame(this, config.duplicate(), colors, "logIDs", guiManager.main.multiPlayerSettings.bLogGNS));
 		
 		//keybinds
-		config.init(6, 30, 49, 34, 8);
+		config.init(6, 35, 49, 39, 8);
 		guiComponents.add(new BasicTextFrame(this, "Keybinds", config.duplicate(), colors));
-		config.init(50, 30, 94, 34, 8);
+		config.init(50, 35, 94, 39, 8);
 		guiComponents.add(new ButtonFrame(this, "open Hotkey Menu", config.duplicate(), colors, this::openHotkeyScreen));
-		generateKeybindScreenComponents(guiManager.main.keybindManagerMP.variables, 0, config, colors, 6, 35, 94, 39, 8);
-		generateKeybindScreenComponents(guiManager.main.keybindManagerMP.variables, 1, config, colors, 6, 40, 94, 44, 8);
+		//generateKeybindScreenComponents(guiManager.main.keybindManagerMP.variables, 0, config, colors, 6, 40, 94, 44, 8);
+		//generateKeybindScreenComponents(guiManager.main.keybindManagerMP.variables, 1, config, colors, 6, 45, 94, 49, 8);
 		
 		//tracing entries
-		config.init(6, 50, 94, 54, 8);
+		config.init(6, 55, 94, 59, 8);
 		guiComponents.add(new BasicTextFrame(this, "Tracked Entities", config.duplicate(), colors));
-		generateTrackingScreenComponents(guiManager.main.entityTracker.observedEntityIDMP, config, colors, 6, 55, 94, 5, 8);
+		generateTrackingScreenComponents(guiManager.main.entityTracker.observedEntityIDMP, config, colors, 6, 60, 94, 5, 8);
 	}
 	
 	private void generateCommonScreenComponents(FrameConfig config, FrameColors colors) {
@@ -123,10 +123,14 @@ public class ConfigGUI extends Screen implements IJumperGUI{
 		config.init(45, 20, 54, 24, 8);
 		guiComponents.add(new ValueFrame(this, config.duplicate(), colors, "y-offset", guiManager.ingameGUI.yOffsetGNS, Double.class));
 		config.init(55, 20, 64, 24, 8);
-		guiComponents.add(new ValueFrame(this, config.duplicate(), colors, "fontHeight", guiManager.fontHeightGNS, Integer.class));
+		guiComponents.add(new ValueFrame(this, config.duplicate(), colors, "fontHeight", guiManager.fontHeightGNS, Double.class));
+		config.init(6, 25, 49, 29, 8);
+		guiComponents.add(new ValueFrame(this, config.duplicate(), colors, "cfg_path", Main.getInstance().dataManager.configPathGNS, String.class));
+		config.init(50, 25, 94, 29, 8);
+		guiComponents.add(new ValueFrame(this, config.duplicate(), colors, "update_path", Main.getInstance().dataManager.updatePathGNS, String.class));
 	}
 	
-	public void generateKeybindScreenComponents(LinkedHashMap<String, KeybindAccessors> keybindVariables, int accessorIndex, FrameConfig config, FrameColors colors, int x1, int y1, int x2, int y2, int border) {
+	/*public void generateKeybindScreenComponents(LinkedHashMap<String, KeybindAccessors> keybindVariables, int accessorIndex, FrameConfig config, FrameColors colors, int x1, int y1, int x2, int y2, int border) {
 		int i = 0;
 		float steps = (float)(x2 - x1) / keybindVariables.size();
 		for(String key : keybindVariables.keySet()) {
@@ -135,7 +139,7 @@ public class ConfigGUI extends Screen implements IJumperGUI{
 			guiComponents.add(new KeybindFrame(this, config.duplicate(), colors, key, keybindVariables.get(key).accessors[accessorIndex]));
 			i++;
 		}
-	}
+	}*/
 	
 	public void generateTrackingScreenComponents(HashMap<String, TrackingData> entities, FrameConfig config, FrameColors colors, int x1, int y1, int x2, int height, int border) {
 		int i = 0;
@@ -174,7 +178,7 @@ public class ConfigGUI extends Screen implements IJumperGUI{
 	public void render(int mouseX, int mouseY, float partialTicks) {
 		int scaledScreenWidth = minecraft.mainWindow.getScaledWidth();
 		int scaledScreenHeight = minecraft.mainWindow.getScaledHeight();
-		int guiScale = minecraft.gameSettings.guiScale;
+		int guiScale = minecraft.gameSettings.guiScale;		
 		if(guiScale == 0) {
 			if(!detectedAutoGUI) {
 				detectedAutoGUI = true;
@@ -186,6 +190,7 @@ public class ConfigGUI extends Screen implements IJumperGUI{
 			detectedAutoGUI = false;
 			Minecraft.getInstance().player.sendMessage(new TranslationTextComponent("thank you for your cooperation."));
 		}
+		
 		for(IRenderableFrame renderable : guiComponents) {
 			if(renderable instanceof IClickableFrame) {
 				((IClickableFrame)renderable).mouseOver(mouseX, mouseY, scaledScreenWidth, scaledScreenHeight, this.leftDown, this.queueLeftUpdate);
@@ -195,15 +200,17 @@ public class ConfigGUI extends Screen implements IJumperGUI{
 			}
 			renderable.render(scaledScreenWidth, scaledScreenHeight, guiScale);
 		}
+		
 		queueLeftUpdate = false;
 	}
 	
 	public void keyEvent(InputEvent.KeyInputEvent event) {
+		//TODO
 		if(Main.getInstance().keyPressListener.pressedKeys.contains(1)) {
 			if(Main.getInstance().moduleManager.state == State.MULTIPLAYER) {
-				Main.getInstance().moduleManager.menuMP.toggle();
+				//Main.getInstance().moduleManager.menuMP.toggle();
 			}else if(Main.getInstance().moduleManager.state == State.SINGLEPLAYER) {
-				Main.getInstance().moduleManager.menuSP.toggle();
+				//Main.getInstance().moduleManager.menuSP.toggle();
 			}
 			return;
 		}
@@ -224,6 +231,22 @@ public class ConfigGUI extends Screen implements IJumperGUI{
 			this.leftDown = leftDown;
 			queueLeftUpdate = true;
 		}
+	}
+	
+	@Override
+	public void drawCenteredString(FontRenderer fontRenderer, String text, int xPos, int height, int color) {
+		double configFontHeight = guiManager.fontHeightGNS.get();
+		if(configFontHeight == 0) {
+			return;
+		}
+		height -= (fontRenderer.FONT_HEIGHT * configFontHeight) / 2;
+		xPos /= configFontHeight;
+		height /= configFontHeight;
+		
+		GlStateManager.pushMatrix();
+		GlStateManager.scaled(configFontHeight, configFontHeight, configFontHeight);
+		super.drawCenteredString(fontRenderer, text, xPos, height, color);
+		GlStateManager.popMatrix();
 	}
 	
 	@Override

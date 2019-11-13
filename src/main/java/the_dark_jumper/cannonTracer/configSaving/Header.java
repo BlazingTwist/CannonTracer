@@ -7,11 +7,6 @@ public class Header {
 	public String content;
 	public int level;
 	
-	public interface Content{
-		public String buildContent();
-		public boolean readContent(String content);
-	}
-	
 	public Header(String name, String content, int level) {
 		init(name, content, level);
 	}

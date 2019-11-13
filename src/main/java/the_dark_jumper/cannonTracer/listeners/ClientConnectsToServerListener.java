@@ -52,15 +52,12 @@ public class ClientConnectsToServerListener {
 		main.entityTracker.lastSecond.clear();
 		main.entityTracker.currentTick = 0;
 		if(Minecraft.getInstance().world == null) {
-			main.moduleManager.clearModules();
 			main.moduleManager.state = ModuleManager.State.MENU;
 			return;
 		}
 		if(Minecraft.getInstance().isSingleplayer()) {
-			main.moduleManager.registerSinglePlayerModules();
 			main.moduleManager.state = ModuleManager.State.SINGLEPLAYER;
 		}else {
-			main.moduleManager.registerMultiplayerModules();
 			main.moduleManager.state = ModuleManager.State.MULTIPLAYER;
 		}
 		Update.sendUpdateMessageIfNeeded();
