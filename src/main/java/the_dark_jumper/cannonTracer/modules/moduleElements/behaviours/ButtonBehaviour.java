@@ -1,18 +1,20 @@
-package the_dark_jumper.cannontracer.modules.moduleelements;
+package the_dark_jumper.cannontracer.modules.moduleelements.behaviours;
 
 import java.util.function.Consumer;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
+import the_dark_jumper.cannontracer.modules.moduleelements.IModule;
+import the_dark_jumper.cannontracer.modules.moduleelements.ModuleBasic;
 
 public class ButtonBehaviour implements IModuleBehaviour{
-	private ModuleBase parent;
+	private ModuleBasic parent;
 	@Override public IModule getParent() {return parent;}
 	
 	public boolean isPressed = false;
 	public Consumer<Boolean> onPressedChanged;
 	
-	public ButtonBehaviour(ModuleBase parent, boolean isPressed, Consumer<Boolean> callback) {
+	public ButtonBehaviour(ModuleBasic parent, boolean isPressed, Consumer<Boolean> callback) {
 		this.parent = parent;
 		this.isPressed = isPressed;
 		this.onPressedChanged = callback;

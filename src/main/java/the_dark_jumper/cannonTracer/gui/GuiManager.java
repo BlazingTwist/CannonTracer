@@ -9,7 +9,7 @@ import the_dark_jumper.cannontracer.util.GetterAndSetter;
 
 public class GuiManager {
 	public final Main main;
-	public final IngameGUI ingameGUI;
+	public final OnscreenGUI onscreenGUI;
 	public final ConfigGUI configGUI;
 	public final HotkeyGUI hotkeyGUI;
 	
@@ -17,16 +17,16 @@ public class GuiManager {
 	
 	public GuiManager(Main main) {
 		this.main = main;
-		ingameGUI = new IngameGUI(this);
+		onscreenGUI = new OnscreenGUI(this);
 		configGUI = new ConfigGUI(this);
 		hotkeyGUI = new HotkeyGUI(this);
 	}
 	
 	public void renderGUIs() {
 		if(main.moduleManager.state == ModuleManager.State.SINGLEPLAYER) {
-			ingameGUI.renderScreen();
+			onscreenGUI.renderScreen();
 		}else if(main.moduleManager.state == ModuleManager.State.MULTIPLAYER) {
-			ingameGUI.renderScreen();
+			onscreenGUI.renderScreen();
 		}
 	}
 	

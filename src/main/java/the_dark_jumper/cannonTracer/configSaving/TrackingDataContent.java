@@ -2,7 +2,7 @@ package the_dark_jumper.cannontracer.configsaving;
 
 import java.util.HashMap;
 
-import the_dark_jumper.cannontracer.util.TrackingData;
+import the_dark_jumper.cannontracer.tracking.TrackingData;
 
 public class TrackingDataContent{
 	public String entityID;

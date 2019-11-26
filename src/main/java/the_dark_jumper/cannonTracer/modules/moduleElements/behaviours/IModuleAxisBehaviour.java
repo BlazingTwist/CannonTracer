@@ -1,4 +1,4 @@
-package the_dark_jumper.cannontracer.modules.moduleelements;
+package the_dark_jumper.cannontracer.modules.moduleelements.behaviours;
 
 public interface IModuleAxisBehaviour extends IModuleBehaviour{
 	public void onOtherTriggerChanged(boolean isTriggered);

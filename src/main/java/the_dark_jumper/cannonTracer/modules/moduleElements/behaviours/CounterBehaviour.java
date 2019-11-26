@@ -1,4 +1,4 @@
-package the_dark_jumper.cannontracer.modules.moduleelements;
+package the_dark_jumper.cannontracer.modules.moduleelements.behaviours;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -6,6 +6,8 @@ import java.util.function.Supplier;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
+import the_dark_jumper.cannontracer.modules.moduleelements.IModule;
+import the_dark_jumper.cannontracer.modules.moduleelements.ModuleAxis;
 import the_dark_jumper.cannontracer.util.GetterAndSetter;
 
 public class CounterBehaviour implements IModuleAxisBehaviour{

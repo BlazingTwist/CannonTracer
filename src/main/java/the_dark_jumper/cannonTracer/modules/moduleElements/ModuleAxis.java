@@ -3,6 +3,8 @@ package the_dark_jumper.cannontracer.modules.moduleelements;
 import java.util.LinkedList;
 
 import the_dark_jumper.cannontracer.Main;
+import the_dark_jumper.cannontracer.modules.moduleelements.behaviours.IModuleAxisBehaviour;
+import the_dark_jumper.cannontracer.modules.moduleelements.behaviours.IModuleBehaviour;
 import the_dark_jumper.cannontracer.util.KeybindData;
 
 public class ModuleAxis implements IModule{

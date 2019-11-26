@@ -175,12 +175,31 @@ public class ScrollableTable implements IRenderableFrame, IClickableFrame, IKeyE
 		int tableHeight = config.yEnd - config.y;
 		for(int i = 0; i < formats.length; i++) {
 			FormatData formatData = formats[i];
-			if(!isScaled) {
-				formatData.width = (int)(formatData.width * 100d / tableHeight);
-				formatData.offset = (int)(formatData.offset * 100d / tableHeight);
+			if(formatData != null) {
+				if(!isScaled) {
+					formatData.width = (int)(formatData.width * 100d / tableHeight);
+					formatData.offset = (int)(formatData.offset * 100d / tableHeight);
+				}
 			}
 			rowFormat.add(formatData);
 		}
+	}
+	
+	public void setRowFormat(int index, boolean isScaled, FormatData format) {
+		if(rowFormat == null) {
+			rowFormat = new ArrayList<>();
+		}
+		if(rowFormat.size() <= index) {
+			for(int i = rowFormat.size(); i <= index; i++) {
+				rowFormat.add(null);
+			}
+		}
+		if(!isScaled) {
+			int tableHeight = config.yEnd - config.y;
+			format.width = (int)(format.width * 100d / tableHeight);
+			format.offset = (int)(format.offset * 100d / tableHeight);
+		}
+		rowFormat.set(index, format);
 	}
 	
 	public void clearUniformColFormat() {
@@ -212,12 +231,31 @@ public class ScrollableTable implements IRenderableFrame, IClickableFrame, IKeyE
 		int tableWidth = config.xEnd - config.x;
 		for(int i = 0; i < formats.length; i++) {
 			FormatData formatData = formats[i];
-			if(!isScaled) {
-				formatData.width = (int)(formatData.width * 100d / tableWidth);
-				formatData.offset = (int)(formatData.offset * 100d / tableWidth);
+			if(formatData != null) {
+				if(!isScaled) {
+					formatData.width = (int)(formatData.width * 100d / tableWidth);
+					formatData.offset = (int)(formatData.offset * 100d / tableWidth);
+				}
 			}
 			colFormat.add(formatData);
 		}
+	}
+	
+	public void setColFormat(int index, boolean isScaled, FormatData format) {
+		if(colFormat == null) {
+			colFormat = new ArrayList<>();
+		}
+		if(colFormat.size() <= index) {
+			for(int i = colFormat.size(); i <= index; i++) {
+				colFormat.add(null);
+			}
+		}
+		if(!isScaled) {
+			int tableWidth = config.xEnd - config.x;
+			format.width = (int)(format.width * 100d / tableWidth);
+			format.offset = (int)(format.offset * 100d / tableWidth);
+		}
+		colFormat.set(index, format);
 	}
 	
 	public void addRow(IRenderableFrame... frames) {
@@ -271,10 +309,19 @@ public class ScrollableTable implements IRenderableFrame, IClickableFrame, IKeyE
 		int relY2 = getPercentValue(scaledScreenHeight, config.yEnd);
 		int perceivedScreenWidth = relX2 - relX1;
 		int perceivedScreenHeight = relY2 - relY1;
-		double scrollOffsetX = horizontalScrollbar.scrollbarPos * (1 - horizontalScrollbar.getScrollbarSize());
-		double scrollOffsetY = verticalScrollbar.scrollbarPos * (1 - verticalScrollbar.getScrollbarSize());
-		scrollOffsetX *= (perceivedScreenWidth * horizontalScrollFactor);
-		scrollOffsetY *= (perceivedScreenHeight * verticalScrollFactor);
+		
+		double scrollOffsetX = 0;
+		if(horizontalScrollbar != null) {
+			scrollOffsetX = horizontalScrollbar.scrollbarPos * (1 - horizontalScrollbar.getScrollbarSize());
+			scrollOffsetX *= (perceivedScreenWidth * horizontalScrollFactor);
+		}
+		
+		double scrollOffsetY = 0;
+		if(verticalScrollbar != null) {
+			scrollOffsetY = verticalScrollbar.scrollbarPos * (1 - verticalScrollbar.getScrollbarSize());
+			scrollOffsetY *= (perceivedScreenHeight * verticalScrollFactor);
+		}
+		
 		if(x >= relX1 && x <= relX2 && y >= relY1 && y <= relY2) {
 			//mouse is hovering over table
 			for(int i = 0; i < rows.size(); i++) {
@@ -335,14 +382,31 @@ public class ScrollableTable implements IRenderableFrame, IClickableFrame, IKeyE
 			frame.drawTexts(x1, y1, x2, y2);
 			return;
 		}
-		double scrollViewStartX = horizontalScrollbar.scrollbarPos * (1 - horizontalScrollbar.getScrollbarSize());
+		double scrollViewStartX = perceivedX1;
+		double scrollViewEndX = perceivedX2;
+		double scrollViewStartY = perceivedY1;
+		double scrollViewEndY = perceivedY2;
+		if(horizontalScrollbar != null) {
+			double factor = width * horizontalScrollFactor;
+			double scrollpos = horizontalScrollbar.scrollbarPos * (1 - horizontalScrollbar.getScrollbarSize());
+			scrollViewStartX = perceivedX1 + (factor * scrollpos);
+			scrollViewEndX = perceivedX1 + (factor * (scrollpos + horizontalScrollbar.getScrollbarSize()));
+		}
+		if(verticalScrollbar != null) {
+			double factor = height * verticalScrollFactor;
+			double scrollpos = verticalScrollbar.scrollbarPos * (1 - verticalScrollbar.getScrollbarSize());
+			scrollViewStartY = perceivedY1 + (factor * scrollpos);
+			scrollViewEndY = perceivedY1 + (factor * (scrollpos + verticalScrollbar.getScrollbarSize()));
+		}
+		
+		/*double scrollViewStartX = horizontalScrollbar.scrollbarPos * (1 - horizontalScrollbar.getScrollbarSize());
 		double scrollViewEndX = scrollViewStartX + horizontalScrollbar.getScrollbarSize();
 		double scrollViewStartY = verticalScrollbar.scrollbarPos * (1 - verticalScrollbar.getScrollbarSize());
 		double scrollViewEndY = scrollViewStartY + verticalScrollbar.getScrollbarSize();
 		scrollViewStartX = (scrollViewStartX * width * horizontalScrollFactor) + perceivedX1;
 		scrollViewEndX = (scrollViewEndX * width * horizontalScrollFactor) + perceivedX1;
 		scrollViewStartY = (scrollViewStartY * height * verticalScrollFactor) + perceivedY1;
-		scrollViewEndY = (scrollViewEndY * height * verticalScrollFactor) + perceivedY1;
+		scrollViewEndY = (scrollViewEndY * height * verticalScrollFactor) + perceivedY1;*/
 		if(x1 < scrollViewStartX || x2 > scrollViewEndX || y1 < scrollViewStartY || y2 > scrollViewEndY) {
 			//frame would be outside of table
 			//System.out.println("horizscrollbarpos: "+horizontalScrollbar.scrollbarPos+" | horizscrollbarsize: "+horizontalScrollbar.getScrollbarSize()+" | horizscrollfactor: "+horizontalScrollFactor+" | vertscrollbarpos: "+verticalScrollbar.scrollbarPos+" | vertscrollbarsize: "+verticalScrollbar.getScrollbarSize()+" | vertscrollfactor: "+verticalScrollFactor+" | width: "+width+" | height: "+height);

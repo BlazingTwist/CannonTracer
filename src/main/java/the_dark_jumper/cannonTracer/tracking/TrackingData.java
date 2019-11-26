@@ -1,4 +1,6 @@
-package the_dark_jumper.cannontracer.util;
+package the_dark_jumper.cannontracer.tracking;
+
+import the_dark_jumper.cannontracer.util.GetterAndSetter;
 
 public class TrackingData {
 	private float time;

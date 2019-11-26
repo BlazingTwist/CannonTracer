@@ -1,7 +1,8 @@
-package the_dark_jumper.cannontracer.modules.moduleelements;
+package the_dark_jumper.cannontracer.modules.moduleelements.behaviours;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
+import the_dark_jumper.cannontracer.modules.moduleelements.IModule;
 
 public interface IModuleBehaviour {
 	public IModule getParent();

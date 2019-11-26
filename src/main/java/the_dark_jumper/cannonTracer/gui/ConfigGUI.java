@@ -14,20 +14,29 @@ import the_dark_jumper.cannontracer.Main;
 import the_dark_jumper.cannontracer.Update;
 import the_dark_jumper.cannontracer.gui.guielements.BasicTextFrame;
 import the_dark_jumper.cannontracer.gui.guielements.ButtonFrame;
+import the_dark_jumper.cannontracer.gui.guielements.ScrollableTable;
 import the_dark_jumper.cannontracer.gui.guielements.ToggleValueFrame;
 import the_dark_jumper.cannontracer.gui.guielements.ValueFrame;
 import the_dark_jumper.cannontracer.gui.guielements.interfaces.IClickableFrame;
 import the_dark_jumper.cannontracer.gui.guielements.interfaces.IFocusableFrame;
+import the_dark_jumper.cannontracer.gui.guielements.interfaces.IKeyEventRepeaterFrame;
 import the_dark_jumper.cannontracer.gui.guielements.interfaces.IRenderableFrame;
 import the_dark_jumper.cannontracer.gui.guielements.interfaces.ITickableFrame;
+import the_dark_jumper.cannontracer.gui.utils.FormatData;
 import the_dark_jumper.cannontracer.gui.utils.FrameColors;
 import the_dark_jumper.cannontracer.gui.utils.FrameConfig;
 import the_dark_jumper.cannontracer.modules.ModuleManager.State;
-import the_dark_jumper.cannontracer.util.TrackingData;
+import the_dark_jumper.cannontracer.modules.ModuleTableEntry;
+import the_dark_jumper.cannontracer.modules.moduleelements.IModule;
+import the_dark_jumper.cannontracer.modules.moduleelements.ModuleAxis;
+import the_dark_jumper.cannontracer.modules.moduleelements.ModuleBasic;
+import the_dark_jumper.cannontracer.tracking.TrackingData;
 
 public class ConfigGUI extends Screen implements IJumperGUI{	
 	public final GuiManager guiManager;
 	public ArrayList<IRenderableFrame> guiComponents = new ArrayList<>();
+	private ScrollableTable moduleKeybindTable;
+	private ScrollableTable trackingTable;
 	
 	public ConfigGUI(GuiManager guiManager) {
 		super(null);
@@ -69,13 +78,15 @@ public class ConfigGUI extends Screen implements IJumperGUI{
 		guiComponents.add(new BasicTextFrame(this, "Keybinds", config.duplicate(), colors));
 		config.init(50, 35, 94, 39, 8);
 		guiComponents.add(new ButtonFrame(this, "open Hotkey Menu", config.duplicate(), colors, this::openHotkeyScreen));
-		//generateKeybindScreenComponents(guiManager.main.keybindManagerSP.variables, 0, config, colors, 6, 40, 94, 44, 8);
-		//generateKeybindScreenComponents(guiManager.main.keybindManagerSP.variables, 1, config, colors, 6, 45, 94, 49, 8);
+		config.init(6, 40, 94, 59, 8);
+		generateModuleKeybindTable(config, colors, Main.getInstance().moduleManager.singlePlayerModules);
 		
 		//tracing entries
-		config.init(6, 55, 94, 59, 8);
+		config.init(6, 65, 94, 69, 8);
 		guiComponents.add(new BasicTextFrame(this, "Tracked Entities", config.duplicate(), colors));
-		generateTrackingScreenComponents(guiManager.main.entityTracker.observedEntityIDSP, config, colors, 6, 60, 94, 5, 8);
+		config.init(6, 70, 94, 94, 8);
+		generateTrackingTable(Main.getInstance().entityTracker.observedEntityIDSP, config, colors);
+		//generateTrackingScreenComponents(guiManager.main.entityTracker.observedEntityIDSP, config, colors, 6, 70, 94, 5, 8);
 	}
 	
 	public void generateMultiplayerScreenComponents() {
@@ -99,13 +110,15 @@ public class ConfigGUI extends Screen implements IJumperGUI{
 		guiComponents.add(new BasicTextFrame(this, "Keybinds", config.duplicate(), colors));
 		config.init(50, 35, 94, 39, 8);
 		guiComponents.add(new ButtonFrame(this, "open Hotkey Menu", config.duplicate(), colors, this::openHotkeyScreen));
-		//generateKeybindScreenComponents(guiManager.main.keybindManagerMP.variables, 0, config, colors, 6, 40, 94, 44, 8);
-		//generateKeybindScreenComponents(guiManager.main.keybindManagerMP.variables, 1, config, colors, 6, 45, 94, 49, 8);
+		config.init(6, 40, 94, 59, 8);
+		generateModuleKeybindTable(config, colors, Main.getInstance().moduleManager.multiPlayerModules);
 		
 		//tracing entries
-		config.init(6, 55, 94, 59, 8);
+		config.init(6, 65, 94, 69, 8);
 		guiComponents.add(new BasicTextFrame(this, "Tracked Entities", config.duplicate(), colors));
-		generateTrackingScreenComponents(guiManager.main.entityTracker.observedEntityIDMP, config, colors, 6, 60, 94, 5, 8);
+		config.init(6, 70, 94, 94, 8);
+		generateTrackingTable(Main.getInstance().entityTracker.observedEntityIDMP, config, colors);
+		//generateTrackingScreenComponents(guiManager.main.entityTracker.observedEntityIDMP, config, colors, 6, 70, 94, 5, 8);
 	}
 	
 	private void generateCommonScreenComponents(FrameConfig config, FrameColors colors) {
@@ -119,9 +132,9 @@ public class ConfigGUI extends Screen implements IJumperGUI{
 		config.init(6, 20, 34, 24, 8);
 		guiComponents.add(new BasicTextFrame(this, "GUI Config", config.duplicate(), colors));
 		config.init(35, 20, 44, 24, 8);
-		guiComponents.add(new ValueFrame(this, config.duplicate(), colors, "x-offset", guiManager.ingameGUI.xOffsetGNS, Double.class));
+		guiComponents.add(new ValueFrame(this, config.duplicate(), colors, "x-offset", guiManager.onscreenGUI.xOffsetGNS, Double.class));
 		config.init(45, 20, 54, 24, 8);
-		guiComponents.add(new ValueFrame(this, config.duplicate(), colors, "y-offset", guiManager.ingameGUI.yOffsetGNS, Double.class));
+		guiComponents.add(new ValueFrame(this, config.duplicate(), colors, "y-offset", guiManager.onscreenGUI.yOffsetGNS, Double.class));
 		config.init(55, 20, 64, 24, 8);
 		guiComponents.add(new ValueFrame(this, config.duplicate(), colors, "fontHeight", guiManager.fontHeightGNS, Double.class));
 		config.init(6, 25, 49, 29, 8);
@@ -130,46 +143,69 @@ public class ConfigGUI extends Screen implements IJumperGUI{
 		guiComponents.add(new ValueFrame(this, config.duplicate(), colors, "update_path", Main.getInstance().dataManager.updatePathGNS, String.class));
 	}
 	
-	/*public void generateKeybindScreenComponents(LinkedHashMap<String, KeybindAccessors> keybindVariables, int accessorIndex, FrameConfig config, FrameColors colors, int x1, int y1, int x2, int y2, int border) {
-		int i = 0;
-		float steps = (float)(x2 - x1) / keybindVariables.size();
-		for(String key : keybindVariables.keySet()) {
-			int innerx1 = (int)(x1 + (steps * i));
-			config.init(innerx1, y1, (int)(innerx1 + steps - 1), y2, border);
-			guiComponents.add(new KeybindFrame(this, config.duplicate(), colors, key, keybindVariables.get(key).accessors[accessorIndex]));
-			i++;
-		}
-	}*/
+	private void generateModuleKeybindTable(FrameConfig config, FrameColors colors, ArrayList<IModule> modules) {
+		moduleKeybindTable = new ScrollableTable(this, config.duplicate(), colors);
+		moduleKeybindTable.setUniformColFormat(false, 9, 1);
+		moduleKeybindTable.setColFormat(false,
+				new FormatData(2, 1),
+				new FormatData(9, 2)
+				);
+		moduleKeybindTable.setUniformRowFormat(false, 4, 1);
+		moduleKeybindTable.addRow(
+				null,
+				new BasicTextFrame(this, "KeybindName", null, colors),
+				new BasicTextFrame(this, "triggerState", null, colors),
+				new BasicTextFrame(this, "keybind", null, colors)
+				);
+		generateKeybinds(moduleKeybindTable, modules);
+		moduleKeybindTable.generateScrollbars(true, 10, true, moduleKeybindTable.matchWidthToHeight(10));
+		moduleKeybindTable.updateScrollbarRanges();
+		guiComponents.add(moduleKeybindTable);
+	}
 	
-	public void generateTrackingScreenComponents(HashMap<String, TrackingData> entities, FrameConfig config, FrameColors colors, int x1, int y1, int x2, int height, int border) {
-		int i = 0;
-		float steps = (x2 - x1) / 8f;
-		for(String key : entities.keySet()) {
-			int innery1 = y1 + height * i;
-			config.init(x1, innery1, (int)(x1 + steps - 1), (innery1 + height - 1), border);
-			guiComponents.add(new BasicTextFrame(this, key, config.duplicate(), colors));
-			TrackingData trackingData = entities.get(key);
-			for(int i2 = 1; i2 <= 7; i2++) {
-				int innerx1 = (int)(x1 + (i2 * steps));
-				config.init(innerx1, innery1, (int)(innerx1 + steps - 1), (innery1 + height - 1), border);
-				if(i2 == 1) {
-					guiComponents.add(new ValueFrame(this, config.duplicate(), colors, "time", trackingData.timeGNS, Float.class));
-				}else if(i2 == 2) {
-					guiComponents.add(new ValueFrame(this, config.duplicate(), colors, "thickness", trackingData.thicknessGNS, Float.class));
-				}else if(i2 == 3) {
-					guiComponents.add(new ValueFrame(this, config.duplicate(), colors, "red", trackingData.redGNS, Integer.class));
-				}else if(i2 == 4) {
-					guiComponents.add(new ValueFrame(this, config.duplicate(), colors, "green", trackingData.greenGNS, Integer.class));
-				}else if(i2 == 5) {
-					guiComponents.add(new ValueFrame(this, config.duplicate(), colors, "blue", trackingData.blueGNS, Integer.class));
-				}else if(i2 == 6) {
-					guiComponents.add(new ValueFrame(this, config.duplicate(), colors, "alpha", trackingData.alphaGNS, Integer.class));
-				}else if(i2 == 7) {
-					guiComponents.add(new ToggleValueFrame(this, config.duplicate(), colors, "render", trackingData.renderGNS));
-				}
+	private void generateKeybinds(ScrollableTable table, ArrayList<IModule> modules){
+		int limit = modules.size();
+		for(int i = 0; i < limit; i++) {
+			IModule module = modules.get(i);
+			if(module instanceof ModuleBasic) {
+				table.addRow(new ModuleTableEntry(this, module.getName(), ((ModuleBasic)module).keybinds, table, i).generateRow());
+			}else if(module instanceof ModuleAxis) {
+				table.addRow(new ModuleTableEntry(this, module.getName()+"+", ((ModuleAxis)module).positiveKeybinds, table, i).generateRow());
+				//increment limit because module axis splits into two keybind sets
+				limit++;
+				i++;
+				table.addRow(new ModuleTableEntry(this, module.getName()+"-", ((ModuleAxis)module).negativeKeybinds, table, i).generateRow());
 			}
-			i++;
 		}
+	}
+	
+	private void generateTrackingTable(HashMap<String, TrackingData> entities, FrameConfig config, FrameColors colors) {
+		trackingTable = new ScrollableTable(this, config.duplicate(), colors);
+		trackingTable.setUniformColFormat(true, 11, 1);
+		trackingTable.setColFormat(true,
+				new FormatData(16, 1)
+				);
+		trackingTable.setUniformRowFormat(false, 4, 1);
+		for(String key : entities.keySet()) {
+			generateTrackingRow(trackingTable, key, entities.get(key));
+		}
+		trackingTable.generateScrollbars(false, 0, true, 1);
+		trackingTable.updateScrollbarRanges();
+		guiComponents.add(trackingTable);
+	}
+	
+	private void generateTrackingRow(ScrollableTable table, String entityName, TrackingData trackingData) {
+		System.out.println("adding key: "+entityName);
+		table.addRow(
+				new BasicTextFrame(this, entityName, null, table.colors),
+				new ValueFrame(this, null, table.colors, "time", trackingData.timeGNS, Float.class),
+				new ValueFrame(this, null, table.colors, "thickness", trackingData.thicknessGNS, Float.class),
+				new ValueFrame(this, null, table.colors, "red", trackingData.redGNS, Integer.class),
+				new ValueFrame(this, null, table.colors, "green", trackingData.greenGNS, Integer.class),
+				new ValueFrame(this, null, table.colors, "blue", trackingData.blueGNS, Integer.class),
+				new ValueFrame(this, null, table.colors, "alpha", trackingData.alphaGNS, Integer.class),
+				new ToggleValueFrame(this, null, table.colors, "render", trackingData.renderGNS)
+				);
 	}
 	
 	boolean detectedAutoGUI = false;
@@ -204,29 +240,32 @@ public class ConfigGUI extends Screen implements IJumperGUI{
 		queueLeftUpdate = false;
 	}
 	
-	public void keyEvent(InputEvent.KeyInputEvent event) {
-		//TODO
+	@Override public void keyEvent(InputEvent.KeyInputEvent event) {
 		if(Main.getInstance().keyPressListener.pressedKeys.contains(1)) {
 			if(Main.getInstance().moduleManager.state == State.MULTIPLAYER) {
-				//Main.getInstance().moduleManager.menuMP.toggle();
+				Main.getInstance().moduleManager.menuMP.behaviour.onTriggerChanged(true);
 			}else if(Main.getInstance().moduleManager.state == State.SINGLEPLAYER) {
-				//Main.getInstance().moduleManager.menuSP.toggle();
+				Main.getInstance().moduleManager.menuSP.behaviour.onTriggerChanged(true);
 			}
 			return;
 		}
 		for(IRenderableFrame renderable : guiComponents) {
-			if(renderable instanceof IFocusableFrame && ((IFocusableFrame)renderable).getFocused()) {
-				((IFocusableFrame)renderable).keyEvent(event);
+			if(renderable instanceof IFocusableFrame) {
+				if(((IFocusableFrame)renderable).getFocused()) {
+					((IFocusableFrame)renderable).keyEvent(event);
+				}
+			}else if(renderable instanceof IKeyEventRepeaterFrame) {
+				((IKeyEventRepeaterFrame)renderable).keyEvent(event);
 			}
 		}
 	}
 	
 	public boolean leftDown = false;
 	public boolean queueLeftUpdate = false;
-	public boolean getLeftDown() {
+	@Override public boolean getLeftDown() {
 		return leftDown;
 	}
-	public void mousePressEvent(boolean leftDown) {
+	@Override public void mousePressEvent(boolean leftDown) {
 		if(this.leftDown != leftDown) {
 			this.leftDown = leftDown;
 			queueLeftUpdate = true;

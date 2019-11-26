@@ -2,8 +2,8 @@ package the_dark_jumper.cannontracer.settings;
 
 import net.minecraft.client.Minecraft;
 import the_dark_jumper.cannontracer.Main;
+import the_dark_jumper.cannontracer.tracking.SingleTickMoveData;
 import the_dark_jumper.cannontracer.util.GetterAndSetter;
-import the_dark_jumper.cannontracer.util.SingleTickMoveData;
 
 public class SinglePlayerSettings {
 	public final Main main;

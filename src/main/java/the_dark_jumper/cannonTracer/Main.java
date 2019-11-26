@@ -15,8 +15,9 @@ import the_dark_jumper.cannontracer.listeners.ServerChatListener;
 import the_dark_jumper.cannontracer.modules.ModuleManager;
 import the_dark_jumper.cannontracer.settings.MultiPlayerSettings;
 import the_dark_jumper.cannontracer.settings.SinglePlayerSettings;
+import the_dark_jumper.cannontracer.tracking.EntityTracker;
+import the_dark_jumper.cannontracer.tracking.TrackingData;
 import the_dark_jumper.cannontracer.util.KeyLibrary;
-import the_dark_jumper.cannontracer.util.TrackingData;
 
 @Mod("cannontracer")
 public class Main {
@@ -45,9 +46,8 @@ public class Main {
 	
 	public Main() {
 		instance = this;
-		multiPlayerSettings = new MultiPlayerSettings(this);
-		singlePlayerSettings = new SinglePlayerSettings(this);
-		moduleManager = new ModuleManager(this);
+		keyLibrary = new KeyLibrary();
+		
 		dataManager = new DataManager(this);
 		guiManager = new GuiManager(this);
 		hotkeyManager = new HotkeyManager(this);
@@ -56,7 +56,10 @@ public class Main {
 		keyPressListener = new KeyPressListener(this);
 		renderTickListener = new RenderTickListener(this);
 		serverChatListener = new ServerChatListener(this);
-		keyLibrary = new KeyLibrary();
+		
+		multiPlayerSettings = new MultiPlayerSettings(this);
+		singlePlayerSettings = new SinglePlayerSettings(this);
+		moduleManager = new ModuleManager(this);
 		
 		checkConfig();
 	}

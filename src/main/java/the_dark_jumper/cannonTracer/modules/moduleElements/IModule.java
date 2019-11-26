@@ -1,5 +1,7 @@
 package the_dark_jumper.cannontracer.modules.moduleelements;
 
+import the_dark_jumper.cannontracer.modules.moduleelements.behaviours.IModuleBehaviour;
+
 public interface IModule {
 	public String getName();
 	public boolean getRender();

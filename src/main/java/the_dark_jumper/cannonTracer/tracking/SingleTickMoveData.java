@@ -1,4 +1,4 @@
-package the_dark_jumper.cannontracer.util;
+package the_dark_jumper.cannontracer.tracking;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,8 +6,8 @@ import java.util.HashMap;
 import com.mojang.blaze3d.platform.GlStateManager;
 
 import net.minecraft.client.renderer.BufferBuilder;
-import the_dark_jumper.cannontracer.EntityTracker;
 import the_dark_jumper.cannontracer.modules.ModuleManager;
+import the_dark_jumper.cannontracer.util.SimpleLocation;
 
 public class SingleTickMoveData {
 	public final EntityTracker entityTracker;

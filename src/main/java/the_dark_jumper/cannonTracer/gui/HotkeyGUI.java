@@ -113,7 +113,7 @@ public class HotkeyGUI extends Screen implements IJumperGUI{
 		guiComponents.add(hotkeyTable);
 	}
 	
-	public void generateHotkeys(ScrollableTable table, ArrayList<Hotkey> hotkeys2) {
+	private void generateHotkeys(ScrollableTable table, ArrayList<Hotkey> hotkeys2) {
 		for(int i = 0; i < hotkeys2.size(); i++) {
 			Hotkey hotkey = hotkeys2.get(i);
 			HotkeyTableEntry hotkeyEntry = new HotkeyTableEntry(this, hotkey, table, i);
@@ -154,7 +154,7 @@ public class HotkeyGUI extends Screen implements IJumperGUI{
 		queueLeftUpdate = false;
 	}
 	
-	public void keyEvent(InputEvent.KeyInputEvent event) {
+	@Override public void keyEvent(InputEvent.KeyInputEvent event) {
 		if(Main.getInstance().keyPressListener.pressedKeys.contains(1)) {
 			closeButtonPressed(true);
 			return;
@@ -172,10 +172,10 @@ public class HotkeyGUI extends Screen implements IJumperGUI{
 	
 	public boolean leftDown = false;
 	public boolean queueLeftUpdate = false;
-	public boolean getLeftDown() {
+	@Override public boolean getLeftDown() {
 		return leftDown;
 	}
-	public void mousePressEvent(boolean leftDown) {
+	@Override public void mousePressEvent(boolean leftDown) {
 		if(this.leftDown != leftDown) {
 			this.leftDown = leftDown;
 			queueLeftUpdate = true;

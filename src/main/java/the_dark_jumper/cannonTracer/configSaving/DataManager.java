@@ -12,14 +12,14 @@ import java.util.prefs.Preferences;
 
 import the_dark_jumper.cannontracer.Main;
 import the_dark_jumper.cannontracer.gui.GuiManager;
-import the_dark_jumper.cannontracer.gui.IngameGUI;
+import the_dark_jumper.cannontracer.gui.OnscreenGUI;
 import the_dark_jumper.cannontracer.hotkey.Hotkey;
 import the_dark_jumper.cannontracer.hotkey.HotkeyManager;
 import the_dark_jumper.cannontracer.modules.moduleelements.IModule;
 import the_dark_jumper.cannontracer.modules.moduleelements.ModuleAxis;
-import the_dark_jumper.cannontracer.modules.moduleelements.ModuleBase;
+import the_dark_jumper.cannontracer.modules.moduleelements.ModuleBasic;
+import the_dark_jumper.cannontracer.tracking.TrackingData;
 import the_dark_jumper.cannontracer.util.GetterAndSetter;
-import the_dark_jumper.cannontracer.util.TrackingData;
 
 public class DataManager {
 	public final Main main;
@@ -80,11 +80,11 @@ public class DataManager {
 		Header header = new Header("guiConfig", "", 1);
 		header.write(bwout);
 		header.init("configEntry", "", 2);
-		IngameGUI ingameGUI = Main.getInstance().guiManager.ingameGUI;
+		OnscreenGUI onscreenGUI = Main.getInstance().guiManager.onscreenGUI;
 		GuiManager guiManager = Main.getInstance().guiManager;
-		header.content = new DataTypes.ConfigDouble("xOffset", ingameGUI.xOffsetGNS.get()).buildString();
+		header.content = new DataTypes.ConfigDouble("xOffset", onscreenGUI.xOffsetGNS.get()).buildString();
 		header.write(bwout);
-		header.content = new DataTypes.ConfigDouble("yOffset", ingameGUI.yOffsetGNS.get()).buildString();
+		header.content = new DataTypes.ConfigDouble("yOffset", onscreenGUI.yOffsetGNS.get()).buildString();
 		header.write(bwout);
 		header.content = new DataTypes.ConfigDouble("fontHeight", guiManager.fontHeightGNS.get()).buildString();
 		header.write(bwout);
@@ -106,8 +106,8 @@ public class DataManager {
 		//output singleplayer keybinds
 		header.init("Keybind", "", 2);
 		for(IModule module : keybindList) {
-			if(module instanceof ModuleBase) {
-				ModuleBase moduleBase = (ModuleBase)module;
+			if(module instanceof ModuleBasic) {
+				ModuleBasic moduleBase = (ModuleBasic)module;
 				header.content = new KeybindContent().setCommand(moduleBase.name).setKeybinds(moduleBase.keybinds).buildContent();
 				header.write(bwout);
 			}else if(module instanceof ModuleAxis) {
@@ -118,11 +118,6 @@ public class DataManager {
 				header.write(bwout);
 			}
 		}
-		/*for(Iterator<String> it = keybindList.keySet().iterator(); it.hasNext();) {
-			String key = it.next();
-			header.content = new ModuleKeybindContent(key, keybindList).buildContent();
-			header.write(bwout);
-		}*/
 	}
 	
 	public void Load() {
@@ -206,8 +201,8 @@ public class DataManager {
 				if(!module.getName().equals(keybindContent.command)) {
 					continue;
 				}
-				if(module instanceof ModuleBase) {
-					((ModuleBase)module).setKeybinds(keybindContent.keybinds);
+				if(module instanceof ModuleBasic) {
+					((ModuleBasic)module).setKeybinds(keybindContent.keybinds);
 				}
 			}
 		}
@@ -248,7 +243,7 @@ public class DataManager {
 	
 	public void loadGUIConfig(ArrayList<String> lines) {
 		GuiManager guiManager = Main.getInstance().guiManager;
-		IngameGUI ingameGUI = Main.getInstance().guiManager.ingameGUI;
+		OnscreenGUI onscreenGUI = Main.getInstance().guiManager.onscreenGUI;
 		Header header = new Header(null, null, 0);
 		DataTypes.ConfigString configString = new DataTypes.ConfigString();
 		boolean foundSection = false;
@@ -273,9 +268,9 @@ public class DataManager {
 						//couldn't read offsets... okay then, guess we're ignoring this one?
 					}else {
 						if(configString.name.equals("xOffset")) {
-							ingameGUI.xOffsetGNS.set(Double.parseDouble(configString.value));
+							onscreenGUI.xOffsetGNS.set(Double.parseDouble(configString.value));
 						}else if(configString.name.equals("yOffset")) {
-							ingameGUI.yOffsetGNS.set(Double.parseDouble(configString.value));
+							onscreenGUI.yOffsetGNS.set(Double.parseDouble(configString.value));
 						}else if(configString.name.equals("fontHeight")) {
 							guiManager.fontHeightGNS.set(Double.parseDouble(configString.value));
 						}

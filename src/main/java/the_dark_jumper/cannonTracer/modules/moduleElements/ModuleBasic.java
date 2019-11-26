@@ -3,9 +3,10 @@ package the_dark_jumper.cannontracer.modules.moduleelements;
 import java.util.LinkedList;
 
 import the_dark_jumper.cannontracer.Main;
+import the_dark_jumper.cannontracer.modules.moduleelements.behaviours.IModuleBehaviour;
 import the_dark_jumper.cannontracer.util.KeybindData;
 
-public class ModuleBase implements IModule{
+public class ModuleBasic implements IModule{
 	public String name;
 	@Override public String getName() {return name;}
 	
@@ -21,23 +22,23 @@ public class ModuleBase implements IModule{
 	
 	private boolean ignoreInput = false;
 	
-	public ModuleBase(String name, boolean render, boolean isGlobal) {
+	public ModuleBasic(String name, boolean render, boolean isGlobal) {
 		this.name = name;
 		this.render = render;
 		this.isGlobal = isGlobal;
 	}
 	
-	public ModuleBase setKeybinds(LinkedList<KeybindData> keybinds) {
+	public ModuleBasic setKeybinds(LinkedList<KeybindData> keybinds) {
 		this.keybinds = keybinds;
 		return this;
 	}
 	
-	public ModuleBase addKeybind(boolean triggerState, int keycode) {
+	public ModuleBasic addKeybind(boolean triggerState, int keycode) {
 		keybinds.add(new KeybindData(triggerState, keycode));
 		return this;
 	}
 	
-	public ModuleBase setBehaviour(IModuleBehaviour behaviour) {
+	public ModuleBasic setBehaviour(IModuleBehaviour behaviour) {
 		this.behaviour = behaviour;
 		return this;
 	}
