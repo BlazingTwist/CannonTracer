@@ -61,29 +61,32 @@ public class ConfigGUI extends Screen implements IJumperGUI{
 		guiComponents.clear();
 		FrameConfig config = new FrameConfig();
 		FrameColors colors = new FrameColors();
-		generateCommonScreenComponents(config, colors);
+		FrameColors headerColors = new FrameColors();
+		headerColors.innerColor = 0x778f8f8f;
+		headerColors.borderColor = 0xff7f7f7f;
+		generateCommonScreenComponents(config, colors, headerColors);
 		
 		//headline
-		config.init(6, 10, 34, 14, 8);
-		guiComponents.add(new BasicTextFrame(this, "Config-Screen", config.duplicate(), colors));
-		config.init(35, 10, 49, 14, 8);
+		config.init(8, 10, 21, 14, 8);
+		guiComponents.add(new BasicTextFrame(this, "Config-Screen", config.duplicate(), headerColors));
+		config.init(47, 10, 62, 14, 8);
 		guiComponents.add(new ButtonFrame(this, "Update", config.duplicate(), colors, this::onUpdateButton));
-		config.init(50, 10, 71, 14, 8);
+		config.init(63, 10, 78, 14, 8);
 		guiComponents.add(new ValueFrame(this, config.duplicate(), colors, "displayTick", guiManager.main.singlePlayerSettings.renderTickGNS, Integer.class));
-		config.init(72, 10, 94, 14, 8);
+		config.init(79, 10, 94, 14, 8);
 		guiComponents.add(new ToggleValueFrame(this, config.duplicate(), colors, "logIDs", guiManager.main.singlePlayerSettings.bLogGNS));
 		
 		//keybinds
-		config.init(6, 35, 49, 39, 8);
-		guiComponents.add(new BasicTextFrame(this, "Keybinds", config.duplicate(), colors));
-		config.init(50, 35, 94, 39, 8);
+		config.init(8, 35, 21, 39, 8);
+		guiComponents.add(new BasicTextFrame(this, "Keybinds", config.duplicate(), headerColors));
+		config.init(80, 35, 94, 39, 8);
 		guiComponents.add(new ButtonFrame(this, "open Hotkey Menu", config.duplicate(), colors, this::openHotkeyScreen));
 		config.init(6, 40, 94, 59, 8);
 		generateModuleKeybindTable(config, colors, Main.getInstance().moduleManager.singlePlayerModules);
 		
 		//tracing entries
-		config.init(6, 65, 94, 69, 8);
-		guiComponents.add(new BasicTextFrame(this, "Tracked Entities", config.duplicate(), colors));
+		config.init(8, 65, 21, 69, 8);
+		guiComponents.add(new BasicTextFrame(this, "Tracked Entities", config.duplicate(), headerColors));
 		config.init(6, 70, 94, 94, 8);
 		generateTrackingTable(Main.getInstance().entityTracker.observedEntityIDSP, config, colors);
 		//generateTrackingScreenComponents(guiManager.main.entityTracker.observedEntityIDSP, config, colors, 6, 70, 94, 5, 8);
@@ -93,35 +96,38 @@ public class ConfigGUI extends Screen implements IJumperGUI{
 		guiComponents.clear();
 		FrameConfig config = new FrameConfig();
 		FrameColors colors = new FrameColors();
-		generateCommonScreenComponents(config, colors);
+		FrameColors headerColors = new FrameColors();
+		headerColors.innerColor = 0;
+		headerColors.borderColor = 0xff7f7f7f;
+		generateCommonScreenComponents(config, colors, headerColors);
 		
 		//headline
-		config.init(6, 10, 34, 14, 8);
-		guiComponents.add(new BasicTextFrame(this, "Config-Screen", config.duplicate(), colors));
-		config.init(35, 10, 49, 14, 8);
+		config.init(8, 10, 21, 14, 8);
+		guiComponents.add(new BasicTextFrame(this, "Config-Screen", config.duplicate(), headerColors));
+		config.init(47, 10, 62, 14, 8);
 		guiComponents.add(new ButtonFrame(this, "Update", config.duplicate(), colors, this::onUpdateButton));
-		config.init(50, 10, 71, 14, 8);
+		config.init(63, 10, 78, 14, 8);
 		guiComponents.add(new ValueFrame(this, config.duplicate(), colors, "displayTick", guiManager.main.multiPlayerSettings.renderTickGNS, Integer.class));
-		config.init(72, 10, 94, 14, 8);
+		config.init(79, 10, 94, 14, 8);
 		guiComponents.add(new ToggleValueFrame(this, config.duplicate(), colors, "logIDs", guiManager.main.multiPlayerSettings.bLogGNS));
 		
 		//keybinds
-		config.init(6, 35, 49, 39, 8);
-		guiComponents.add(new BasicTextFrame(this, "Keybinds", config.duplicate(), colors));
-		config.init(50, 35, 94, 39, 8);
+		config.init(8, 35, 21, 39, 8);
+		guiComponents.add(new BasicTextFrame(this, "Keybinds", config.duplicate(), headerColors));
+		config.init(80, 35, 94, 39, 8);
 		guiComponents.add(new ButtonFrame(this, "open Hotkey Menu", config.duplicate(), colors, this::openHotkeyScreen));
 		config.init(6, 40, 94, 59, 8);
 		generateModuleKeybindTable(config, colors, Main.getInstance().moduleManager.multiPlayerModules);
 		
 		//tracing entries
-		config.init(6, 65, 94, 69, 8);
-		guiComponents.add(new BasicTextFrame(this, "Tracked Entities", config.duplicate(), colors));
+		config.init(8, 65, 21, 69, 8);
+		guiComponents.add(new BasicTextFrame(this, "Tracked Entities", config.duplicate(), headerColors));
 		config.init(6, 70, 94, 94, 8);
 		generateTrackingTable(Main.getInstance().entityTracker.observedEntityIDMP, config, colors);
 		//generateTrackingScreenComponents(guiManager.main.entityTracker.observedEntityIDMP, config, colors, 6, 70, 94, 5, 8);
 	}
 	
-	private void generateCommonScreenComponents(FrameConfig config, FrameColors colors) {
+	private void generateCommonScreenComponents(FrameConfig config, FrameColors colors, FrameColors headerColors) {
 		//alpha outliner
 		config.init(5, 5, 95, 95, 8);
 		FrameColors backGroundColors = new FrameColors();
@@ -129,13 +135,13 @@ public class ConfigGUI extends Screen implements IJumperGUI{
 		guiComponents.add(new BasicTextFrame(this, "", config.duplicate(), backGroundColors));
 		
 		//gui config
-		config.init(6, 20, 34, 24, 8);
-		guiComponents.add(new BasicTextFrame(this, "GUI Config", config.duplicate(), colors));
-		config.init(35, 20, 44, 24, 8);
+		config.init(8, 20, 21, 24, 8);
+		guiComponents.add(new BasicTextFrame(this, "GUI Config", config.duplicate(), headerColors));
+		config.init(47, 20, 62, 24, 8);
 		guiComponents.add(new ValueFrame(this, config.duplicate(), colors, "x-offset", guiManager.onscreenGUI.xOffsetGNS, Double.class));
-		config.init(45, 20, 54, 24, 8);
+		config.init(63, 20, 78, 24, 8);
 		guiComponents.add(new ValueFrame(this, config.duplicate(), colors, "y-offset", guiManager.onscreenGUI.yOffsetGNS, Double.class));
-		config.init(55, 20, 64, 24, 8);
+		config.init(79, 20, 94, 24, 8);
 		guiComponents.add(new ValueFrame(this, config.duplicate(), colors, "fontHeight", guiManager.fontHeightGNS, Double.class));
 		config.init(6, 25, 49, 29, 8);
 		guiComponents.add(new ValueFrame(this, config.duplicate(), colors, "cfg_path", Main.getInstance().dataManager.configPathGNS, String.class));
