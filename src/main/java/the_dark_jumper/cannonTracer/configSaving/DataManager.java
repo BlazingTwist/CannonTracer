@@ -133,6 +133,7 @@ public class DataManager {
 			loadServerSpecificConfig(lines, "SinglePlayer", main.entityTracker.observedEntityIDSP, main.moduleManager.singlePlayerModules);
 			loadServerSpecificConfig(lines, "MultiPlayer", main.entityTracker.observedEntityIDMP, main.moduleManager.multiPlayerModules);
 			loadHotkeys(lines);
+			loadGUIConfig(lines);
 			br.close();
 		}catch(Exception e) {
 			e.printStackTrace();

@@ -97,7 +97,7 @@ public class ConfigGUI extends Screen implements IJumperGUI{
 		FrameConfig config = new FrameConfig();
 		FrameColors colors = new FrameColors();
 		FrameColors headerColors = new FrameColors();
-		headerColors.innerColor = 0;
+		headerColors.innerColor = 0x778f8f8f;
 		headerColors.borderColor = 0xff7f7f7f;
 		generateCommonScreenComponents(config, colors, headerColors);
 		
