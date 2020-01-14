@@ -91,6 +91,9 @@ public class ScrollableTable implements IRenderableFrame, IClickableFrame, IKeyE
 			//nothing to do here;
 			return;
 		}
+		if(rows.size() < 1 || getAmountOfColumns() < 1) {
+			return;
+		}
 		FrameConfig lastConfig = getCellConfig(getAmountOfColumns() - 1, rows.size() - 1);
 		if(horizontalScrollbar != null) {
 			horizontalScrollbar.setScrollbarSize(100d / lastConfig.xEnd);
