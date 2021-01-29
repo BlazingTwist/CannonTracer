@@ -1,0 +1,14 @@
+modLoader="javafml"
+loaderVersion="[31,)"
+
+# A list of mods - how many allowed here is determined by the individual mod loader
+[[mods]]
+modId="cannontracer"
+version="0.9.15"
+displayName="Cannon Tracer"
+credits="Thanks for this mod goes to my no longer existing will to live"
+authors="The_Dark_Jumper"
+description='''
+Is a Mod that allows you to track and visualize moving entities.
+It may be standalone for singleplayer worlds, but will require a server-side plugin for use in Multiplayer.
+'''
