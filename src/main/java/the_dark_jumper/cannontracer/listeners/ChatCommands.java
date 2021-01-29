@@ -4,9 +4,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import net.minecraftforge.client.event.ClientChatEvent;
-import org.codehaus.plexus.util.StringUtils;
 import the_dark_jumper.cannontracer.Main;
 import the_dark_jumper.cannontracer.util.ChatUtils;
+import the_dark_jumper.cannontracer.util.StringUtils;
 
 public enum ChatCommands {
 	HELP("/tracer help"),
