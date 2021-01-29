@@ -12,7 +12,8 @@ public enum ChatCommands {
 	HELP("/tracer help"),
 	DEBUG("/tracer debug"),
 	TRACE_SAVE("/tracer save"),
-	TRACE_LOAD("/tracer load");
+	TRACE_LOAD("/tracer load"),
+	TRACE_LIST("/tracer list");
 
 	private String commandPrefix;
 
@@ -28,28 +29,38 @@ public enum ChatCommands {
 		text = text.substring(commandPrefix.length());
 
 		switch (this) {
-			case HELP:
+			case HELP: {
 				ChatUtils.messagePlayer("/tracer help - shows this message", "", true);
 				ChatUtils.messagePlayer("/tracer debug - toggles debug printing of plugin messages", "", true);
+				ChatUtils.messagePlayer("/tracer list - lists all saved traces", "", true);
 				ChatUtils.messagePlayer("/tracer save [trace_name] - saves the rendered traces to the given trace_name", "", true);
 				ChatUtils.messagePlayer("/tracer load [trace_name_1] [trace_name_2] ... [trace_name_n] - load one or more saved traces", "", true);
 				break;
-			case DEBUG:
+			}
+			case DEBUG: {
 				ServerChatListener serverChatListener = Main.getInstance().serverChatListener;
 				boolean debugPrint = !serverChatListener.debugPrint;
 				serverChatListener.debugPrint = debugPrint;
 				ChatUtils.messagePlayer("Debug printing is now ", debugPrint ? "enabled" : "disabled", debugPrint);
 				break;
-			case TRACE_LOAD:
+			}
+			case TRACE_LOAD: {
 				List<String> traceNames = Arrays.stream(text.split(" "))
 						.filter(x -> !StringUtils.isBlank(x))
 						.map(String::trim)
 						.collect(Collectors.toList());
 				Main.getInstance().dataManager.loadTrace(traceNames);
 				break;
-			case TRACE_SAVE:
+			}
+			case TRACE_SAVE: {
 				Main.getInstance().dataManager.saveTrace(text.trim());
 				break;
+			}
+			case TRACE_LIST: {
+				String traceNames = String.join(", ", Main.getInstance().dataManager.getTraceNames());
+				ChatUtils.messagePlayer("Found these traces: ", traceNames, true);
+				break;
+			}
 		}
 
 		event.setCanceled(true);
