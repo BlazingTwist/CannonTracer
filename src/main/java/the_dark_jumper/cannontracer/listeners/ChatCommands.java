@@ -12,6 +12,7 @@ public enum ChatCommands {
 	HELP("/tracer help"),
 	DEBUG("/tracer debug"),
 	TRACE_SAVE("/tracer save"),
+	TRACE_DELETE("/tracer delete"),
 	TRACE_LOAD("/tracer load"),
 	TRACE_LIST("/tracer list");
 
@@ -34,6 +35,7 @@ public enum ChatCommands {
 				ChatUtils.messagePlayer("/tracer debug - toggles debug printing of plugin messages", "", true);
 				ChatUtils.messagePlayer("/tracer list - lists all saved traces", "", true);
 				ChatUtils.messagePlayer("/tracer save [trace_name] - saves the rendered traces to the given trace_name", "", true);
+				ChatUtils.messagePlayer("/tracer save [trace_name] - deletes the saved trace with the given trace_name", "", true);
 				ChatUtils.messagePlayer("/tracer load [trace_name_1] [trace_name_2] ... [trace_name_n] - load one or more saved traces", "", true);
 				break;
 			}
@@ -54,6 +56,10 @@ public enum ChatCommands {
 			}
 			case TRACE_SAVE: {
 				Main.getInstance().dataManager.saveTrace(text.trim());
+				break;
+			}
+			case TRACE_DELETE: {
+				Main.getInstance().dataManager.deleteTrace(text.trim());
 				break;
 			}
 			case TRACE_LIST: {

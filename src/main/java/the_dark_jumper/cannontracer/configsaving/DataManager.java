@@ -157,6 +157,27 @@ public class DataManager {
 		}
 	}
 
+	public void deleteTrace(String traceName) {
+		String traceDirectory = getTraceSaveDirectory();
+		if (traceDirectory == null) {
+			ChatUtils.messagePlayer("", "Can't delete trace, save directory not found.", false);
+			return;
+		}
+
+		String fileName = traceDirectory + File.separator + traceName;
+		File traceFile = new File(fileName);
+		if (!traceFile.exists()) {
+			ChatUtils.messagePlayer("", "File doesn't exist at path: " + fileName, false);
+		} else {
+			boolean success = traceFile.delete();
+			if (success) {
+				ChatUtils.messagePlayer("", "Successfully deleted trace", true);
+			} else {
+				ChatUtils.messagePlayer("", "Unable to delete trace, unknown error", false);
+			}
+		}
+	}
+
 	public void load() {
 		trackingDataSP = null;
 		trackingDataMP = null;
