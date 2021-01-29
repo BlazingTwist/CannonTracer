@@ -8,9 +8,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
+import the_dark_jumper.cannontracer.util.ChatUtils;
 
 public class Update {
 	public static final String STARTED_MSG = "is updating...";
@@ -22,13 +20,9 @@ public class Update {
 	
 	public static final String VERSION = "0.9.15";
 	
-	public static final TextFormatting HIGHLIGHT_COLOR = TextFormatting.AQUA;
-	public static final TextFormatting POSITIVE_COLOR = TextFormatting.GREEN;
-	public static final TextFormatting NEGATIVE_COLOR = TextFormatting.RED;
-	
 	public static void sendUpdateMessageIfNeeded() {
 		if(checkUpdateAvailable()) {
-			messagePlayer(MOD_NAME, OUTDATED_MSG, false);
+			ChatUtils.messagePlayer(MOD_NAME, OUTDATED_MSG, false);
 		}
 	}
 	
@@ -70,44 +64,30 @@ public class Update {
 	
 	public static void updateMod() {
 		if(!checkUpdateAvailable()) {
-			messagePlayer(MOD_NAME, UP_TO_DATE_MSG, true);
+			ChatUtils.messagePlayer(MOD_NAME, UP_TO_DATE_MSG, true);
 		}else {
-			new Thread(new Runnable() {
-				@Override
-				public void run() {
-					doModUpdate();
-				}
-			}).start();
+			new Thread(Update::doModUpdate).start();
 		}
 	}
 	
 	private static void doModUpdate() {
 		String path = Main.getInstance().dataManager.updatePathGNS.get();
 		if(path == null) {
-			messagePlayer(MOD_NAME, FAILED_MSG, false);
-			messagePlayer("Update", "failed due to missing updatePath, please specify in the config-screen", false);
+			ChatUtils.messagePlayer(MOD_NAME, FAILED_MSG, false);
+			ChatUtils.messagePlayer("Update", "failed due to missing updatePath, please specify in the config-screen", false);
 			return;
 		}
-		
-		messagePlayer(MOD_NAME, STARTED_MSG, true);
+
+		ChatUtils.messagePlayer(MOD_NAME, STARTED_MSG, true);
 		try {
 			File file = new File(path);
 			writeToFile(file, new BufferedInputStream(new URL("https://github.com/BlazingTwist/CannonTracer/releases/latest/download/cannontracer.jar").openStream()));
-			messagePlayer(MOD_NAME, SUCCESS_MSG, true);
+			ChatUtils.messagePlayer(MOD_NAME, SUCCESS_MSG, true);
 		}catch(IOException e) {
 			e.printStackTrace();
-			messagePlayer(MOD_NAME, FAILED_MSG, false);
-			messagePlayer("Update ", "failed due to IOException", false);
+			ChatUtils.messagePlayer(MOD_NAME, FAILED_MSG, false);
+			ChatUtils.messagePlayer("Update ", "failed due to IOException", false);
 		}
-	}
-	
-	public static void messagePlayer(String part1, String part2, boolean isPositive) {
-		TranslationTextComponent textComponent = new TranslationTextComponent(part1);
-		textComponent.setStyle(textComponent.getStyle().setColor(HIGHLIGHT_COLOR));
-		TranslationTextComponent textComponent2 = new TranslationTextComponent(part2);
-		textComponent2.setStyle(textComponent2.getStyle().setColor(isPositive ? POSITIVE_COLOR : NEGATIVE_COLOR));
-		textComponent.appendSibling(textComponent2);
-		Minecraft.getInstance().player.sendMessage(textComponent);
 	}
 	
 	public synchronized static void writeToFile(final File file, final BufferedInputStream inputStream) throws IOException{

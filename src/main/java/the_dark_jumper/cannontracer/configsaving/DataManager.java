@@ -3,13 +3,17 @@ package the_dark_jumper.cannontracer.configsaving;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.List;
 import java.util.prefs.Preferences;
 import the_dark_jumper.cannontracer.Main;
+import the_dark_jumper.cannontracer.util.ChatUtils;
 import the_dark_jumper.cannontracer.util.GetterAndSetter;
 
 public class DataManager {
@@ -87,6 +91,35 @@ public class DataManager {
 		}
 	}
 
+	public void saveTrace(String traceName){
+		if (configPathGNS.get().equals("")) {
+			ChatUtils.messagePlayer("", "Can't save trace, configPath must be set!", false);
+			return;
+		}
+
+		String fileName = new File(configPathGNS.get()).getParentFile().getAbsolutePath() + File.separator + traceName + ".json";
+		try{
+			ObjectMapper mapper = new ObjectMapper()
+					.enable(SerializationFeature.INDENT_OUTPUT)
+					.disable(MapperFeature.AUTO_DETECT_CREATORS,
+							MapperFeature.AUTO_DETECT_FIELDS,
+							MapperFeature.AUTO_DETECT_GETTERS,
+							MapperFeature.AUTO_DETECT_IS_GETTERS);
+			SavedTrace trace = new SavedTrace(main.entityTracker.tracingHistory);
+			String jsonString = mapper.writeValueAsString(trace);
+
+			FileWriter out = new FileWriter(fileName);
+			out.write(jsonString);
+			out.close();
+
+			ChatUtils.messagePlayer("", "Trace saved at " + fileName, true);
+		} catch (IOException e) {
+			System.out.println("thrown error while saving trace");
+			ChatUtils.messagePlayer("", "Unable to save trace - unknown error!", false);
+			e.printStackTrace();
+		}
+	}
+
 	public void load() {
 		trackingDataSP = null;
 		trackingDataMP = null;
@@ -105,11 +138,91 @@ public class DataManager {
 					MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS,
 					MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES);
 			this.tracerConfig = mapper.readValue(json, TracerConfig.class);
-
-			main.moduleManager.reloadConfig();
-			main.hotkeyManager.reloadConfig();
 		} catch (Exception e) {
+			System.err.println("Unable to parse config, resetting to default");
+			e.printStackTrace();
+
+			backupConfigFile();
+			resetConfig();
+			save();
+		}
+		reloadConfig();
+	}
+
+	public void loadTrace(List<String> traceNames){
+		if (configPathGNS.get().equals("")) {
+			ChatUtils.messagePlayer("", "Can't load trace, configPath must be set!", false);
+			return;
+		}
+
+		main.entityTracker.tracingHistory.clear();
+
+		ObjectMapper mapper = new ObjectMapper().enable(
+				MapperFeature.ACCEPT_CASE_INSENSITIVE_VALUES,
+				MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS,
+				MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES);
+
+		String basePath = new File(configPathGNS.get()).getParentFile().getAbsolutePath() + File.separator;
+		try {
+			for (String traceName : traceNames) {
+				String fileName = basePath + traceName + ".json";
+				ChatUtils.messagePlayer("loading trace from " + fileName, "", true);
+
+				List<String> lines = Files.readAllLines(Paths.get(fileName));
+				StringBuilder jsonBuilder = new StringBuilder();
+				lines.forEach(line -> jsonBuilder.append(line).append("\n"));
+				String json = jsonBuilder.toString();
+
+				SavedTrace trace = mapper.readValue(json, SavedTrace.class);
+				main.entityTracker.tracingHistory.addAll(trace.getTraces());
+			}
+
+			ChatUtils.messagePlayer("", "traces finished loading.", true);
+		} catch (IOException e) {
+			System.out.println("thrown error while loading trace");
+			ChatUtils.messagePlayer("", "Unable to load trace - unknown error!", false);
 			e.printStackTrace();
 		}
+	}
+
+	private void backupConfigFile() {
+		try {
+			File configFile = new File(configPathGNS.get());
+			if (configFile.exists()) {
+				File configFileBackup = new File(configPathGNS.get() + ".bac");
+				Files.copy(configFile.toPath(), configFileBackup.toPath(), StandardCopyOption.REPLACE_EXISTING);
+			}
+		}catch(IOException e){
+			System.err.println("unable to backup config! Will be overwritten.");
+		}
+	}
+
+	public void resetConfig() {
+		this.tracerConfig = new TracerConfig();
+		HashMap<String, TrackingDataEntry> trackingDataSP = getTrackingDataSP();
+		HashMap<String, TrackingDataEntry> trackingDataMP = getTrackingDataMP();
+
+		trackingDataSP.put(
+				"TNTEntity",
+				new TrackingDataEntry(true, 10, 3,
+						new Color(255, 0, 0, 255)));
+		trackingDataSP.put(
+				"FallingBlockEntity",
+				new TrackingDataEntry(true, 10, 3,
+						new Color(0, 255, 0, 255)));
+
+		trackingDataMP.put(
+				"CraftTNTPrimed",
+				new TrackingDataEntry(true, 10, 3,
+						new Color(255, 0, 0, 255)));
+		trackingDataMP.put(
+				"CraftFallingBlock",
+				new TrackingDataEntry(true, 10, 3,
+						new Color(0, 255, 0, 255)));
+	}
+
+	public void reloadConfig() {
+		main.moduleManager.reloadConfig();
+		main.hotkeyManager.reloadConfig();
 	}
 }

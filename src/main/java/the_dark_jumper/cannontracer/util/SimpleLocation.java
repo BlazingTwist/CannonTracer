@@ -1,8 +1,17 @@
 package the_dark_jumper.cannontracer.util;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class SimpleLocation {
-	public double x, y, z;
-	
+	@JsonProperty("x")
+	public double x;
+
+	@JsonProperty("y")
+	public double y;
+
+	@JsonProperty("z")
+	public double z;
+
 	public void init(double x, double y, double z) {
 		this.x = x;
 		this.y = y;

@@ -4,9 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.prefs.Preferences;
 import net.minecraftforge.fml.common.Mod;
-import the_dark_jumper.cannontracer.configsaving.Color;
 import the_dark_jumper.cannontracer.configsaving.DataManager;
-import the_dark_jumper.cannontracer.configsaving.TrackingDataEntry;
 import the_dark_jumper.cannontracer.gui.GuiManager;
 import the_dark_jumper.cannontracer.hotkey.HotkeyManager;
 import the_dark_jumper.cannontracer.listeners.ClientConnectsToServerListener;
@@ -77,22 +75,7 @@ public class Main {
 		File file = new File(path);
 		if (!file.isFile()) {
 			System.out.println("WARNING: config file not found at path: " + path);
-			dataManager.getTrackingDataSP().put(
-					"TNTEntity",
-					new TrackingDataEntry(true, 10, 3,
-							new Color(255, 0, 0, 255)));
-			dataManager.getTrackingDataSP().put(
-					"FallingBlockEntity",
-					new TrackingDataEntry(true, 10, 3,
-							new Color(0, 255, 0, 255)));
-			dataManager.getTrackingDataMP().put(
-					"CraftTNTPrimed",
-					new TrackingDataEntry(true, 10, 3,
-							new Color(255, 0, 0, 255)));
-			dataManager.getTrackingDataMP().put(
-					"CraftFallingBlock",
-					new TrackingDataEntry(true, 10, 3,
-							new Color(0, 255, 0, 255)));
+			dataManager.resetConfig();
 			try {
 				file.getParentFile().mkdirs();
 				file.createNewFile();

@@ -2,6 +2,8 @@ package the_dark_jumper.cannontracer.listeners;
 
 import java.util.HashMap;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
+import net.minecraftforge.client.event.ClientChatEvent;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -13,6 +15,7 @@ import the_dark_jumper.cannontracer.util.SimpleLocation;
 public class ServerChatListener {
 	public final Main main;
 	public boolean isRegistered = false;
+	public boolean debugPrint = false;
 
 	public ServerChatListener(Main main) {
 		this.main = main;
@@ -20,23 +23,34 @@ public class ServerChatListener {
 	}
 
 	@SubscribeEvent
-	public void chatEvent(ClientChatReceivedEvent event) {
-		if (main.moduleManager.state != ModuleManager.State.MULTIPLAYER) {
-			return;
+	public void playerChatEvent(ClientChatEvent event) {
+		String text = event.getMessage();
+
+		for (ChatCommands command : ChatCommands.values()) {
+			if (command.isCommand(text)) {
+				command.handle(event, text);
+			}
 		}
+	}
+
+	@SubscribeEvent
+	public void chatEvent(ClientChatReceivedEvent event) {
 		String text = event.getMessage().getFormattedText();
-		if (text.length() >= 21) {
+
+		if (main.moduleManager.state == ModuleManager.State.MULTIPLAYER) {
 			if (text.startsWith("[JumperCannonTracer]")) {
-				event.setCanceled(true);
+				if (!debugPrint) {
+					event.setCanceled(true);
+				}
 				String message = text.substring(20);
 				if (message.equals("[SettingsRequest]")) {
 					isRegistered = true;
 					sendConfigMessage();
-					return;
-				}
-				String[] data = message.split("\\|");
-				if (main.dataManager.getTrackingDataMP().containsKey(data[0])) {
-					handleTracingData(data);
+				} else {
+					String[] data = message.split("\\|");
+					if (main.dataManager.getTrackingDataMP().containsKey(data[0])) {
+						handleTracingData(data);
+					}
 				}
 			}
 		}
@@ -64,7 +78,7 @@ public class ServerChatListener {
 
 	public void putDataInHistory(String entityName, int tick, SimpleLocation pos1, SimpleLocation pos2, boolean isLastTick) {
 		for (SingleTickMoveData moveData : main.entityTracker.tracingHistory) {
-			if (!moveData.isNewData(pos1, pos2)) {
+			if (moveData.isSameData(pos1, pos2)) {
 				//is old
 				if (!moveData.tickData.containsKey(entityName)) {
 					moveData.tickData.put(entityName, new HashMap<>());
@@ -85,21 +99,27 @@ public class ServerChatListener {
 			return;
 		}
 		//target message: [JumperCannonTracer][Config]"key"="value"|"key"="value;value2;value3"|...
-		String message = "[JumperCannonTracer][Config]logIDs=";
-		message += Boolean.toString(main.multiPlayerSettings.bLogGNS.get());
+		StringBuilder message = new StringBuilder("[JumperCannonTracer][Config]logIDs=");
+		message.append(main.multiPlayerSettings.bLogGNS.get());
 		for (String key : main.dataManager.getTrackingDataMP().keySet()) {
 			if (!main.dataManager.getTrackingDataMP().get(key).isRender()) {
 				continue;
 			}
-			message += ("|[entity]=" + key + ";" + main.dataManager.getTrackingDataMP().get(key).getTime());
+			message.append("|[entity]=").append(key).append(";").append(main.dataManager.getTrackingDataMP().get(key).getTime());
 		}
-		Minecraft.getInstance().player.sendChatMessage(message);
+		ClientPlayerEntity player = Minecraft.getInstance().player;
+		if (player != null) {
+			player.sendChatMessage(message.toString());
+		}
 	}
 
 	public void requestTracingData() {
 		if (!isRegistered) {
 			return;
 		}
-		Minecraft.getInstance().player.sendChatMessage("[JumperCannonTracer][PullDataRequest]");
+		ClientPlayerEntity player = Minecraft.getInstance().player;
+		if (player != null) {
+			player.sendChatMessage("[JumperCannonTracer][PullDataRequest]");
+		}
 	}
 }

@@ -2,10 +2,10 @@ package the_dark_jumper.cannontracer.gui;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.client.event.InputEvent;
 import org.lwjgl.opengl.GL11;
 import the_dark_jumper.cannontracer.Main;
@@ -29,6 +29,7 @@ import the_dark_jumper.cannontracer.modules.ModuleTableEntry;
 import the_dark_jumper.cannontracer.modules.moduleelements.IModule;
 import the_dark_jumper.cannontracer.modules.moduleelements.ModuleAxis;
 import the_dark_jumper.cannontracer.modules.moduleelements.ModuleBasic;
+import the_dark_jumper.cannontracer.util.ChatUtils;
 import the_dark_jumper.cannontracer.util.GetterAndSetter;
 
 public class ConfigGUI extends Screen implements IJumperGUI {
@@ -85,6 +86,7 @@ public class ConfigGUI extends Screen implements IJumperGUI {
 	private void reloadConfigButton(boolean isPressed) {
 		if (isPressed) {
 			this.queueRefresh = true;
+			ChatUtils.messagePlayer("Config reloaded.", "", true);
 		}
 	}
 
@@ -300,7 +302,7 @@ public class ConfigGUI extends Screen implements IJumperGUI {
 		}
 
 		public void onDelete(boolean isPressed) {
-			if(isPressed){
+			if (isPressed) {
 				String id = idChangeHandler.getID();
 				entities.remove(id);
 				Main.getInstance().dataManager.save();
@@ -335,13 +337,13 @@ public class ConfigGUI extends Screen implements IJumperGUI {
 		if (guiScale == 0) {
 			if (!detectedAutoGUI) {
 				detectedAutoGUI = true;
-				Minecraft.getInstance().player.sendMessage(new TranslationTextComponent("please don't use 'auto' as a gui-scale, I don't have internal access to it"));
+				ChatUtils.messagePlayer("please don't use 'auto' as a gui-scale, I don't have internal access to it", "", false);
 			}
 			return;
 		}
 		if (detectedAutoGUI) {
 			detectedAutoGUI = false;
-			Minecraft.getInstance().player.sendMessage(new TranslationTextComponent("thank you for your cooperation."));
+			ChatUtils.messagePlayer("thank you for your cooperation.", "", true);
 		}
 
 		for (IRenderableFrame renderable : guiComponents) {
@@ -395,6 +397,7 @@ public class ConfigGUI extends Screen implements IJumperGUI {
 	}
 
 	@Override
+	@ParametersAreNonnullByDefault
 	public void drawCenteredString(FontRenderer fontRenderer, String text, int xPos, int height, int color) {
 		double configFontHeight = guiManager.getGuiConfig().getFontHeight();
 		if (configFontHeight == 0) {
@@ -415,6 +418,9 @@ public class ConfigGUI extends Screen implements IJumperGUI {
 
 	@Override
 	public void onClose() {
+		if(minecraft == null){
+			return;
+		}
 		if (minecraft.currentScreen != null && minecraft.currentScreen != this && minecraft.currentScreen instanceof IJumperGUI) {
 			minecraft.currentScreen.onClose();
 		}
@@ -447,19 +453,13 @@ public class ConfigGUI extends Screen implements IJumperGUI {
 
 	@Override
 	public void renderBackground() {
-		//no, just no
-		return;
 	}
 
 	@Override
 	public void renderBackground(int something) {
-		//I said no, fuck you!
-		return;
 	}
 
 	@Override
 	public void renderDirtBackground(int something) {
-		//are you shitting me?
-		return;
 	}
 }

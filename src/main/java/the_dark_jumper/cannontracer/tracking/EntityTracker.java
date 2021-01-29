@@ -133,7 +133,7 @@ public class EntityTracker {
 
 	public void checkNewEntities(Queue<SingleTickMoveData> source, SimpleLocation pos1, SimpleLocation pos2, String entityName) {
 		for (SingleTickMoveData moveData : source) {
-			if (!moveData.isNewData(pos1, pos2)) {
+			if (moveData.isSameData(pos1, pos2)) {
 				//is old data
 				moveData.addTick(entityName, currentTick, false);
 				return;
