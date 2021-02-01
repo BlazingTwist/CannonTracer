@@ -155,13 +155,15 @@ public class ConfigGUI extends Screen implements IJumperGUI {
 		//headline
 		config.init(8, 10, 21, 14, 8);
 		guiComponents.add(new BasicTextFrame(this, "Config-Screen", config.duplicate(), headerColors));
-		config.init(47, 10, 54, 14, 8);
+		config.init(47, 10, 55, 14, 8);
 		guiComponents.add(new ButtonFrame(this, "Update mod", config.duplicate(), colors, this::onUpdateButton));
-		config.init(55, 10, 62, 14, 8);
+		config.init(56, 10, 64, 14, 8);
 		guiComponents.add(new ButtonFrame(this, "Reload Config", config.duplicate(), colors, this::reloadConfigButton));
-		config.init(63, 10, 78, 14, 8);
+		config.init(65, 10, 74, 14, 8);
 		guiComponents.add(new ValueFrame<>(this, config.duplicate(), colors, "displayTick", guiManager.main.multiPlayerSettings.renderTickGNS, Integer.class, false));
-		config.init(79, 10, 94, 14, 8);
+		config.init(75, 10, 84, 14, 8);
+		guiComponents.add(new ValueFrame<>(this, config.duplicate(), colors, "maxRange", guiManager.main.dataManager.getTracerConfig().getMultiPlayerConfig().getMaxRangeGNS(), Integer.class, false));
+		config.init(85, 10, 94, 14, 8);
 		guiComponents.add(new ToggleValueFrame(this, config.duplicate(), colors, "logIDs", guiManager.main.multiPlayerSettings.bLogGNS));
 
 		//keybinds
@@ -418,7 +420,7 @@ public class ConfigGUI extends Screen implements IJumperGUI {
 
 	@Override
 	public void onClose() {
-		if(minecraft == null){
+		if (minecraft == null) {
 			return;
 		}
 		if (minecraft.currentScreen != null && minecraft.currentScreen != this && minecraft.currentScreen instanceof IJumperGUI) {

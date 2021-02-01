@@ -145,6 +145,8 @@ public class DataManager {
 			SavedTrace trace = new SavedTrace(main.entityTracker.tracingHistory);
 			String jsonString = mapper.writeValueAsString(trace);
 
+			File outFile = new File(fileName);
+			outFile.mkdirs();
 			FileWriter out = new FileWriter(fileName);
 			out.write(jsonString);
 			out.close();

@@ -63,8 +63,13 @@ public enum ChatCommands {
 				break;
 			}
 			case TRACE_LIST: {
-				String traceNames = String.join(", ", Main.getInstance().dataManager.getTraceNames());
-				ChatUtils.messagePlayer("Found these traces: ", traceNames, true);
+				List<String> traceNames = Main.getInstance().dataManager.getTraceNames();
+				if(traceNames != null){
+					String traceNameString = String.join(", ", traceNames);
+					ChatUtils.messagePlayer("Found these traces: ", traceNameString, true);
+				}else{
+					ChatUtils.messagePlayer("No traces found.", "", true);
+				}
 				break;
 			}
 		}

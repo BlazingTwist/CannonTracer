@@ -10,6 +10,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import the_dark_jumper.cannontracer.Main;
 import the_dark_jumper.cannontracer.modules.ModuleManager;
 import the_dark_jumper.cannontracer.tracking.SingleTickMoveData;
+import the_dark_jumper.cannontracer.util.ChatUtils;
 import the_dark_jumper.cannontracer.util.SimpleLocation;
 
 public class ServerChatListener {
@@ -101,6 +102,8 @@ public class ServerChatListener {
 		//target message: [JumperCannonTracer][Config]"key"="value"|"key"="value;value2;value3"|...
 		StringBuilder message = new StringBuilder("[JumperCannonTracer][Config]logIDs=");
 		message.append(main.multiPlayerSettings.bLogGNS.get());
+		message.append("|range=");
+		message.append(main.dataManager.getTracerConfig().getMultiPlayerConfig().getMaxRange());
 		for (String key : main.dataManager.getTrackingDataMP().keySet()) {
 			if (!main.dataManager.getTrackingDataMP().get(key).isRender()) {
 				continue;
@@ -115,6 +118,7 @@ public class ServerChatListener {
 
 	public void requestTracingData() {
 		if (!isRegistered) {
+			ChatUtils.messagePlayer("", "can't pull data, not registered on this server. Try /tracer register", false);
 			return;
 		}
 		ClientPlayerEntity player = Minecraft.getInstance().player;

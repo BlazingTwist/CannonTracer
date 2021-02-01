@@ -34,6 +34,20 @@ public class SimpleLocation {
 		this.y += a.y;
 		this.z += a.z;
 	}
+
+	public static SimpleLocation sub(SimpleLocation a, SimpleLocation b) {
+		return new SimpleLocation(a.x - b.x, a.y - b.y, a.z - b.z);
+	}
+
+	public void sub(SimpleLocation a) {
+		this.x -= a.x;
+		this.y -= a.y;
+		this.z -= a.z;
+	}
+
+	public double magnitude() {
+		return Math.sqrt(x * x + y * y + z * z);
+	}
 	
 	public boolean equals(SimpleLocation a) {
 		return (this.x == a.x && this.y == a.y && this.z == a.z);
