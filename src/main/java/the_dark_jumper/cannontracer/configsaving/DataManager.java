@@ -134,19 +134,20 @@ public class DataManager {
 	}
 
 	public void saveTrace(String traceName) {
-		if (configPathGNS.get().equals("")) {
+		String traceDir = getTraceSaveDirectory();
+
+		if (traceDir == null) {
 			ChatUtils.messagePlayer("", "Can't save trace, configPath must be set!", false);
 			return;
 		}
 
-		String fileName = getTraceSaveDirectory() + File.separator + traceName;
+		new File(traceDir).mkdirs();
+		String fileName = traceDir + File.separator + traceName;
 		try {
 			ObjectMapper mapper = getObjectMapper();
 			SavedTrace trace = new SavedTrace(main.entityTracker.tracingHistory);
 			String jsonString = mapper.writeValueAsString(trace);
 
-			File outFile = new File(fileName);
-			outFile.mkdirs();
 			FileWriter out = new FileWriter(fileName);
 			out.write(jsonString);
 			out.close();

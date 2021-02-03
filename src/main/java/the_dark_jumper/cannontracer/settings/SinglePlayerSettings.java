@@ -1,5 +1,6 @@
 package the_dark_jumper.cannontracer.settings;
 
+import java.util.HashMap;
 import net.minecraft.client.Minecraft;
 import the_dark_jumper.cannontracer.Main;
 import the_dark_jumper.cannontracer.tracking.SingleTickMoveData;
@@ -69,5 +70,35 @@ public class SinglePlayerSettings {
 			return;
 		}
 		main.entityTracker.tracingHistory.clear();
+	}
+
+	public void showFirstTick(boolean b) {
+		int first = Integer.MAX_VALUE;
+		for (SingleTickMoveData singleTickMoveData : main.entityTracker.tracingHistory) {
+			for (HashMap<Integer, Boolean> tickData : singleTickMoveData.tickData.values()) {
+				int minTick = tickData.keySet().stream().min(Integer::compareTo).orElse(Integer.MAX_VALUE);
+				if(minTick < first){
+					first = minTick;
+				}
+			}
+		}
+		if(first < main.moduleManager.getMaxDisplayTickMP()){
+			renderTickGNS.set(first);
+		}
+	}
+
+	public void showLastTick(boolean b){
+		int last = Integer.MIN_VALUE;
+		for (SingleTickMoveData singleTickMoveData : main.entityTracker.tracingHistory) {
+			for (HashMap<Integer, Boolean> tickData : singleTickMoveData.tickData.values()) {
+				int maxTick = tickData.keySet().stream().max(Integer::compareTo).orElse(Integer.MIN_VALUE);
+				if(maxTick > last){
+					last = maxTick;
+				}
+			}
+		}
+		if(last >= 0){
+			renderTickGNS.set(last);
+		}
 	}
 }

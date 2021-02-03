@@ -29,6 +29,8 @@ public class ModuleManager {
 	public ModuleBasic loadLastSecondSP;
 	public ModuleBasic clearHistorySP;
 	public ModuleAxis displayTickSP;
+	public ModuleBasic showFirstTickSP;
+	public ModuleBasic showLastTickSP;
 
 	public ModuleBasic xRayTracesMP;
 	public ModuleBasic menuMP;
@@ -36,6 +38,9 @@ public class ModuleManager {
 	public ModuleBasic clearDataMP;
 	public ModuleAxis displayTickMP;
 	public ModuleBasic findNextDespawnTickMP;
+	public ModuleBasic findPreviousDespawnTickMP;
+	public ModuleBasic showFirstTickMP;
+	public ModuleBasic showLastTickMP;
 
 	private HashSet<IFocusableFrame> focusedFrames = new HashSet<>();
 
@@ -54,9 +59,9 @@ public class ModuleManager {
 	}
 
 	public void onFrameFocusChanged(IFocusableFrame frame, boolean focus) {
-		if(focus){
+		if (focus) {
 			focusedFrames.add(frame);
-		}else{
+		} else {
 			focusedFrames.remove(frame);
 		}
 	}
@@ -89,6 +94,14 @@ public class ModuleManager {
 		displayTickSP = new ModuleAxis("DisplayTickSP", true, false);
 		displayTickSP.setBehaviour(new CounterBehaviour(displayTickSP, 1, main.singlePlayerSettings.renderTickGNS).setMax(this::getMaxDisplayTickSP));
 		singlePlayerModules.add(displayTickSP);
+
+		showFirstTickSP = new ModuleBasic("ShowFirstTickSP", false, false);
+		showFirstTickSP.setBehaviour(new ButtonBehaviour(showFirstTickSP, false, main.singlePlayerSettings::showFirstTick));
+		singlePlayerModules.add(showFirstTickSP);
+
+		showLastTickSP = new ModuleBasic("ShowLastTickSP", false, false);
+		showLastTickSP.setBehaviour(new ButtonBehaviour(showLastTickSP, false, main.singlePlayerSettings::showLastTick));
+		singlePlayerModules.add(showLastTickSP);
 	}
 
 	public void generateMultiPlayerModules() {
@@ -112,9 +125,21 @@ public class ModuleManager {
 		displayTickMP.setBehaviour(new CounterBehaviour(displayTickMP, 1, main.multiPlayerSettings.renderTickGNS).setMax(this::getMaxDisplayTickMP));
 		multiPlayerModules.add(displayTickMP);
 
-		findNextDespawnTickMP = new ModuleBasic("DisplayDespawnTickMP", false, false);
+		findNextDespawnTickMP = new ModuleBasic("DisplayNextDespawnTickMP", false, false);
 		findNextDespawnTickMP.setBehaviour(new ButtonBehaviour(findNextDespawnTickMP, false, main.multiPlayerSettings::findNextDespawnTick));
 		multiPlayerModules.add(findNextDespawnTickMP);
+
+		findPreviousDespawnTickMP = new ModuleBasic("DisplayPrevDespawnTickMP", false, false);
+		findPreviousDespawnTickMP.setBehaviour(new ButtonBehaviour(findPreviousDespawnTickMP, false, main.multiPlayerSettings::findPreviousDespawnTick));
+		multiPlayerModules.add(findPreviousDespawnTickMP);
+
+		showFirstTickMP = new ModuleBasic("ShowFirstTickMP", false, false);
+		showFirstTickMP.setBehaviour(new ButtonBehaviour(showFirstTickMP, false, main.multiPlayerSettings::showFirstTick));
+		multiPlayerModules.add(showFirstTickMP);
+
+		showLastTickMP = new ModuleBasic("ShowLastTickMP", false, false);
+		showLastTickMP.setBehaviour(new ButtonBehaviour(showLastTickMP, false, main.multiPlayerSettings::showLastTick));
+		multiPlayerModules.add(showLastTickMP);
 	}
 
 	public void reloadConfig() {
@@ -127,6 +152,8 @@ public class ModuleManager {
 		clearHistorySP.setKeybind(keysSP.getClearHistorySP());
 		displayTickSP.setPositiveKeybind(keysSP.getDisplayTickSPAdd());
 		displayTickSP.setNegativeKeybind(keysSP.getDisplayTickSPSub());
+		showFirstTickSP.setKeybind(keysSP.getShowFirstTickSP());
+		showLastTickSP.setKeybind(keysSP.getShowLastTickSP());
 
 		MultiPlayerKeybinds keysMP = main.dataManager.getTracerConfig().getMultiPlayerConfig().getKeybinds();
 		xRayTracesMP.setKeybind(keysMP.getxRayTracesMP());
@@ -136,6 +163,9 @@ public class ModuleManager {
 		displayTickMP.setPositiveKeybind(keysMP.getDisplayTickMPAdd());
 		displayTickMP.setNegativeKeybind(keysMP.getDisplayTickMPSub());
 		findNextDespawnTickMP.setKeybind(keysMP.getDisplayDespawnTickMP());
+		findPreviousDespawnTickMP.setKeybind(keysMP.getDisplayPreviousDespawnTickMP());
+		showFirstTickMP.setKeybind(keysMP.getShowFirstTickMP());
+		showLastTickMP.setKeybind(keysMP.getShowLastTickMP());
 	}
 
 	public ArrayList<IModule> getModules() {
@@ -171,12 +201,12 @@ public class ModuleManager {
 
 	public void keyPressed(int key, boolean screenActive) {
 		if (!focusedFrames.isEmpty()) { // ignore even global keybinds when textField is focused
-			if(!screenActive){
+			if (!screenActive) {
 				// TODO this really doesn't belong here, but eh
 				for (IFocusableFrame focusedFrame : focusedFrames) {
 					focusedFrame.setFocused(false);
 				}
-			}else{
+			} else {
 				return;
 			}
 		}

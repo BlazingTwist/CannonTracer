@@ -93,4 +93,14 @@ public class ModuleBasic implements IModule {
 			}
 		}
 	}
+
+	@Override
+	public String toString() {
+		return "ModuleBasic{" +
+				"name='" + name + '\'' +
+				", render=" + render +
+				", isGlobal=" + isGlobal +
+				", keybind=" + keybind +
+				'}';
+	}
 }

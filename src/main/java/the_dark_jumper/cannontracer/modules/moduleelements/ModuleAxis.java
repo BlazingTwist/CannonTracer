@@ -130,4 +130,15 @@ public class ModuleAxis implements IModule {
 		return positiveKeybind != null && positiveKeybind.getTrigger().size() != 0
 				&& negativeKeybind != null && negativeKeybind.getTrigger().size() != 0;
 	}
+
+	@Override
+	public String toString() {
+		return "ModuleAxis{" +
+				"name='" + name + '\'' +
+				", render=" + render +
+				", isGlobal=" + isGlobal +
+				", positiveKeybind=" + positiveKeybind +
+				", negativeKeybind=" + negativeKeybind +
+				'}';
+	}
 }

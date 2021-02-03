@@ -4,7 +4,7 @@ loaderVersion="[31,)"
 # A list of mods - how many allowed here is determined by the individual mod loader
 [[mods]]
 modId="cannontracer"
-version="0.9.17"
+version="0.9.18"
 displayName="Cannon Tracer"
 credits="Thanks for this mod goes to my no longer existing will to live"
 authors="The_Dark_Jumper"

@@ -24,6 +24,15 @@ public class MultiPlayerKeybinds {
 	@JsonProperty("DisplayDespawnTickMP")
 	private KeybindEntry displayDespawnTickMP = new KeybindEntry().addTrigger(42, 333);
 
+	@JsonProperty("DisplayPrevDespawnTickMP")
+	private KeybindEntry displayPreviousDespawnTickMP = new KeybindEntry().addTrigger(42, 331);
+
+	@JsonProperty("ShowFirstTickMP")
+	private KeybindEntry showFirstTickMP = new KeybindEntry().addTrigger(328);
+
+	@JsonProperty("ShowLastTickMP")
+	private KeybindEntry showLastTickMP = new KeybindEntry().addTrigger(336);
+
 	public MultiPlayerKeybinds() {
 	}
 
@@ -87,6 +96,33 @@ public class MultiPlayerKeybinds {
 
 	public MultiPlayerKeybinds setDisplayDespawnTickMP(KeybindEntry displayDespawnTickMP) {
 		this.displayDespawnTickMP = displayDespawnTickMP;
+		return this;
+	}
+
+	public KeybindEntry getDisplayPreviousDespawnTickMP() {
+		return displayPreviousDespawnTickMP;
+	}
+
+	public MultiPlayerKeybinds setDisplayPreviousDespawnTickMP(KeybindEntry displayPreviousDespawnTickMP) {
+		this.displayPreviousDespawnTickMP = displayPreviousDespawnTickMP;
+		return this;
+	}
+
+	public KeybindEntry getShowFirstTickMP() {
+		return showFirstTickMP;
+	}
+
+	public MultiPlayerKeybinds setShowFirstTickMP(KeybindEntry showFirstTickMP) {
+		this.showFirstTickMP = showFirstTickMP;
+		return this;
+	}
+
+	public KeybindEntry getShowLastTickMP() {
+		return showLastTickMP;
+	}
+
+	public MultiPlayerKeybinds setShowLastTickMP(KeybindEntry showLastTickMP) {
+		this.showLastTickMP = showLastTickMP;
 		return this;
 	}
 }

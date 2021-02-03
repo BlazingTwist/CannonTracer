@@ -27,6 +27,12 @@ public class SinglePlayerKeybinds {
 	@JsonProperty("DisplayTickSP-")
 	private KeybindEntry displayTickSPSub = new KeybindEntry().addTrigger(331);
 
+	@JsonProperty("ShowFirstTickSP")
+	private KeybindEntry showFirstTickSP = new KeybindEntry().addTrigger(328);
+
+	@JsonProperty("ShowLastTickSP")
+	private KeybindEntry showLastTickSP = new KeybindEntry().addTrigger(336);
+
 	public SinglePlayerKeybinds() {
 	}
 
@@ -99,6 +105,24 @@ public class SinglePlayerKeybinds {
 
 	public SinglePlayerKeybinds setDisplayTickSPSub(KeybindEntry displayTickSPSub) {
 		this.displayTickSPSub = displayTickSPSub;
+		return this;
+	}
+
+	public KeybindEntry getShowFirstTickSP() {
+		return showFirstTickSP;
+	}
+
+	public SinglePlayerKeybinds setShowFirstTickSP(KeybindEntry showFirstTickSP) {
+		this.showFirstTickSP = showFirstTickSP;
+		return this;
+	}
+
+	public KeybindEntry getShowLastTickSP() {
+		return showLastTickSP;
+	}
+
+	public SinglePlayerKeybinds setShowLastTickSP(KeybindEntry showLastTickSP) {
+		this.showLastTickSP = showLastTickSP;
 		return this;
 	}
 }
