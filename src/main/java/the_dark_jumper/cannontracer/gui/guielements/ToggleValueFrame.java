@@ -1,9 +1,9 @@
 package the_dark_jumper.cannontracer.gui.guielements;
 
+import jumpercommons.GetterAndSetter;
 import the_dark_jumper.cannontracer.gui.IJumperGUI;
 import the_dark_jumper.cannontracer.gui.utils.FrameColors;
 import the_dark_jumper.cannontracer.gui.utils.FrameConfig;
-import the_dark_jumper.cannontracer.util.GetterAndSetter;
 
 public class ToggleValueFrame extends DoubleSegmentFrame{
 	public final GetterAndSetter<Boolean> source;

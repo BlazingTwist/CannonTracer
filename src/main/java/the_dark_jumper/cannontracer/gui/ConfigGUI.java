@@ -3,6 +3,7 @@ package the_dark_jumper.cannontracer.gui;
 import java.util.ArrayList;
 import java.util.HashMap;
 import javax.annotation.ParametersAreNonnullByDefault;
+import jumpercommons.GetterAndSetter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
@@ -30,7 +31,6 @@ import the_dark_jumper.cannontracer.modules.moduleelements.IModule;
 import the_dark_jumper.cannontracer.modules.moduleelements.ModuleAxis;
 import the_dark_jumper.cannontracer.modules.moduleelements.ModuleBasic;
 import the_dark_jumper.cannontracer.util.ChatUtils;
-import the_dark_jumper.cannontracer.util.GetterAndSetter;
 
 public class ConfigGUI extends Screen implements IJumperGUI {
 	public final GuiManager guiManager;

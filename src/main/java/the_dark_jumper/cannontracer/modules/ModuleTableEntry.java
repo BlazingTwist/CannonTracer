@@ -1,6 +1,7 @@
 package the_dark_jumper.cannontracer.modules;
 
 import java.util.ArrayList;
+import jumpercommons.GetterAndSetter;
 import the_dark_jumper.cannontracer.configsaving.KeybindEntry;
 import the_dark_jumper.cannontracer.gui.IJumperGUI;
 import the_dark_jumper.cannontracer.gui.guielements.BasicTextFrame;
@@ -10,7 +11,6 @@ import the_dark_jumper.cannontracer.gui.guielements.ScrollableTable;
 import the_dark_jumper.cannontracer.gui.guielements.ToggleKeybindFrame;
 import the_dark_jumper.cannontracer.gui.guielements.interfaces.IRenderableFrame;
 import the_dark_jumper.cannontracer.gui.utils.FormatData;
-import the_dark_jumper.cannontracer.util.GetterAndSetter;
 
 public class ModuleTableEntry {
 	private IJumperGUI parent;

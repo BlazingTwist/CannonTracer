@@ -1,9 +1,11 @@
 package the_dark_jumper.cannontracer.hotkey;
 
 import java.util.ArrayList;
+import jumpercommons.GetterAndSetter;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import the_dark_jumper.cannontracer.configsaving.HotkeyEntry;
-import the_dark_jumper.cannontracer.util.GetterAndSetter;
+import the_dark_jumper.cannontracer.listeners.ServerChatListener;
 
 public class Hotkey {
 	private HotkeyEntry hotkey = new HotkeyEntry();
@@ -12,7 +14,7 @@ public class Hotkey {
 	public Hotkey() {
 	}
 
-	public Hotkey(String command, ArrayList<GetterAndSetter<Integer>> trigger, ArrayList<GetterAndSetter<Integer>> exclude){
+	public Hotkey(String command, ArrayList<GetterAndSetter<Integer>> trigger, ArrayList<GetterAndSetter<Integer>> exclude) {
 		this.hotkey = new HotkeyEntry(command, trigger, exclude);
 	}
 
@@ -44,7 +46,14 @@ public class Hotkey {
 	private void onTriggeredChanged(boolean isTriggered) {
 		ignoreInput = isTriggered;
 		if (isTriggered) {
-			Minecraft.getInstance().player.sendChatMessage(hotkey.getCommand());
+			String message = hotkey.getCommand();
+			if (ServerChatListener.handleChatMessageSent(message)) {
+				return;
+			}
+			ClientPlayerEntity player = Minecraft.getInstance().player;
+			if (player != null) {
+				player.sendChatMessage(hotkey.getCommand());
+			}
 		}
 	}
 }

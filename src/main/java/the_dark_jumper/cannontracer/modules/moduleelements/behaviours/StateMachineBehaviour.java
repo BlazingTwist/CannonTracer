@@ -1,10 +1,10 @@
 package the_dark_jumper.cannontracer.modules.moduleelements.behaviours;
 
+import jumpercommons.GetterAndSetter;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import the_dark_jumper.cannontracer.modules.moduleelements.IModule;
 import the_dark_jumper.cannontracer.modules.moduleelements.ModuleBasic;
-import the_dark_jumper.cannontracer.util.GetterAndSetter;
 
 public class StateMachineBehaviour implements IModuleBehaviour {
 	private ModuleBasic parent;
@@ -14,7 +14,7 @@ public class StateMachineBehaviour implements IModuleBehaviour {
 		return parent;
 	}
 
-	public String stateNames[];
+	public String[] stateNames;
 	public GetterAndSetter<Integer> valueGNS;
 
 	public StateMachineBehaviour(ModuleBasic parent, int currentState, String[] stateNames, GetterAndSetter<Integer> valueGNS) {

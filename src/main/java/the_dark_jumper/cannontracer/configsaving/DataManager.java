@@ -14,9 +14,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
+import jumpercommons.GetterAndSetter;
 import the_dark_jumper.cannontracer.Main;
 import the_dark_jumper.cannontracer.util.ChatUtils;
-import the_dark_jumper.cannontracer.util.GetterAndSetter;
 
 public class DataManager {
 	public final Main main;
@@ -209,7 +209,7 @@ public class DataManager {
 
 	public void loadTrace(List<String> traceNames) {
 		if (configPathGNS.get().equals("")) {
-			ChatUtils.messagePlayer("", "Can't load trace, configPath must be set!", false);
+			ChatUtils.messagePlayer("", "Can't open trace, configPath must be set!", false);
 			return;
 		}
 
@@ -235,7 +235,7 @@ public class DataManager {
 			ChatUtils.messagePlayer("", "traces finished loading.", true);
 		} catch (IOException e) {
 			System.out.println("thrown error while loading trace");
-			ChatUtils.messagePlayer("", "Unable to load trace - unknown error!", false);
+			ChatUtils.messagePlayer("", "Unable to open trace - unknown error!", false);
 			e.printStackTrace();
 		}
 	}

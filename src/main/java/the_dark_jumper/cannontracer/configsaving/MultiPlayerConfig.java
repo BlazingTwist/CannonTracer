@@ -2,7 +2,7 @@ package the_dark_jumper.cannontracer.configsaving;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.HashMap;
-import the_dark_jumper.cannontracer.util.GetterAndSetter;
+import jumpercommons.GetterAndSetter;
 
 public class MultiPlayerConfig {
 	@JsonProperty("trackingData")

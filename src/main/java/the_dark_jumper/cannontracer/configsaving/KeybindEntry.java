@@ -3,8 +3,8 @@ package the_dark_jumper.cannontracer.configsaving;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
+import jumpercommons.GetterAndSetter;
 import the_dark_jumper.cannontracer.Main;
-import the_dark_jumper.cannontracer.util.GetterAndSetter;
 
 public class KeybindEntry {
 	@JsonProperty("trigger")

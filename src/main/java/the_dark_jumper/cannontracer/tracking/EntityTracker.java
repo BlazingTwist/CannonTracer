@@ -1,15 +1,19 @@
 package the_dark_jumper.cannontracer.tracking;
 
 import com.google.common.collect.Sets;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import java.util.Iterator;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import jumpercommons.SimpleLocation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Vec3d;
@@ -24,7 +28,6 @@ import org.lwjgl.opengl.GL11;
 import the_dark_jumper.cannontracer.Main;
 import the_dark_jumper.cannontracer.configsaving.TrackingDataEntry;
 import the_dark_jumper.cannontracer.modules.ModuleManager;
-import the_dark_jumper.cannontracer.util.SimpleLocation;
 
 public class EntityTracker {
 	public final Main main;
@@ -165,31 +168,29 @@ public class EntityTracker {
 			return;
 		}
 
-		ClientPlayerEntity player = Minecraft.getInstance().player;
+		Minecraft minecraft = Minecraft.getInstance();
+		EntityRendererManager rendererManager = minecraft.getRenderManager();
+		IRenderTypeBuffer.Impl bufferSource = Minecraft.getInstance().getRenderTypeBuffers().getBufferSource();
+		MatrixStack matrixStack = new MatrixStack();
+		ClientPlayerEntity player = minecraft.player;
 		if (player == null) {
 			return;
 		}
 
 		GL11.glPushMatrix();
-		//GlStateManager.pushMatrix();
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
-		//GlStateManager.disableTexture();
 		GL11.glEnable(GL11.GL_BLEND);
-		//GlStateManager.enableBlend();
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		//GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		if (getXray()) {
 			GL11.glDisable(GL11.GL_DEPTH_TEST);
-			//GlStateManager.disableDepthTest();
 		}
 
 		//1.15 fix that I found online... don't touch it, it's magic
-		ActiveRenderInfo renderInfo = Minecraft.getInstance().gameRenderer.getActiveRenderInfo();
+		ActiveRenderInfo renderInfo = minecraft.gameRenderer.getActiveRenderInfo();
 		Vec3d projectedView = renderInfo.getProjectedView();
 		GL11.glRotatef(renderInfo.getPitch(), 1, 0, 0);
 		GL11.glRotatef(renderInfo.getYaw() + 180, 0, 1, 0);
 		GL11.glTranslated(-projectedView.x, -projectedView.y, -projectedView.z);
-		//GlStateManager.translated(-player_pos.x, -player_pos.y, -player_pos.z);
 
 
 		final Tessellator tessellator = Tessellator.getInstance();
@@ -201,6 +202,9 @@ public class EntityTracker {
 				TrackingDataEntry trackData = isSinglePlayer ? main.dataManager.getTrackingDataSP().get(key) : main.dataManager.getTrackingDataMP().get(key);
 				if (trackData != null && trackData.isRender()) {
 					moveData.setupDrawingBuffer(bufferBuilder, trackData, key);
+
+					// TODO check axis rendering
+					//moveData.renderAxisText(rendererManager, matrixStack, bufferSource);
 				}
 			}
 		}
@@ -208,15 +212,10 @@ public class EntityTracker {
 		tessellator.draw();
 		if (getXray()) {
 			GL11.glEnable(GL11.GL_DEPTH_TEST);
-			//GlStateManager.enableDepthTest();
 		}
 		GL11.glLineWidth(1.0f);
-		//GlStateManager.lineWidth(1.0f);
 		GL11.glDisable(GL11.GL_BLEND);
-		//GlStateManager.disableBlend();
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
-		//GlStateManager.enableTexture();
 		GL11.glPopMatrix();
-		//GlStateManager.popMatrix();
 	}
 }

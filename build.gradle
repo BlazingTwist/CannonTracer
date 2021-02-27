@@ -13,7 +13,7 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-version = '0.9.18'
+version = '1.0.1'
 group = 'blazingtwist.cannontracer' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'cannontracer'
 
@@ -92,6 +92,9 @@ repositories {
     maven {
         url "https://repository-achartengine.forge.cloudbees.com/snapshot/"
     }
+    flatDir {
+        dirs 'D:/Programmierung/IntelliJProjects'
+    }
 }
 
 configurations {
@@ -105,7 +108,7 @@ dependencies {
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft 'net.minecraftforge:forge:1.15.2-31.2.47'
 
-    provided 'com.fasterxml.jackson.core:jackson-databind:2.12.1'
+    provided name: 'JumperCommons', version: '1.0'
 
     // You may put jars on which you depend on in ./libs or you may define them like so..
     // compile "some.group:artifact:version:classifier"

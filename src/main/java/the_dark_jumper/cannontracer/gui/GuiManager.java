@@ -12,12 +12,14 @@ public class GuiManager {
 	public final OnscreenGUI onscreenGUI;
 	public final ConfigGUI configGUI;
 	public final HotkeyGUI hotkeyGUI;
+	public final TestCannonGUI testCannonGUI;
 	
 	public GuiManager(Main main) {
 		this.main = main;
 		onscreenGUI = new OnscreenGUI(this);
 		configGUI = new ConfigGUI(this);
 		hotkeyGUI = new HotkeyGUI(this);
+		testCannonGUI = new TestCannonGUI(this);
 	}
 
 	public GuiConfig getGuiConfig(){

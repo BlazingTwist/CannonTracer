@@ -3,7 +3,6 @@ package the_dark_jumper.cannontracer.listeners;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import net.minecraftforge.client.event.ClientChatEvent;
 import the_dark_jumper.cannontracer.Main;
 import the_dark_jumper.cannontracer.util.ChatUtils;
 import the_dark_jumper.cannontracer.util.StringUtils;
@@ -13,7 +12,7 @@ public enum ChatCommands {
 	DEBUG("/tracer debug"),
 	TRACE_SAVE("/tracer save"),
 	TRACE_DELETE("/tracer delete"),
-	TRACE_LOAD("/tracer load"),
+	TRACE_LOAD("/tracer open"),
 	TRACE_LIST("/tracer list");
 
 	private String commandPrefix;
@@ -26,17 +25,17 @@ public enum ChatCommands {
 		return text.startsWith(commandPrefix);
 	}
 
-	public void handle(ClientChatEvent event, String text) {
+	public boolean handle(String text) {
 		text = text.substring(commandPrefix.length());
 
 		switch (this) {
 			case HELP: {
-				ChatUtils.messagePlayer("/tracer help - shows this message", "", true);
-				ChatUtils.messagePlayer("/tracer debug - toggles debug printing of plugin messages", "", true);
-				ChatUtils.messagePlayer("/tracer list - lists all saved traces", "", true);
-				ChatUtils.messagePlayer("/tracer save [trace_name] - saves the rendered traces to the given trace_name", "", true);
-				ChatUtils.messagePlayer("/tracer save [trace_name] - deletes the saved trace with the given trace_name", "", true);
-				ChatUtils.messagePlayer("/tracer load [trace_name_1] [trace_name_2] ... [trace_name_n] - load one or more saved traces", "", true);
+				ChatUtils.messagePlayer("/tracer help", " - shows this message", true);
+				ChatUtils.messagePlayer("/tracer debug", " - toggles debug printing of plugin messages", true);
+				ChatUtils.messagePlayer("/tracer list", " - lists all saved traces", true);
+				ChatUtils.messagePlayer("/tracer save [trace_name]", " - saves the rendered traces to the given trace_name", true);
+				ChatUtils.messagePlayer("/tracer save [trace_name]", " - deletes the saved trace with the given trace_name", true);
+				ChatUtils.messagePlayer("/tracer open [trace_name_1] [trace_name_2] ... [trace_name_n]", " - open one or more saved traces", true);
 				break;
 			}
 			case DEBUG: {
@@ -74,6 +73,6 @@ public enum ChatCommands {
 			}
 		}
 
-		event.setCanceled(true);
+		return true;
 	}
 }

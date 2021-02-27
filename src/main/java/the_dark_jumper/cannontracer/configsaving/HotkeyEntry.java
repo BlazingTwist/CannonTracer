@@ -2,7 +2,7 @@ package the_dark_jumper.cannontracer.configsaving;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
-import the_dark_jumper.cannontracer.util.GetterAndSetter;
+import jumpercommons.GetterAndSetter;
 
 public class HotkeyEntry extends KeybindEntry {
 	@JsonProperty("command")

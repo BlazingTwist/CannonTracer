@@ -1,13 +1,13 @@
 package the_dark_jumper.cannontracer.hotkey;
 
 import java.util.ArrayList;
+import jumpercommons.GetterAndSetter;
 import the_dark_jumper.cannontracer.gui.HotkeyGUI;
 import the_dark_jumper.cannontracer.gui.guielements.ButtonFrame;
 import the_dark_jumper.cannontracer.gui.guielements.ScrollableTable;
 import the_dark_jumper.cannontracer.gui.guielements.ToggleKeybindFrame;
 import the_dark_jumper.cannontracer.gui.guielements.ValueFrame;
 import the_dark_jumper.cannontracer.gui.guielements.interfaces.IRenderableFrame;
-import the_dark_jumper.cannontracer.util.GetterAndSetter;
 
 public class HotkeyTableEntry {
 	private HotkeyGUI parent;

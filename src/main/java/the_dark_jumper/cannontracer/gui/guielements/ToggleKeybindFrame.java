@@ -1,11 +1,11 @@
 package the_dark_jumper.cannontracer.gui.guielements;
 
+import jumpercommons.GetterAndSetter;
 import the_dark_jumper.cannontracer.Main;
 import the_dark_jumper.cannontracer.gui.IJumperGUI;
 import the_dark_jumper.cannontracer.gui.guielements.interfaces.IFocusableFrame;
 import the_dark_jumper.cannontracer.gui.utils.FrameColors;
 import the_dark_jumper.cannontracer.gui.utils.FrameConfig;
-import the_dark_jumper.cannontracer.util.GetterAndSetter;
 
 public class ToggleKeybindFrame extends KeybindFrame implements IFocusableFrame {
 	public final GetterAndSetter<Boolean> toggle;

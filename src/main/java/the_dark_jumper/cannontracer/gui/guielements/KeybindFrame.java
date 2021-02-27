@@ -1,5 +1,6 @@
 package the_dark_jumper.cannontracer.gui.guielements;
 
+import jumpercommons.GetterAndSetter;
 import net.minecraftforge.client.event.InputEvent;
 import org.lwjgl.glfw.GLFW;
 import the_dark_jumper.cannontracer.Main;
@@ -7,7 +8,6 @@ import the_dark_jumper.cannontracer.gui.IJumperGUI;
 import the_dark_jumper.cannontracer.gui.guielements.interfaces.IFocusableFrame;
 import the_dark_jumper.cannontracer.gui.utils.FrameColors;
 import the_dark_jumper.cannontracer.gui.utils.FrameConfig;
-import the_dark_jumper.cannontracer.util.GetterAndSetter;
 import the_dark_jumper.cannontracer.util.KeyLibrary;
 
 public class KeybindFrame extends DoubleSegmentFrame implements IFocusableFrame {

@@ -2,14 +2,20 @@ package the_dark_jumper.cannontracer.tracking;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import java.util.HashMap;
+import jumpercommons.SimpleLocation;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.Matrix4f;
+import net.minecraft.client.renderer.entity.EntityRendererManager;
 import org.lwjgl.opengl.GL11;
 import the_dark_jumper.cannontracer.Main;
 import the_dark_jumper.cannontracer.configsaving.Color;
 import the_dark_jumper.cannontracer.configsaving.TrackingDataEntry;
 import the_dark_jumper.cannontracer.modules.ModuleManager;
-import the_dark_jumper.cannontracer.util.SimpleLocation;
 
 public class SingleTickMoveData {
 	@JsonIgnore
@@ -72,30 +78,22 @@ public class SingleTickMoveData {
 
 	public void setupDrawingBuffer(BufferBuilder bufferBuilder, TrackingDataEntry trackingData, String entityName) {
 		GL11.glLineWidth(trackingData.getThickness());
-
 		Color color = trackingData.getColor();
-
 		int targetRed = color.getRed();
 		int targetGreen = color.getGreen();
 		int targetBlue = color.getBlue();
 		int targetAlpha = color.getAlpha();
 
-		//GlStateManager.lineWidth(td.getThickness());
-		//y1->y2 | x1->x2 | z1->z2
 		//always y1->y2 first
-		//bufferBuilder.func_225582_a_(pos1.x, pos1.y, pos1.z).func_225586_a_(0,0,0,0).endVertex();
 		bufferBuilder.pos(pos1.x, pos1.y, pos1.z).color(0, 0, 0, 0).endVertex();
-		//bufferBuilder.func_225582_a_(pos1.x, pos2.y, pos1.z).func_225586_a_(targetRed, targetGreen, targetBlue, targetAlpha).endVertex();
 		bufferBuilder.pos(pos1.x, pos2.y, pos1.z).color(targetRed, targetGreen, targetBlue, targetAlpha).endVertex();
+
 		//x1->x2 next if difference is greater, otherwise z1->z2
 		if (Math.abs(pos2.x - pos1.x) >= Math.abs(pos2.z - pos1.z)) {
-			//bufferBuilder.func_225582_a_(pos2.x, pos2.y, pos1.z).func_225586_a_(targetRed, targetGreen, targetBlue, targetAlpha).endVertex();
 			bufferBuilder.pos(pos2.x, pos2.y, pos1.z).color(targetRed, targetGreen, targetBlue, targetAlpha).endVertex();
 		} else {
-			//bufferBuilder.func_225582_a_(pos1.x, pos2.y, pos2.z).func_225586_a_(targetRed, targetGreen, targetBlue, targetAlpha).endVertex();
 			bufferBuilder.pos(pos1.x, pos2.y, pos2.z).color(targetRed, targetGreen, targetBlue, targetAlpha).endVertex();
 		}
-		//bufferBuilder.func_225582_a_(pos2.x, pos2.y, pos2.z).func_225586_a_(targetRed, targetGreen, targetBlue, targetAlpha).endVertex();
 		bufferBuilder.pos(pos2.x, pos2.y, pos2.z).color(targetRed, targetGreen, targetBlue, targetAlpha).endVertex();
 
 		int targetTick;
@@ -132,25 +130,6 @@ public class SingleTickMoveData {
 			targetBlue = 255 - targetBlue;
 		}
 
-		/*bufferBuilder.func_225582_a_((pos2.x-0.49), (pos2.y-0.49), (pos2.z-0.49)).func_225586_a_(0,0,0,0).endVertex();
-		bufferBuilder.func_225582_a_((pos2.x+0.49), (pos2.y-0.49), (pos2.z-0.49)).func_225586_a_(targetRed, targetGreen, targetBlue, targetAlpha).endVertex();
-		bufferBuilder.func_225582_a_((pos2.x+0.49), (pos2.y-0.49), (pos2.z+0.49)).func_225586_a_(targetRed, targetGreen, targetBlue, targetAlpha).endVertex();
-		bufferBuilder.func_225582_a_((pos2.x-0.49), (pos2.y-0.49), (pos2.z+0.49)).func_225586_a_(targetRed, targetGreen, targetBlue, targetAlpha).endVertex();
-		bufferBuilder.func_225582_a_((pos2.x-0.49), (pos2.y-0.49), (pos2.z-0.49)).func_225586_a_(targetRed, targetGreen, targetBlue, targetAlpha).endVertex();
-		bufferBuilder.func_225582_a_((pos2.x-0.49), (pos2.y+0.49), (pos2.z-0.49)).func_225586_a_(targetRed, targetGreen, targetBlue, targetAlpha).endVertex();
-		bufferBuilder.func_225582_a_((pos2.x+0.49), (pos2.y+0.49), (pos2.z-0.49)).func_225586_a_(targetRed, targetGreen, targetBlue, targetAlpha).endVertex();
-		bufferBuilder.func_225582_a_((pos2.x+0.49), (pos2.y+0.49), (pos2.z+0.49)).func_225586_a_(targetRed, targetGreen, targetBlue, targetAlpha).endVertex();
-		bufferBuilder.func_225582_a_((pos2.x-0.49), (pos2.y+0.49), (pos2.z+0.49)).func_225586_a_(targetRed, targetGreen, targetBlue, targetAlpha).endVertex();
-		bufferBuilder.func_225582_a_((pos2.x-0.49), (pos2.y-0.49), (pos2.z+0.49)).func_225586_a_(targetRed, targetGreen, targetBlue, targetAlpha).endVertex();
-
-		//fill missing 3 lines
-		bufferBuilder.func_225582_a_((pos2.x-0.49), (pos2.y+0.49), (pos2.z+0.49)).func_225586_a_(0,0,0,0).endVertex();
-		bufferBuilder.func_225582_a_((pos2.x-0.49), (pos2.y+0.49), (pos2.z-0.49)).func_225586_a_(targetRed, targetGreen, targetBlue, targetAlpha).endVertex();
-		bufferBuilder.func_225582_a_((pos2.x+0.49), (pos2.y-0.49), (pos2.z-0.49)).func_225586_a_(0,0,0,0).endVertex();
-		bufferBuilder.func_225582_a_((pos2.x+0.49), (pos2.y+0.49), (pos2.z-0.49)).func_225586_a_(targetRed, targetGreen, targetBlue, targetAlpha).endVertex();
-		bufferBuilder.func_225582_a_((pos2.x+0.49), (pos2.y-0.49), (pos2.z+0.49)).func_225586_a_(0,0,0,0).endVertex();
-		bufferBuilder.func_225582_a_((pos2.x+0.49), (pos2.y+0.49), (pos2.z+0.49)).func_225586_a_(targetRed, targetGreen, targetBlue, targetAlpha).endVertex();*/
-
 		bufferBuilder.pos((pos2.x - 0.49), (pos2.y - 0.49), (pos2.z - 0.49)).color(0, 0, 0, 0).endVertex();
 		bufferBuilder.pos((pos2.x + 0.49), (pos2.y - 0.49), (pos2.z - 0.49)).color(targetRed, targetGreen, targetBlue, targetAlpha).endVertex();
 		bufferBuilder.pos((pos2.x + 0.49), (pos2.y - 0.49), (pos2.z + 0.49)).color(targetRed, targetGreen, targetBlue, targetAlpha).endVertex();
@@ -169,5 +148,35 @@ public class SingleTickMoveData {
 		bufferBuilder.pos((pos2.x + 0.49), (pos2.y + 0.49), (pos2.z - 0.49)).color(targetRed, targetGreen, targetBlue, targetAlpha).endVertex();
 		bufferBuilder.pos((pos2.x + 0.49), (pos2.y - 0.49), (pos2.z + 0.49)).color(0, 0, 0, 0).endVertex();
 		bufferBuilder.pos((pos2.x + 0.49), (pos2.y + 0.49), (pos2.z + 0.49)).color(targetRed, targetGreen, targetBlue, targetAlpha).endVertex();
+	}
+
+	public void renderAxisText(EntityRendererManager rendererManager, MatrixStack matrixStack, IRenderTypeBuffer buffer){
+		SimpleLocation delta = SimpleLocation.sub(pos2, pos1);
+		renderText(rendererManager, "" + delta.y, matrixStack, buffer, pos1.x, pos1.y + (delta.y / 2), pos1.z);
+
+		if (Math.abs(pos2.x - pos1.x) >= Math.abs(pos2.z - pos1.z)) {
+			renderText(rendererManager, "" + delta.x, matrixStack, buffer, pos1.x + (delta.x / 2), pos2.y, pos1.z);
+			renderText(rendererManager, "" + delta.z, matrixStack, buffer, pos2.x, pos2.y, pos1.z + (delta.z / 2));
+		}else{
+			renderText(rendererManager, "" + delta.z, matrixStack, buffer, pos1.x, pos2.y, pos1.z + (delta.z / 2));
+			renderText(rendererManager, "" + delta.x, matrixStack, buffer, pos1.x + (delta.x / 2), pos2.y, pos2.z);
+		}
+	}
+
+	private static void renderText(EntityRendererManager renderManager, String displayText, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, double x, double y, double z) {
+		double cameraDistance = renderManager.getDistanceToCamera(x, y, z);
+		if (cameraDistance <= 4096.0D) {
+			matrixStackIn.push();
+			matrixStackIn.translate(x, y, z);
+			matrixStackIn.rotate(renderManager.getCameraOrientation());
+			matrixStackIn.scale(-0.025f, -0.025f, 0.025f);
+			Matrix4f matrix = matrixStackIn.getLast().getMatrix();
+			float backgroundOpacity = Minecraft.getInstance().gameSettings.getTextBackgroundOpacity(0.25f);
+			int backgroundColor = (int)(backgroundOpacity * 255f) << 24;
+			FontRenderer fontRenderer = renderManager.getFontRenderer();
+			fontRenderer.renderString(displayText, 0, 0, 0x20FFFFFF, false, matrix, bufferIn, false, backgroundColor, 0);
+			fontRenderer.renderString(displayText, 0, 0, 0xFFFFFFFF, false, matrix, bufferIn, false, 0, 0);
+			matrixStackIn.pop();
+		}
 	}
 }

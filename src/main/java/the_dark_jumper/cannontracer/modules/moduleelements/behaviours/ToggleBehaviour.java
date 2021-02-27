@@ -1,10 +1,10 @@
 package the_dark_jumper.cannontracer.modules.moduleelements.behaviours;
 
+import jumpercommons.GetterAndSetter;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import the_dark_jumper.cannontracer.modules.moduleelements.IModule;
 import the_dark_jumper.cannontracer.modules.moduleelements.ModuleBasic;
-import the_dark_jumper.cannontracer.util.GetterAndSetter;
 
 public class ToggleBehaviour implements IModuleBehaviour {
 	private ModuleBasic parent;

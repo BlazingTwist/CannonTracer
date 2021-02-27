@@ -244,19 +244,13 @@ public class HotkeyGUI extends Screen implements IJumperGUI{
 	
 	@Override
 	public void renderBackground() {
-		//no, just no
-		return;
 	}
 	
 	@Override
 	public void renderBackground(int something) {
-		//I said no, fuck you!
-		return;
 	}
 	
 	@Override
 	public void renderDirtBackground(int something) {
-		//are you shitting me?
-		return;
 	}
 }

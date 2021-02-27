@@ -1,6 +1,7 @@
 package the_dark_jumper.cannontracer.listeners;
 
 import java.util.HashMap;
+import jumpercommons.SimpleLocation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraftforge.client.event.ClientChatEvent;
@@ -11,7 +12,6 @@ import the_dark_jumper.cannontracer.Main;
 import the_dark_jumper.cannontracer.modules.ModuleManager;
 import the_dark_jumper.cannontracer.tracking.SingleTickMoveData;
 import the_dark_jumper.cannontracer.util.ChatUtils;
-import the_dark_jumper.cannontracer.util.SimpleLocation;
 
 public class ServerChatListener {
 	public final Main main;
@@ -25,13 +25,22 @@ public class ServerChatListener {
 
 	@SubscribeEvent
 	public void playerChatEvent(ClientChatEvent event) {
-		String text = event.getMessage();
+		if(handleChatMessageSent(event.getMessage())){
+			event.setCanceled(true);
+		}
+	}
 
+	/**
+	 * @return true when the event should be cancelled
+	 */
+	public static boolean handleChatMessageSent(String message){
+		boolean shouldCancel = false;
 		for (ChatCommands command : ChatCommands.values()) {
-			if (command.isCommand(text)) {
-				command.handle(event, text);
+			if (command.isCommand(message)) {
+				shouldCancel |= command.handle(message);
 			}
 		}
+		return shouldCancel;
 	}
 
 	@SubscribeEvent
@@ -52,6 +61,12 @@ public class ServerChatListener {
 					if (main.dataManager.getTrackingDataMP().containsKey(data[0])) {
 						handleTracingData(data);
 					}
+				}
+			} else if(text.startsWith("[TestCannonData]")) {
+				String data = text.substring("[TestCannonData]".length());
+				main.guiManager.testCannonGUI.open(data);
+				if(!debugPrint){
+					event.setCanceled(true);
 				}
 			}
 		}

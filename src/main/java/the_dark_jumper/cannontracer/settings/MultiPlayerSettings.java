@@ -2,10 +2,10 @@ package the_dark_jumper.cannontracer.settings;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import jumpercommons.GetterAndSetter;
 import net.minecraft.client.Minecraft;
 import the_dark_jumper.cannontracer.Main;
 import the_dark_jumper.cannontracer.tracking.SingleTickMoveData;
-import the_dark_jumper.cannontracer.util.GetterAndSetter;
 
 public class MultiPlayerSettings {
 	public final Main main;
@@ -81,7 +81,10 @@ public class MultiPlayerSettings {
 		int startTick = renderTickGNS.get();
 		int max = main.moduleManager.getMaxDisplayTickMP();
 		int currentTick = startTick;
-		while (((currentTick = (currentTick - 1) % max)) != startTick) {
+		while ((currentTick = currentTick - 1) != startTick) {
+			if(currentTick < 0){
+				currentTick = max;
+			}
 			if (despawnTicks.contains(currentTick)) {
 				renderTickGNS.set(currentTick);
 				return;

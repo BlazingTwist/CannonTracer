@@ -1,16 +1,14 @@
 package the_dark_jumper.cannontracer.gui.guielements;
 
 import javax.annotation.Nullable;
-
-import org.lwjgl.glfw.GLFW;
-
+import jumpercommons.GetterAndSetter;
 import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
+import org.lwjgl.glfw.GLFW;
 import the_dark_jumper.cannontracer.Main;
 import the_dark_jumper.cannontracer.gui.IJumperGUI;
 import the_dark_jumper.cannontracer.gui.guielements.interfaces.IFocusableFrame;
 import the_dark_jumper.cannontracer.gui.utils.FrameColors;
 import the_dark_jumper.cannontracer.gui.utils.FrameConfig;
-import the_dark_jumper.cannontracer.util.GetterAndSetter;
 import the_dark_jumper.cannontracer.util.KeyLibrary;
 
 public class ValueFrame<T> extends DoubleSegmentFrame implements IFocusableFrame {
@@ -46,6 +44,10 @@ public class ValueFrame<T> extends DoubleSegmentFrame implements IFocusableFrame
 		this.source = source;
 		this.clazz = clazz;
 		this.preserveOnclick = preserveOnclick;
+	}
+
+	public void update(){
+		this.value = source.get().toString();
 	}
 
 	@Override

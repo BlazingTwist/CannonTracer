@@ -1,5 +1,7 @@
 package the_dark_jumper.cannontracer.util;
 
+import jumpercommons.GetterAndSetter;
+
 public class KeybindData {
 	public GetterAndSetter<Boolean> triggerGNS;
 	public GetterAndSetter<Integer> keycodeGNS;
