@@ -1,13 +1,13 @@
 package the_dark_jumper.cannontracer.gui.utils;
 
 public class FrameConfig {
-	public int x;
-	public int y;
-	public int xEnd;
-	public int yEnd;
-	public int borderThickness;
+	public float x;
+	public float y;
+	public float xEnd;
+	public float yEnd;
+	public float borderThickness;
 	
-	public FrameConfig init(int x, int y, int xEnd, int yEnd, int borderThickness) {
+	public FrameConfig init(float x, float y, float xEnd, float yEnd, float borderThickness) {
 		this.x = x;
 		this.y = y;
 		this.xEnd = xEnd;

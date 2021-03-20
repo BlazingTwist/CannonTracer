@@ -7,14 +7,14 @@ public interface IClickableFrame extends IRenderableFrame{
 	boolean getHovered();
 	void setHovered(boolean hovered);
 	
-	default void mouseOver(int x, int y, int scaledScreenWidth, int scaledScreenHeight, boolean mouseLeftDown, boolean queueLeftUpdate) {
+	default void mouseOver(float x, float y, float scaledScreenWidth, float scaledScreenHeight, boolean mouseLeftDown, boolean queueLeftUpdate) {
 		if(getIsClicked() && !mouseLeftDown) {
 			setIsClicked(false);
 		}
-		int x1 = getPercentValue(scaledScreenWidth, this.getConfig().x);
-		int x2 = getPercentValue(scaledScreenWidth, this.getConfig().xEnd);
-		int y1 = getPercentValue(scaledScreenHeight, this.getConfig().y);
-		int y2 = getPercentValue(scaledScreenHeight, this.getConfig().yEnd);
+		float x1 = getPercentValue(scaledScreenWidth, this.getConfig().x);
+		float x2 = getPercentValue(scaledScreenWidth, this.getConfig().xEnd);
+		float y1 = getPercentValue(scaledScreenHeight, this.getConfig().y);
+		float y2 = getPercentValue(scaledScreenHeight, this.getConfig().yEnd);
 		if(x >= x1 && x <= x2 && y >= y1 && y <= y2) {
 			setHovered(true);
 			if(queueLeftUpdate && mouseLeftDown) {

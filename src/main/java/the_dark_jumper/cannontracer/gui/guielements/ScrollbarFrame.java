@@ -89,7 +89,7 @@ public class ScrollbarFrame implements IRenderableFrame, IClickableFrame {
 	}
 
 	@Override
-	public void mouseOver(int x, int y, int scaledScreenWidth, int scaledScreenHeight, boolean mouseLeftDown, boolean queueLeftUpdate) {
+	public void mouseOver(float x, float y, float scaledScreenWidth, float scaledScreenHeight, boolean mouseLeftDown, boolean queueLeftUpdate) {
 		IClickableFrame.super.mouseOver(x, y, scaledScreenWidth, scaledScreenHeight, mouseLeftDown, queueLeftUpdate);
 		if (isClicked) {
 			double current;
@@ -129,37 +129,42 @@ public class ScrollbarFrame implements IRenderableFrame, IClickableFrame {
 	}
 
 	@Override
-	public void doFills(int x1, int y1, int x2, int y2, int borderPx) {
-		int width = Math.abs(x2 - x1);
-		int height = Math.abs(y2 - y1);
+	public void doFills(float x1, float y1, float x2, float y2, float borderPx) {
+		int x1i = Math.round(x1);
+		int x2i = Math.round(x2);
+		int y1i = Math.round(y1);
+		int y2i = Math.round(y2);
+		int borderPxi = Math.round(borderPx);
+		float width = Math.abs(x2i - x1i);
+		float height = Math.abs(y2i - y1i);
 
-		Screen.fill(x1, y1, x1 + borderPx, y2, colors.borderColor); //left edge
-		Screen.fill(x1 + borderPx, y1, x2 - borderPx, y1 + borderPx, colors.borderColor); //top edge
-		Screen.fill(x2 - borderPx, y1, x2, y2, colors.borderColor); //right edge
-		Screen.fill(x1 + borderPx, y2 - borderPx, x2 - borderPx, y2, colors.borderColor); //bottom edge
+		Screen.fill(x1i, y1i, x1i + borderPxi, y2i, colors.borderColor); //left edge
+		Screen.fill(x1i + borderPxi, y1i, x2i - borderPxi, y1i + borderPxi, colors.borderColor); //top edge
+		Screen.fill(x2i - borderPxi, y1i, x2i, y2i, colors.borderColor); //right edge
+		Screen.fill(x1i + borderPxi, y2i - borderPxi, x2i - borderPxi, y2i, colors.borderColor); //bottom edge
 
 		int relative1;
 		int relative2;
 		if (isVertical) {
-			relative1 = y1;
-			relative2 = y2;
+			relative1 = y1i;
+			relative2 = y2i;
 		} else {
-			relative1 = x1;
-			relative2 = x2;
+			relative1 = x1i;
+			relative2 = x2i;
 		}
 		int halfBarSize = (int) ((relative2 - relative1) * scrollbarSize / 2);
 		int relativeBarPos = (int) (relative1 + halfBarSize + ((relative2 - relative1 - (2 * halfBarSize)) * scrollbarPos));
 
 		if (isVertical) {
-			int xOffset = width <= (2 * borderPx)
-					? (int) Math.ceil((width - (2 * borderPx)) / 2d)
+			int xOffset = width <= (2 * borderPxi)
+					? (int) Math.ceil((width - (2 * borderPxi)) / 2d)
 					: 0;
-			Screen.fill(x1 + borderPx - xOffset, relativeBarPos - halfBarSize + borderPx, x2 - borderPx + xOffset, relativeBarPos + halfBarSize - borderPx, getInnerColor());
+			Screen.fill(x1i + borderPxi - xOffset, relativeBarPos - halfBarSize + borderPxi, x2i - borderPxi + xOffset, relativeBarPos + halfBarSize - borderPxi, getInnerColor());
 		} else {
-			int yOffset = height <= (2 * borderPx)
-					? (int) Math.ceil((height - (2 * borderPx)) / 2d)
+			int yOffset = height <= (2 * borderPxi)
+					? (int) Math.ceil((height - (2 * borderPxi)) / 2d)
 					: 0;
-			Screen.fill(relativeBarPos - halfBarSize + borderPx, y1 + borderPx - yOffset, relativeBarPos + halfBarSize - borderPx, y2 - borderPx + yOffset, getInnerColor());
+			Screen.fill(relativeBarPos - halfBarSize + borderPxi, y1i + borderPxi - yOffset, relativeBarPos + halfBarSize - borderPxi, y2i - borderPxi + yOffset, getInnerColor());
 		}
 	}
 }

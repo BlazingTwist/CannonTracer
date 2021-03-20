@@ -50,31 +50,31 @@ public class ScrollableTable implements IRenderableFrame, IClickableFrame, IKeyE
 		this.colors = colors;
 	}
 	
-	public int matchWidthToHeight(int height) {
-		int tableHeight = getPercentValue(Minecraft.getInstance().getMainWindow().getScaledHeight() ,config.yEnd - config.y);
+	public float matchWidthToHeight(int height) {
+		float tableHeight = getPercentValue(Minecraft.getInstance().getMainWindow().getScaledHeight() ,config.yEnd - config.y);
 		//int tableHeight = getPercentValue(Minecraft.getInstance().func_228018_at_().getScaledHeight() ,config.yEnd - config.y);
 		//int tableHeight = getPercentValue(Minecraft.getInstance().mainWindow.getScaledHeight() ,config.yEnd - config.y);
 
-		int tableWidth = getPercentValue(Minecraft.getInstance().getMainWindow().getScaledWidth(), config.xEnd - config.x);
+		float tableWidth = getPercentValue(Minecraft.getInstance().getMainWindow().getScaledWidth(), config.xEnd - config.x);
 		//int tableWidth = getPercentValue(Minecraft.getInstance().func_228018_at_().getScaledWidth(), config.xEnd - config.x);
 		//int tableWidth = getPercentValue(Minecraft.getInstance().mainWindow.getScaledWidth(), config.xEnd - config.x);
 
 		return height * tableHeight / tableWidth;
 	}
 	
-	public int matchHeightToWidth(int width) {
-		int tableHeight = getPercentValue(Minecraft.getInstance().getMainWindow().getScaledHeight() ,config.yEnd - config.y);
+	public float matchHeightToWidth(int width) {
+		float tableHeight = getPercentValue(Minecraft.getInstance().getMainWindow().getScaledHeight() ,config.yEnd - config.y);
 		//int tableHeight = getPercentValue(Minecraft.getInstance().func_228018_at_().getScaledHeight() ,config.yEnd - config.y);
 		//int tableHeight = getPercentValue(Minecraft.getInstance().mainWindow.getScaledHeight() ,config.yEnd - config.y);
 
-		int tableWidth = getPercentValue(Minecraft.getInstance().getMainWindow().getScaledWidth(), config.xEnd - config.x);
+		float tableWidth = getPercentValue(Minecraft.getInstance().getMainWindow().getScaledWidth(), config.xEnd - config.x);
 		//int tableWidth = getPercentValue(Minecraft.getInstance().func_228018_at_().getScaledWidth(), config.xEnd - config.x);
 		//int tableWidth = getPercentValue(Minecraft.getInstance().mainWindow.getScaledWidth(), config.xEnd - config.x);
 
 		return width * tableWidth / tableHeight;
 	}
 	
-	public void generateScrollbars(boolean useHorizontal, int height, boolean useVertical, int width) {
+	public void generateScrollbars(boolean useHorizontal, float height, boolean useVertical, float width) {
 		if(useHorizontal) {
 			horizontalScrollbar = new ScrollbarFrame(parent, new FrameConfig().init(0, 100, 100, 100 + height, config.borderThickness), colors, null);
 			horizontalScrollbar.isVertical = false;
@@ -149,14 +149,14 @@ public class ScrollableTable implements IRenderableFrame, IClickableFrame, IKeyE
 			FormatData format = getColFormat(c);
 			startX += (format.width + format.offset);
 		}
-		int endX = startX + getColFormat(col).width;
+		float endX = startX + getColFormat(col).width;
 		
 		int startY = 0;
 		for(int r = 0; r < row; r++) {
 			FormatData format = getRowFormat(r);
 			startY += (format.width + format.offset);
 		}
-		int endY = startY + getRowFormat(row).width;
+		float endY = startY + getRowFormat(row).width;
 		
 		return new FrameConfig().init(startX, startY, endX, endY, this.config.borderThickness);
 	}
@@ -165,11 +165,11 @@ public class ScrollableTable implements IRenderableFrame, IClickableFrame, IKeyE
 		uniformRowFormat = null;
 	}
 	
-	public void setUniformRowFormat(boolean isScaled, int height, int offset) {
-		if(!isScaled) {
-			int tableHeight = config.yEnd - config.y;
-			height = (int)(height * 100d / tableHeight);
-			offset = (int)(offset * 100d / tableHeight);
+	public void setUniformRowFormat(boolean isRelativeToTable, float height, float offset) {
+		if(!isRelativeToTable) {
+			float tableHeight = config.yEnd - config.y;
+			height = height * 100f / tableHeight;
+			offset = offset * 100f / tableHeight;
 		}
 		uniformRowFormat = new FormatData(height, offset);
 	}
@@ -181,26 +181,26 @@ public class ScrollableTable implements IRenderableFrame, IClickableFrame, IKeyE
 		rowFormat = null;
 	}
 	
-	public void setRowFormat(boolean isScaled, FormatData... formats) {
+	public void setRowFormat(boolean isRelativeToTable, FormatData... formats) {
 		if(rowFormat == null) {
 			rowFormat = new ArrayList<>();
 		}else {
 			rowFormat.clear();
 		}
-		int tableHeight = config.yEnd - config.y;
+		float tableHeight = config.yEnd - config.y;
 		for(int i = 0; i < formats.length; i++) {
 			FormatData formatData = formats[i];
 			if(formatData != null) {
-				if(!isScaled) {
-					formatData.width = (int)(formatData.width * 100d / tableHeight);
-					formatData.offset = (int)(formatData.offset * 100d / tableHeight);
+				if(!isRelativeToTable) {
+					formatData.width = formatData.width * 100f / tableHeight;
+					formatData.offset = formatData.offset * 100f / tableHeight;
 				}
 			}
 			rowFormat.add(formatData);
 		}
 	}
 	
-	public void setRowFormat(int index, boolean isScaled, FormatData format) {
+	public void setRowFormat(int index, boolean isRelativeToTable, FormatData format) {
 		if(rowFormat == null) {
 			rowFormat = new ArrayList<>();
 		}
@@ -209,10 +209,10 @@ public class ScrollableTable implements IRenderableFrame, IClickableFrame, IKeyE
 				rowFormat.add(null);
 			}
 		}
-		if(!isScaled) {
-			int tableHeight = config.yEnd - config.y;
-			format.width = (int)(format.width * 100d / tableHeight);
-			format.offset = (int)(format.offset * 100d / tableHeight);
+		if(!isRelativeToTable) {
+			float tableHeight = config.yEnd - config.y;
+			format.width = format.width * 100f / tableHeight;
+			format.offset = format.offset * 100f / tableHeight;
 		}
 		rowFormat.set(index, format);
 	}
@@ -221,11 +221,11 @@ public class ScrollableTable implements IRenderableFrame, IClickableFrame, IKeyE
 		uniformColFormat = null;
 	}
 	
-	public void setUniformColFormat(boolean isScaled, int width, int offset) {
-		if(!isScaled) {
-			int tableWidth = config.xEnd - config.x;
-			width = (int)(width * 100d / tableWidth);
-			offset = (int)(offset * 100d / tableWidth);
+	public void setUniformColFormat(boolean isRelativeToTable, float width, float offset) {
+		if(!isRelativeToTable) {
+			float tableWidth = config.xEnd - config.x;
+			width = width * 100f / tableWidth;
+			offset = offset * 100f / tableWidth;
 		}
 		uniformColFormat = new FormatData(width, offset);
 	}
@@ -237,26 +237,26 @@ public class ScrollableTable implements IRenderableFrame, IClickableFrame, IKeyE
 		colFormat = null;
 	}
 	
-	public void setColFormat(boolean isScaled, FormatData... formats) {
+	public void setColFormat(boolean isRelativeToTable, FormatData... formats) {
 		if(colFormat == null) {
 			colFormat = new ArrayList<>();
 		}else {
 			colFormat.clear();
 		}
-		int tableWidth = config.xEnd - config.x;
+		float tableWidth = config.xEnd - config.x;
 		for(int i = 0; i < formats.length; i++) {
 			FormatData formatData = formats[i];
 			if(formatData != null) {
-				if(!isScaled) {
-					formatData.width = (int)(formatData.width * 100d / tableWidth);
-					formatData.offset = (int)(formatData.offset * 100d / tableWidth);
+				if(!isRelativeToTable) {
+					formatData.width = formatData.width * 100f / tableWidth;
+					formatData.offset = formatData.offset * 100f / tableWidth;
 				}
 			}
 			colFormat.add(formatData);
 		}
 	}
 	
-	public void setColFormat(int index, boolean isScaled, FormatData format) {
+	public void setColFormat(int index, boolean isRelativeToTable, FormatData format) {
 		if(colFormat == null) {
 			colFormat = new ArrayList<>();
 		}
@@ -265,10 +265,10 @@ public class ScrollableTable implements IRenderableFrame, IClickableFrame, IKeyE
 				colFormat.add(null);
 			}
 		}
-		if(!isScaled) {
-			int tableWidth = config.xEnd - config.x;
-			format.width = (int)(format.width * 100d / tableWidth);
-			format.offset = (int)(format.offset * 100d / tableWidth);
+		if(!isRelativeToTable) {
+			float tableWidth = config.xEnd - config.x;
+			format.width = format.width * 100f / tableWidth;
+			format.offset = format.offset * 100f / tableWidth;
 		}
 		colFormat.set(index, format);
 	}
@@ -317,13 +317,13 @@ public class ScrollableTable implements IRenderableFrame, IClickableFrame, IKeyE
 	}
 	
 	@Override
-	public void mouseOver(int x, int y, int scaledScreenWidth, int scaledScreenHeight, boolean mouseLeftDown, boolean queueLeftUpdate) {
-		int relX1 = getPercentValue(scaledScreenWidth, config.x);
-		int relX2 = getPercentValue(scaledScreenWidth, config.xEnd);
-		int relY1 = getPercentValue(scaledScreenHeight, config.y);
-		int relY2 = getPercentValue(scaledScreenHeight, config.yEnd);
-		int perceivedScreenWidth = relX2 - relX1;
-		int perceivedScreenHeight = relY2 - relY1;
+	public void mouseOver(float x, float y, float scaledScreenWidth, float scaledScreenHeight, boolean mouseLeftDown, boolean queueLeftUpdate) {
+		float relX1 = getPercentValue(scaledScreenWidth, config.x);
+		float relX2 = getPercentValue(scaledScreenWidth, config.xEnd);
+		float relY1 = getPercentValue(scaledScreenHeight, config.y);
+		float relY2 = getPercentValue(scaledScreenHeight, config.yEnd);
+		float perceivedScreenWidth = relX2 - relX1;
+		float perceivedScreenHeight = relY2 - relY1;
 		
 		double scrollOffsetX = 0;
 		if(horizontalScrollbar != null) {
@@ -359,19 +359,25 @@ public class ScrollableTable implements IRenderableFrame, IClickableFrame, IKeyE
 	}
 	
 	@Override
-	public void doFills(int x1, int y1, int x2, int y2, int borderPx) {
-		Screen.fill(x1, y1, x1 + borderPx, y2, getColors().borderColor); //left edge
-		Screen.fill(x1 + borderPx, y1, x2 - borderPx, y1 + borderPx, getColors().borderColor); //top edge
-		Screen.fill(x2 - borderPx, y1, x2, y2, getColors().borderColor); //right edge
-		Screen.fill(x1 + borderPx, y2 - borderPx, x2 - borderPx, y2, getColors().borderColor); //bottom edge
+	public void doFills(float x1, float y1, float x2, float y2, float borderPx) {
+		int x1i = Math.round(x1);
+		int x2i = Math.round(x2);
+		int y1i = Math.round(y1);
+		int y2i = Math.round(y2);
+		int borderPxi = Math.round(borderPx);
+
+		Screen.fill(x1i, y1i, x1i + borderPxi, y2i, getColors().borderColor); //left edge
+		Screen.fill(x1i + borderPxi, y1i, x2i - borderPxi, y1i + borderPxi, getColors().borderColor); //top edge
+		Screen.fill(x2i - borderPxi, y1i, x2i, y2i, getColors().borderColor); //right edge
+		Screen.fill(x1i + borderPxi, y2i - borderPxi, x2i - borderPxi, y2i, getColors().borderColor); //bottom edge
 		//System.out.println("doFills called with: "+x1+" | "+y1+" | "+x2+" | "+y2+" | "+borderPx);
 		//System.out.println("Config is: "+getConfig().x+" | "+getConfig().y+" | "+getConfig().xEnd+" | "+getConfig().yEnd);
 		int guiScale = Minecraft.getInstance().gameSettings.guiScale;
 		if(horizontalScrollbar != null) {
-			renderTableFrame(horizontalScrollbar, x1, y1, x2, y2, guiScale, horizontalScrollbar.config, true);
+			renderTableFrame(horizontalScrollbar, x1i, y1i, x2i, y2i, guiScale, horizontalScrollbar.config, true);
 		}
 		if(verticalScrollbar != null) {
-			renderTableFrame(verticalScrollbar, x1, y1, x2, y2, guiScale, verticalScrollbar.config, true);
+			renderTableFrame(verticalScrollbar, x1i, y1i, x2i, y2i, guiScale, verticalScrollbar.config, true);
 		}
 		for(int i = 0; i < rows.size(); i++) {
 			ArrayList<IRenderableFrame> row = rows.get(i);
@@ -384,13 +390,13 @@ public class ScrollableTable implements IRenderableFrame, IClickableFrame, IKeyE
 		}
 	}
 	
-	public void renderTableFrame(IRenderableFrame frame, int perceivedX1, int perceivedY1, int perceivedX2, int perceivedY2, int guiScale, FrameConfig frameConfig, boolean allowOutOfBounds) {
-		int width = perceivedX2 - perceivedX1;
-		int height = perceivedY2 - perceivedY1;
-		int x1 = getPercentValue(width, frameConfig.x) + perceivedX1;
-		int x2 = getPercentValue(width, frameConfig.xEnd) + perceivedX1;
-		int y1 = getPercentValue(height, frameConfig.y) + perceivedY1;
-		int y2 = getPercentValue(height, frameConfig.yEnd) + perceivedY1;
+	public void renderTableFrame(IRenderableFrame frame, float perceivedX1, float perceivedY1, float perceivedX2, float perceivedY2, int guiScale, FrameConfig frameConfig, boolean allowOutOfBounds) {
+		float width = perceivedX2 - perceivedX1;
+		float height = perceivedY2 - perceivedY1;
+		float x1 = getPercentValue(width, frameConfig.x) + perceivedX1;
+		float x2 = getPercentValue(width, frameConfig.xEnd) + perceivedX1;
+		float y1 = getPercentValue(height, frameConfig.y) + perceivedY1;
+		float y2 = getPercentValue(height, frameConfig.yEnd) + perceivedY1;
 		if(allowOutOfBounds) {
 			//render without scrollbar shifting
 			frame.doFills(x1, y1, x2, y2, frameConfig.borderThickness / guiScale);

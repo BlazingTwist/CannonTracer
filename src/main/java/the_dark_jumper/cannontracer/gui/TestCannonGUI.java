@@ -17,6 +17,7 @@ import org.lwjgl.opengl.GL11;
 import the_dark_jumper.cannontracer.Main;
 import the_dark_jumper.cannontracer.gui.guielements.BasicTextFrame;
 import the_dark_jumper.cannontracer.gui.guielements.ButtonFrame;
+import the_dark_jumper.cannontracer.gui.guielements.CompactToggleValueFrame;
 import the_dark_jumper.cannontracer.gui.guielements.ScrollableTable;
 import the_dark_jumper.cannontracer.gui.guielements.ValueFrame;
 import the_dark_jumper.cannontracer.gui.guielements.interfaces.IClickableFrame;
@@ -82,6 +83,13 @@ public class TestCannonGUI extends Screen implements IJumperGUI {
 		}
 	}
 
+	private void cancelButtonPressed(boolean isPressed){
+		if(isPressed){
+			cancelCannonData = true;
+			shouldClose = true;
+		}
+	}
+
 	public void addChargeButtonPressed(boolean isPressed) {
 		if (isPressed) {
 			testCannon.getCharges().add(new TestCannonCharge());
@@ -118,7 +126,7 @@ public class TestCannonGUI extends Screen implements IJumperGUI {
 		config.init(6, 10, 60, 14, 8);
 		guiComponents.add(new BasicTextFrame(this, "Cannon Tester", config.duplicate(), colors));
 		config.init(80, 10, 89, 14, 8);
-		guiComponents.add(new ButtonFrame(this, "cancel", config.duplicate(), colors, this::closeWithoutSend));
+		guiComponents.add(new ButtonFrame(this, "cancel", config.duplicate(), colors, this::cancelButtonPressed));
 		config.init(90, 10, 94, 14, 8);
 		guiComponents.add(new ButtonFrame(this, "X", config.duplicate(), colors, this::closeButtonPressed));
 
@@ -153,17 +161,19 @@ public class TestCannonGUI extends Screen implements IJumperGUI {
 		guiComponents.add(new BasicTextFrame(this, "Charges", config.duplicate(), headerColors));
 		config.init(23, 40, 25, 44, 8);
 		guiComponents.add(new ButtonFrame(this, "+", config.duplicate(), colors, this::addChargeButtonPressed));
-		config.init(10, 45, 63, 94, 8);
+		config.init(10, 45, 63, 94, 4);
 		chargesTable = new ScrollableTable(this, config.duplicate(), colors);
 		chargesTable.setUniformColFormat(false, 9, 1); // fallback value, shouldn't be needed
-		chargesTable.setColFormat(false,
-				new FormatData(2, 1), // delete button
-				new FormatData(9, 0), // amount text field
-				new FormatData(2, 0), // increment button
-				new FormatData(2, 1), // decrement button
-				new FormatData(9, 0), // delay text field
-				new FormatData(2, 0), // increment button
-				new FormatData(2, 1));// decrement button
+		chargesTable.setColFormat(true,
+				new FormatData(4, 1), // delete button
+				new FormatData(10, 1), // enabled/disabled
+				new FormatData(15, 0), // amount text field
+				new FormatData(4, 0), // increment button
+				new FormatData(4, 1), // decrement button
+				new FormatData(15, 0), // delay text field
+				new FormatData(4, 0), // increment button
+				new FormatData(4, 1), // decrement button
+				new FormatData(35, 1));// notes text field
 		chargesTable.setUniformRowFormat(false, 4, 1);
 		chargesTable.generateScrollbars(false, 0, true, chargesTable.matchHeightToWidth(1));
 		generateChargesTable();
@@ -184,12 +194,14 @@ public class TestCannonGUI extends Screen implements IJumperGUI {
 
 			chargesTable.addRow(
 					new ButtonFrame(this, "X", null, colors, new DeleteChargeCallback(i, this::removeCharge)::onPressed),
+					new CompactToggleValueFrame(this, null, colors, "enabled", "disabled", charge.getEnabledGNS()),
 					amountValueFrame,
 					new ButtonFrame(this, "+", null, colors, amountIncrementer::onIncrement),
 					new ButtonFrame(this, "-", null, colors, amountIncrementer::onDecrement),
 					delayValueFrame,
 					new ButtonFrame(this, "+", null, colors, delayIncrementer::onIncrement),
-					new ButtonFrame(this, "-", null, colors, delayIncrementer::onDecrement)
+					new ButtonFrame(this, "-", null, colors, delayIncrementer::onDecrement),
+					new ValueFrame<>(this, null, colors, "note", charge.getNoteGNS(), String.class, true)
 			);
 		}
 
@@ -266,6 +278,7 @@ public class TestCannonGUI extends Screen implements IJumperGUI {
 		if (shouldClose) {
 			onClose();
 			shouldClose = false;
+			cancelCannonData = false;
 		}
 	}
 
@@ -313,14 +326,6 @@ public class TestCannonGUI extends Screen implements IJumperGUI {
 		GL11.glScaled(configFontSize, configFontSize, configFontSize);
 		super.drawCenteredString(fontRenderer, text, xPos, height, color);
 		GL11.glPopMatrix();
-	}
-
-	private void closeWithoutSend(boolean isPressed){
-		if(isPressed){
-			cancelCannonData = true;
-			onClose();
-			cancelCannonData = false;
-		}
 	}
 
 	@Override

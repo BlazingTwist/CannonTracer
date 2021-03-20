@@ -5,35 +5,40 @@ import the_dark_jumper.cannontracer.gui.utils.FrameColors;
 import the_dark_jumper.cannontracer.gui.utils.FrameConfig;
 
 public interface IRenderableFrame {
-	public FrameConfig getConfig();
-	public void setConfig(FrameConfig config);
+	FrameConfig getConfig();
+	void setConfig(FrameConfig config);
 	
-	public FrameColors getColors();
+	FrameColors getColors();
 	
-	public default void render(int scaledScreenWidth, int scaledScreenHeight, int guiScale) {
+	default void render(int scaledScreenWidth, int scaledScreenHeight, int guiScale) {
 		//outer corners
-		int x1 = getPercentValue(scaledScreenWidth, getConfig().x);
-		int x2 = getPercentValue(scaledScreenWidth, getConfig().xEnd);
-		int y1 = getPercentValue(scaledScreenHeight, getConfig().y);
-		int y2 = getPercentValue(scaledScreenHeight, getConfig().yEnd);
+		float x1 = getPercentValue(scaledScreenWidth, getConfig().x);
+		float x2 = getPercentValue(scaledScreenWidth, getConfig().xEnd);
+		float y1 = getPercentValue(scaledScreenHeight, getConfig().y);
+		float y2 = getPercentValue(scaledScreenHeight, getConfig().yEnd);
 		doFills(x1, y1, x2, y2, getConfig().borderThickness / guiScale);
 	}
 	
-	public default void doFills(int x1, int y1, int x2, int y2, int borderPx) {
-		Screen.fill(x1, y1, x1 + borderPx, y2, getColors().borderColor); //left edge
-		Screen.fill(x1 + borderPx, y1, x2 - borderPx, y1 + borderPx, getColors().borderColor); //top edge
-		Screen.fill(x2 - borderPx, y1, x2, y2, getColors().borderColor); //right edge
-		Screen.fill(x1 + borderPx, y2 - borderPx, x2 - borderPx, y2, getColors().borderColor); //bottom edge
-		Screen.fill(x1 + borderPx, y1 + borderPx, x2 - borderPx, y2 - borderPx, getInnerColor());
+	default void doFills(float x1, float y1, float x2, float y2, float borderPx) {
+		int x1i = Math.round(x1);
+		int x2i = Math.round(x2);
+		int y1i = Math.round(y1);
+		int y2i = Math.round(y2);
+		int borderPxi = Math.round(borderPx);
+		Screen.fill(x1i, y1i, x1i + borderPxi, y2i, getColors().borderColor); //left edge
+		Screen.fill(x1i + borderPxi, y1i, x2i - borderPxi, y1i + borderPxi, getColors().borderColor); //top edge
+		Screen.fill(x2i - borderPxi, y1i, x2i, y2i, getColors().borderColor); //right edge
+		Screen.fill(x1i + borderPxi, y2i - borderPxi, x2i - borderPxi, y2i, getColors().borderColor); //bottom edge
+		Screen.fill(x1i + borderPxi, y1i + borderPxi, x2i - borderPxi, y2i - borderPxi, getInnerColor());
 	}
 	
-	public default int getInnerColor() {
+	default int getInnerColor() {
 		return getColors().innerColor;
 	}
 	
-	public default int getPercentValue(int full, int percent) {
+	default float getPercentValue(float full, float percent) {
 		return (full * percent) / 100;
 	}
 	
-	public default void drawTexts(int x1, int y1, int x2, int y2) {}
+	default void drawTexts(float x1, float y1, float x2, float y2) {}
 }

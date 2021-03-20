@@ -130,7 +130,7 @@ public class ConfigGUI extends Screen implements IJumperGUI {
 		guiComponents.add(new BasicTextFrame(this, "Keybinds", config.duplicate(), headerColors));
 		config.init(80, 35, 94, 39, 8);
 		guiComponents.add(new ButtonFrame(this, "open Hotkey Menu", config.duplicate(), colors, this::openHotkeyScreen));
-		config.init(6, 40, 94, 59, 8);
+		config.init(6, 40, 94, 59, 4);
 		generateModuleKeybindTable(config, colors, Main.getInstance().moduleManager.singlePlayerModules);
 
 		//tracing entries
@@ -138,7 +138,7 @@ public class ConfigGUI extends Screen implements IJumperGUI {
 		guiComponents.add(new BasicTextFrame(this, "Tracked Entities", config.duplicate(), headerColors));
 		config.init(80, 65, 94, 69, 8);
 		guiComponents.add(new ButtonFrame(this, "add entity", config.duplicate(), colors, this::addTrackingEntity));
-		config.init(6, 70, 94, 94, 8);
+		config.init(6, 70, 94, 94, 4);
 		generateTrackingTable(Main.getInstance().dataManager.getTrackingDataSP(), config, colors);
 		//generateTrackingScreenComponents(guiManager.main.entityTracker.observedEntityIDSP, config, colors, 6, 70, 94, 5, 8);
 	}
@@ -171,7 +171,7 @@ public class ConfigGUI extends Screen implements IJumperGUI {
 		guiComponents.add(new BasicTextFrame(this, "Keybinds", config.duplicate(), headerColors));
 		config.init(80, 35, 94, 39, 8);
 		guiComponents.add(new ButtonFrame(this, "open Hotkey Menu", config.duplicate(), colors, this::openHotkeyScreen));
-		config.init(6, 40, 94, 59, 8);
+		config.init(6, 40, 94, 59, 4);
 		generateModuleKeybindTable(config, colors, Main.getInstance().moduleManager.multiPlayerModules);
 
 		//tracing entries
@@ -179,7 +179,7 @@ public class ConfigGUI extends Screen implements IJumperGUI {
 		guiComponents.add(new BasicTextFrame(this, "Tracked Entities", config.duplicate(), headerColors));
 		config.init(80, 65, 94, 69, 8);
 		guiComponents.add(new ButtonFrame(this, "add entity", config.duplicate(), colors, this::addTrackingEntity));
-		config.init(6, 70, 94, 94, 8);
+		config.init(6, 70, 94, 94, 4);
 		generateTrackingTable(Main.getInstance().dataManager.getTrackingDataMP(), config, colors);
 		//generateTrackingScreenComponents(guiManager.main.entityTracker.observedEntityIDMP, config, colors, 6, 70, 94, 5, 8);
 	}

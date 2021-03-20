@@ -19,15 +19,15 @@ public class ToggleKeybindFrame extends KeybindFrame implements IFocusableFrame 
 	}
 
 	@Override
-	public void mouseOver(int x, int y, int scaledScreenWidth, int scaledScreenHeight, boolean mouseLeftDown, boolean queueLeftUpdate) {
+	public void mouseOver(float x, float y, float scaledScreenWidth, float scaledScreenHeight, boolean mouseLeftDown, boolean queueLeftUpdate) {
 		if (getIsClicked() && !mouseLeftDown) {
 			setIsClicked(false);
 		}
-		int x1 = getPercentValue(scaledScreenWidth, this.getConfig().x);
-		int x2 = getPercentValue(scaledScreenWidth, this.getEstimateValueBorder(this.getConfig().x, this.getConfig().xEnd));
-		int x3 = getPercentValue(scaledScreenWidth, this.getConfig().xEnd);
-		int y1 = getPercentValue(scaledScreenHeight, this.getConfig().y);
-		int y2 = getPercentValue(scaledScreenHeight, this.getConfig().yEnd);
+		float x1 = getPercentValue(scaledScreenWidth, this.getConfig().x);
+		float x2 = getPercentValue(scaledScreenWidth, this.getEstimateValueBorder(this.getConfig().x, this.getConfig().xEnd));
+		float x3 = getPercentValue(scaledScreenWidth, this.getConfig().xEnd);
+		float y1 = getPercentValue(scaledScreenHeight, this.getConfig().y);
+		float y2 = getPercentValue(scaledScreenHeight, this.getConfig().yEnd);
 		if (x > x1 && x < x3 && y > y1 && y < y2) {
 			setHovered(true);
 			if (x < x2) {

@@ -9,4 +9,17 @@ public class FrameColors {
 	public int colorHover = 0xff4a88ce;
 	public int colorHover2 = 0xff3e72ad;
 	public int defaultValueColor = 0xfff1f1f1;
+
+	public FrameColors duplicate() {
+		FrameColors duplicate = new FrameColors();
+		duplicate.borderColor = borderColor;
+		duplicate.innerColor = innerColor;
+		duplicate.innerColor2 = innerColor2;
+		duplicate.colorOn = colorOn;
+		duplicate.colorOff = colorOff;
+		duplicate.colorHover = colorHover;
+		duplicate.colorHover2 = colorHover2;
+		duplicate.defaultValueColor = defaultValueColor;
+		return duplicate;
+	}
 }

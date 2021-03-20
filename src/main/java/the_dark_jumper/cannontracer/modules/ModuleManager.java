@@ -70,7 +70,7 @@ public class ModuleManager {
 	public void focusReleaseAllFrames(){
 		List<IFocusableFrame> focusedFramesCopy = new ArrayList<>(focusedFrames);
 		for (IFocusableFrame focusedFrame : focusedFramesCopy) {
-			focusedFrame.setFocused(false);
+			focusedFrame.onFocusChange(false);
 		}
 	}
 
@@ -218,7 +218,7 @@ public class ModuleManager {
 			if (!screenActive) {
 				// TODO this really doesn't belong here, but eh
 				for (IFocusableFrame focusedFrame : focusedFrames) {
-					focusedFrame.setFocused(false);
+					focusedFrame.onFocusChange(false);
 				}
 			} else {
 				return;
