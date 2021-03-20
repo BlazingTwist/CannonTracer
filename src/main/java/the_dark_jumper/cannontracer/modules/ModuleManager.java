@@ -2,6 +2,7 @@ package the_dark_jumper.cannontracer.modules;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import the_dark_jumper.cannontracer.Main;
 import the_dark_jumper.cannontracer.configsaving.MultiPlayerKeybinds;
 import the_dark_jumper.cannontracer.configsaving.SinglePlayerKeybinds;
@@ -66,6 +67,13 @@ public class ModuleManager {
 		}
 	}
 
+	public void focusReleaseAllFrames(){
+		List<IFocusableFrame> focusedFramesCopy = new ArrayList<>(focusedFrames);
+		for (IFocusableFrame focusedFrame : focusedFramesCopy) {
+			focusedFrame.setFocused(false);
+		}
+	}
+
 	public void generateSinglePlayerModules() {
 		tracerModeSP = new ModuleBasic("TracerModeSP", true, false);
 		tracerModeSP.setBehaviour(new StateMachineBehaviour(tracerModeSP, 0, new String[]{"Timed Render", "Permanent Render", "Last x Seconds"}, main.singlePlayerSettings.modeGNS));
@@ -92,7 +100,10 @@ public class ModuleManager {
 		singlePlayerModules.add(clearHistorySP);
 
 		displayTickSP = new ModuleAxis("DisplayTickSP", true, false);
-		displayTickSP.setBehaviour(new CounterBehaviour(displayTickSP, 1, main.singlePlayerSettings.renderTickGNS).setMax(this::getMaxDisplayTickSP));
+		displayTickSP.setBehaviour(
+				new CounterBehaviour(displayTickSP, 1, main.singlePlayerSettings.renderTickGNS)
+						.setMax(this::getMaxDisplayTickSP)
+		);
 		singlePlayerModules.add(displayTickSP);
 
 		showFirstTickSP = new ModuleBasic("ShowFirstTickSP", false, false);
@@ -122,7 +133,10 @@ public class ModuleManager {
 		multiPlayerModules.add(clearDataMP);
 
 		displayTickMP = new ModuleAxis("DisplayTickMP", true, false);
-		displayTickMP.setBehaviour(new CounterBehaviour(displayTickMP, 1, main.multiPlayerSettings.renderTickGNS).setMax(this::getMaxDisplayTickMP));
+		displayTickMP.setBehaviour(
+				new CounterBehaviour(displayTickMP, 1, main.multiPlayerSettings.renderTickGNS)
+						.setMax(this::getMaxDisplayTickMP)
+		);
 		multiPlayerModules.add(displayTickMP);
 
 		findNextDespawnTickMP = new ModuleBasic("DisplayNextDespawnTickMP", false, false);

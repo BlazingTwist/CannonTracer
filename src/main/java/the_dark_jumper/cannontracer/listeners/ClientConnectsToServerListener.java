@@ -47,7 +47,7 @@ public class ClientConnectsToServerListener {
 	}
 
 	private void checkWorldStatus() {
-		main.serverChatListener.isRegistered = false;
+		main.serverChatListener.setRegistered(false);
 		main.entityTracker.tracingHistory.clear();
 		main.entityTracker.lastSecond.clear();
 		main.entityTracker.currentTick = 0;

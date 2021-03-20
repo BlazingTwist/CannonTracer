@@ -1,25 +1,20 @@
 package the_dark_jumper.cannontracer.modules.moduleelements.behaviours;
 
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.function.Supplier;
 import jumpercommons.GetterAndSetter;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import the_dark_jumper.cannontracer.modules.moduleelements.IModule;
 import the_dark_jumper.cannontracer.modules.moduleelements.ModuleAxis;
+import the_dark_jumper.cannontracer.util.LoopingIncrementer;
 
-public class CounterBehaviour implements IModuleAxisBehaviour {
+public class CounterBehaviour extends LoopingIncrementer implements IModuleAxisBehaviour {
 	private ModuleAxis parent;
 
 	@Override
 	public IModule getParent() {
 		return parent;
 	}
-
-	private Timer timer = null;
-	public boolean incrementLoopIsRunning = false;
-	public boolean decrementLoopIsRunning = false;
 
 	public Supplier<Integer> max = null;
 	public int maxNum;
@@ -76,35 +71,16 @@ public class CounterBehaviour implements IModuleAxisBehaviour {
 
 	@Override
 	public void onTriggerChanged(boolean isTriggered) {
-		if (isTriggered) {
-			decrementLoopIsRunning = false;
-			if (incrementLoopIsRunning) {
-				return;
-			}
-			increment();
-			incrementLoopIsRunning = true;
-			startTimer(new Increment(), 300);
-		} else {
-			incrementLoopIsRunning = false;
-		}
+		onIncrement(isTriggered);
 	}
 
 	@Override
 	public void onOtherTriggerChanged(boolean isTriggered) {
-		if (isTriggered) {
-			incrementLoopIsRunning = false;
-			if (decrementLoopIsRunning) {
-				return;
-			}
-			decrement();
-			decrementLoopIsRunning = true;
-			startTimer(new Decrement(), 300);
-		} else {
-			decrementLoopIsRunning = false;
-		}
+		onDecrement(isTriggered);
 	}
 
-	private void increment() {
+	@Override
+	protected void doIncrement() {
 		int value = valueGNS.get();
 		int max = getMax();
 		if (value == max) {
@@ -117,7 +93,8 @@ public class CounterBehaviour implements IModuleAxisBehaviour {
 		valueGNS.set(value);
 	}
 
-	private void decrement() {
+	@Override
+	protected void doDecrement() {
 		int value = valueGNS.get();
 		int min = getMin();
 		if (value == min) {
@@ -128,51 +105,5 @@ public class CounterBehaviour implements IModuleAxisBehaviour {
 			value = min;
 		}
 		valueGNS.set(value);
-	}
-
-	private void onIncrementLoop() {
-		if (!incrementLoopIsRunning) {
-			return;
-		}
-		increment();
-		startTimer(new Increment(), 50);
-	}
-
-	private void onDecrementLoop() {
-		if (!decrementLoopIsRunning) {
-			return;
-		}
-		decrement();
-		startTimer(new Decrement(), 50);
-	}
-
-	private void startTimer(ValueChanger vc, int delay) {
-		if (timer != null) {
-			timer.cancel();
-			timer.purge();
-		}
-		timer = new Timer();
-		timer.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				vc.changeValue();
-			}
-		}, delay);
-	}
-
-	private interface ValueChanger {
-		void changeValue();
-	}
-
-	private class Increment implements ValueChanger {
-		public void changeValue() {
-			onIncrementLoop();
-		}
-	}
-
-	private class Decrement implements ValueChanger {
-		public void changeValue() {
-			onDecrementLoop();
-		}
 	}
 }

@@ -1,31 +1,54 @@
 package the_dark_jumper.cannontracer.listeners;
 
 import java.util.HashMap;
+import java.util.function.Supplier;
 import jumpercommons.SimpleLocation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ClientChatEvent;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fml.network.NetworkRegistry;
+import net.minecraftforge.fml.network.simple.SimpleChannel;
 import the_dark_jumper.cannontracer.Main;
 import the_dark_jumper.cannontracer.modules.ModuleManager;
 import the_dark_jumper.cannontracer.tracking.SingleTickMoveData;
 import the_dark_jumper.cannontracer.util.ChatUtils;
+import the_dark_jumper.cannontracer.util.StringPacket;
 
 public class ServerChatListener {
+	public final SimpleChannel testCannonChannel = NetworkRegistry.ChannelBuilder
+			.named(new ResourceLocation("jumperutils", "testcannondata"))
+			.clientAcceptedVersions((version) -> true)
+			.serverAcceptedVersions((version) -> true)
+			.networkProtocolVersion(() -> "1")
+			.simpleChannel();
+
 	public final Main main;
-	public boolean isRegistered = false;
+	private boolean isRegistered = false;
 	public boolean debugPrint = false;
 
 	public ServerChatListener(Main main) {
 		this.main = main;
 		MinecraftForge.EVENT_BUS.register(this);
+		testCannonChannel.registerMessage(Main.testCannonChannelID, StringPacket.class, StringPacket::encode, StringPacket::new, this::handleTestCannonPacket);
+	}
+
+	public ServerChatListener setRegistered(boolean registered) {
+		isRegistered = registered;
+		return this;
+	}
+
+	public boolean isRegistered() {
+		return isRegistered;
 	}
 
 	@SubscribeEvent
 	public void playerChatEvent(ClientChatEvent event) {
-		if(handleChatMessageSent(event.getMessage())){
+		if (handleChatMessageSent(event.getMessage())) {
 			event.setCanceled(true);
 		}
 	}
@@ -33,7 +56,7 @@ public class ServerChatListener {
 	/**
 	 * @return true when the event should be cancelled
 	 */
-	public static boolean handleChatMessageSent(String message){
+	public static boolean handleChatMessageSent(String message) {
 		boolean shouldCancel = false;
 		for (ChatCommands command : ChatCommands.values()) {
 			if (command.isCommand(message)) {
@@ -54,7 +77,7 @@ public class ServerChatListener {
 				}
 				String message = text.substring(20);
 				if (message.equals("[SettingsRequest]")) {
-					isRegistered = true;
+					this.setRegistered(true);
 					sendConfigMessage();
 				} else {
 					String[] data = message.split("\\|");
@@ -62,14 +85,12 @@ public class ServerChatListener {
 						handleTracingData(data);
 					}
 				}
-			} else if(text.startsWith("[TestCannonData]")) {
-				String data = text.substring("[TestCannonData]".length());
-				main.guiManager.testCannonGUI.open(data);
-				if(!debugPrint){
-					event.setCanceled(true);
-				}
 			}
 		}
+	}
+
+	public void handleTestCannonPacket(StringPacket packet, Supplier<NetworkEvent.Context> contextSupplier) {
+		main.guiManager.testCannonGUI.open(packet.getData());
 	}
 
 	public void handleTracingData(String[] data) {
@@ -111,7 +132,7 @@ public class ServerChatListener {
 	}
 
 	public void sendConfigMessage() {
-		if (!isRegistered) {
+		if (!isRegistered()) {
 			return;
 		}
 		//target message: [JumperCannonTracer][Config]"key"="value"|"key"="value;value2;value3"|...
@@ -132,7 +153,7 @@ public class ServerChatListener {
 	}
 
 	public void requestTracingData() {
-		if (!isRegistered) {
+		if (!isRegistered()) {
 			ChatUtils.messagePlayer("", "can't pull data, not registered on this server. Try /tracer register", false);
 			return;
 		}

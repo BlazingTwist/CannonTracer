@@ -4,7 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
+import java.util.function.Consumer;
 import jumpercommons.GetterAndSetter;
+import jumpercommons.TestCannon;
 import jumpercommons.TestCannonCharge;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -15,65 +17,34 @@ import org.lwjgl.opengl.GL11;
 import the_dark_jumper.cannontracer.Main;
 import the_dark_jumper.cannontracer.gui.guielements.BasicTextFrame;
 import the_dark_jumper.cannontracer.gui.guielements.ButtonFrame;
+import the_dark_jumper.cannontracer.gui.guielements.ScrollableTable;
 import the_dark_jumper.cannontracer.gui.guielements.ValueFrame;
 import the_dark_jumper.cannontracer.gui.guielements.interfaces.IClickableFrame;
 import the_dark_jumper.cannontracer.gui.guielements.interfaces.IFocusableFrame;
 import the_dark_jumper.cannontracer.gui.guielements.interfaces.IKeyEventRepeaterFrame;
 import the_dark_jumper.cannontracer.gui.guielements.interfaces.IRenderableFrame;
 import the_dark_jumper.cannontracer.gui.guielements.interfaces.ITickableFrame;
+import the_dark_jumper.cannontracer.gui.utils.FormatData;
 import the_dark_jumper.cannontracer.gui.utils.FrameColors;
 import the_dark_jumper.cannontracer.gui.utils.FrameConfig;
 import the_dark_jumper.cannontracer.util.ChatUtils;
+import the_dark_jumper.cannontracer.util.DoubleIncrementer;
+import the_dark_jumper.cannontracer.util.IntIncrementer;
+import the_dark_jumper.cannontracer.util.StringPacket;
 
 public class TestCannonGUI extends Screen implements IJumperGUI {
-	private static class IntIncrementer {
-		private final ValueFrame<Integer> valueFrame;
-		private final GetterAndSetter<Integer> getterAndSetter;
-		private final Integer offset;
+	private static class DeleteChargeCallback {
+		private final int index;
+		private final Consumer<Integer> deletionCallback;
 
-		private IntIncrementer(ValueFrame<Integer> valueFrame, GetterAndSetter<Integer> getterAndSetter, Integer offset) {
-			this.valueFrame = valueFrame;
-			this.getterAndSetter = getterAndSetter;
-			this.offset = offset;
+		public DeleteChargeCallback(int index, Consumer<Integer> deletionCallback) {
+			this.index = index;
+			this.deletionCallback = deletionCallback;
 		}
 
-		public void onIncrement(boolean pressed) {
+		public void onPressed(boolean pressed) {
 			if (pressed) {
-				getterAndSetter.set(getterAndSetter.get() + offset);
-				valueFrame.update();
-			}
-		}
-
-		public void onDecrement(boolean pressed) {
-			if (pressed) {
-				getterAndSetter.set(getterAndSetter.get() - offset);
-				valueFrame.update();
-			}
-		}
-	}
-
-	private static class DoubleIncrementer {
-		private final ValueFrame<Double> valueFrame;
-		private final GetterAndSetter<Double> getterAndSetter;
-		private final Double offset;
-
-		private DoubleIncrementer(ValueFrame<Double> valueFrame, GetterAndSetter<Double> getterAndSetter, Double offset){
-			this.valueFrame = valueFrame;
-			this.getterAndSetter = getterAndSetter;
-			this.offset = offset;
-		}
-
-		public void onIncrement(boolean pressed) {
-			if (pressed) {
-				getterAndSetter.set(getterAndSetter.get() + offset);
-				valueFrame.update();
-			}
-		}
-
-		public void onDecrement(boolean pressed) {
-			if (pressed) {
-				getterAndSetter.set(getterAndSetter.get() - offset);
-				valueFrame.update();
+				deletionCallback.accept(index);
 			}
 		}
 	}
@@ -81,13 +52,15 @@ public class TestCannonGUI extends Screen implements IJumperGUI {
 	public final GuiManager guiManager;
 	private final ObjectMapper objectMapper;
 	public ArrayList<IRenderableFrame> guiComponents = new ArrayList<>();
+	private ScrollableTable chargesTable = null;
 
 	boolean detectedAutoGUI = false;
 	public boolean leftDown = false;
 	public boolean queueLeftUpdate = false;
 	private boolean shouldClose = false;
+	private boolean cancelCannonData = false;
 
-	private TestCannonCharge testCannonCharge = new TestCannonCharge();
+	private final TestCannon testCannon = new TestCannon();
 
 	public TestCannonGUI(GuiManager guiManager) {
 		super(null);
@@ -109,6 +82,23 @@ public class TestCannonGUI extends Screen implements IJumperGUI {
 		}
 	}
 
+	public void addChargeButtonPressed(boolean isPressed) {
+		if (isPressed) {
+			testCannon.getCharges().add(new TestCannonCharge());
+			generateChargesTable();
+		}
+	}
+
+	public void removeCharge(int chargeIndex) {
+		if (chargeIndex >= testCannon.getCharges().size()) {
+			Minecraft.getInstance().player.sendMessage(new TranslationTextComponent("Couldn't delete Charge " + chargeIndex + ", stop spamming that button."));
+			return;
+		}
+
+		testCannon.getCharges().remove(chargeIndex);
+		generateChargesTable();
+	}
+
 	public void generateScreenComponents() {
 		guiComponents.clear();
 		FrameConfig config = new FrameConfig();
@@ -125,62 +115,90 @@ public class TestCannonGUI extends Screen implements IJumperGUI {
 		guiComponents.add(new BasicTextFrame(this, "", config.duplicate(), backGroundColors));
 
 		//headline
-		config.init(6, 10, 59, 14, 8);
+		config.init(6, 10, 60, 14, 8);
 		guiComponents.add(new BasicTextFrame(this, "Cannon Tester", config.duplicate(), colors));
+		config.init(80, 10, 89, 14, 8);
+		guiComponents.add(new ButtonFrame(this, "cancel", config.duplicate(), colors, this::closeWithoutSend));
 		config.init(90, 10, 94, 14, 8);
 		guiComponents.add(new ButtonFrame(this, "X", config.duplicate(), colors, this::closeButtonPressed));
 
-		config.init(8, 20, 22, 24, 8);
-		guiComponents.add(new BasicTextFrame(this, "General", config.duplicate(), headerColors));
-		config.init(10, 25, 19, 29, 8);
-		createIntegerIncrementerFrame(config, colors, "delay", testCannonCharge.getDelayGNS(), 1);
-		config.init(25, 25, 34, 29, 8);
-		createIntegerIncrementerFrame(config, colors, "amount", testCannonCharge.getAmountGNS(), 1);
-
-
-		config.init(8, 35, 22, 39, 8);
+		config.init(8, 15, 22, 19, 8);
 		guiComponents.add(new BasicTextFrame(this, "BlockOffset", config.duplicate(), headerColors));
-		config.init(10, 40, 19, 44, 8);
-		createDoubleIncrementerFrame(config, colors, "X", testCannonCharge.getBlockOffset().x, 1d);
-		config.init(25, 40, 34, 44, 8);
-		createDoubleIncrementerFrame(config, colors, "Y", testCannonCharge.getBlockOffset().y, 1d);
-		config.init(40, 40, 49, 44, 8);
-		createDoubleIncrementerFrame(config, colors, "Z", testCannonCharge.getBlockOffset().z, 1d);
+		config.init(10, 20, 19, 24, 8);
+		createDoubleIncrementerFrame(config, colors, "X", testCannon.getBlockOffset().x);
+		config.init(10, 25, 19, 29, 8);
+		createDoubleIncrementerFrame(config, colors, "Y", testCannon.getBlockOffset().y);
+		config.init(10, 30, 19, 34, 8);
+		createDoubleIncrementerFrame(config, colors, "Z", testCannon.getBlockOffset().z);
 
-		config.init(8, 50, 22, 54, 8);
+		config.init(28, 15, 42, 19, 8);
 		guiComponents.add(new BasicTextFrame(this, "PixelOffset", config.duplicate(), headerColors));
-		config.init(10, 55, 19, 59, 8);
-		createDoubleIncrementerFrame(config, colors, "X", testCannonCharge.getPixelOffset().x, 1d);
-		config.init(25, 55, 34, 59, 8);
-		createDoubleIncrementerFrame(config, colors, "Y", testCannonCharge.getPixelOffset().y, 1d);
-		config.init(40, 55, 49, 59, 8);
-		createDoubleIncrementerFrame(config, colors, "Z", testCannonCharge.getPixelOffset().z, 1d);
+		config.init(30, 20, 39, 24, 8);
+		createDoubleIncrementerFrame(config, colors, "X", testCannon.getPixelOffset().x);
+		config.init(30, 25, 39, 29, 8);
+		createDoubleIncrementerFrame(config, colors, "Y", testCannon.getPixelOffset().y);
+		config.init(30, 30, 39, 34, 8);
+		createDoubleIncrementerFrame(config, colors, "Z", testCannon.getPixelOffset().z);
 
-		config.init(8, 65, 22, 69, 8);
+		config.init(48, 15, 62, 19, 8);
 		guiComponents.add(new BasicTextFrame(this, "Velocity", config.duplicate(), headerColors));
-		config.init(10, 70, 19, 74, 8);
-		createDoubleIncrementerFrame(config, colors, "X", testCannonCharge.getVelocity().x, 1d);
-		config.init(25, 70, 34, 74, 8);
-		createDoubleIncrementerFrame(config, colors, "Y", testCannonCharge.getVelocity().y, 1d);
-		config.init(40, 70, 49, 74, 8);
-		createDoubleIncrementerFrame(config, colors, "Z", testCannonCharge.getVelocity().z, 1d);
+		config.init(50, 20, 59, 24, 8);
+		createDoubleIncrementerFrame(config, colors, "X", testCannon.getVelocity().x);
+		config.init(50, 25, 59, 29, 8);
+		createDoubleIncrementerFrame(config, colors, "Y", testCannon.getVelocity().y);
+		config.init(50, 30, 59, 34, 8);
+		createDoubleIncrementerFrame(config, colors, "Z", testCannon.getVelocity().z);
+
+		config.init(8, 40, 22, 44, 8);
+		guiComponents.add(new BasicTextFrame(this, "Charges", config.duplicate(), headerColors));
+		config.init(23, 40, 25, 44, 8);
+		guiComponents.add(new ButtonFrame(this, "+", config.duplicate(), colors, this::addChargeButtonPressed));
+		config.init(10, 45, 63, 94, 8);
+		chargesTable = new ScrollableTable(this, config.duplicate(), colors);
+		chargesTable.setUniformColFormat(false, 9, 1); // fallback value, shouldn't be needed
+		chargesTable.setColFormat(false,
+				new FormatData(2, 1), // delete button
+				new FormatData(9, 0), // amount text field
+				new FormatData(2, 0), // increment button
+				new FormatData(2, 1), // decrement button
+				new FormatData(9, 0), // delay text field
+				new FormatData(2, 0), // increment button
+				new FormatData(2, 1));// decrement button
+		chargesTable.setUniformRowFormat(false, 4, 1);
+		chargesTable.generateScrollbars(false, 0, true, chargesTable.matchHeightToWidth(1));
+		generateChargesTable();
+		guiComponents.add(chargesTable);
 	}
 
-	private void createIntegerIncrementerFrame(FrameConfig config, FrameColors colors, String text, GetterAndSetter<Integer> source, Integer offset){
-		ValueFrame<Integer> valueFrame = new ValueFrame<>(this, config.duplicate(), colors, text, source, Integer.class, false);
-		IntIncrementer incrementer = new IntIncrementer(valueFrame, source, offset);
-		guiComponents.add(valueFrame);
-		config.x = config.xEnd;
-		config.xEnd = config.x + 2;
-		guiComponents.add(new ButtonFrame(this, "+", config.duplicate(), colors, incrementer::onIncrement));
-		config.x = config.xEnd;
-		config.xEnd = config.x + 2;
-		guiComponents.add(new ButtonFrame(this, "-", config.duplicate(), colors, incrementer::onDecrement));
+	private void generateChargesTable() {
+		chargesTable.getRows().clear();
+
+		ArrayList<TestCannonCharge> charges = testCannon.getCharges();
+		for (int i = 0; i < charges.size(); i++) {
+			FrameColors colors = chargesTable.colors;
+			TestCannonCharge charge = charges.get(i);
+			ValueFrame<Integer> amountValueFrame = new ValueFrame<>(this, null, colors, "amount", charge.getAmountGNS(), Integer.class, false);
+			IntIncrementer amountIncrementer = new IntIncrementer(amountValueFrame::update, charge.getAmountGNS(), 1, 0, null);
+			ValueFrame<Integer> delayValueFrame = new ValueFrame<>(this, null, colors, "delay", charge.getDelayGNS(), Integer.class, false);
+			IntIncrementer delayIncrementer = new IntIncrementer(delayValueFrame::update, charge.getDelayGNS(), 1, 0, null);
+
+			chargesTable.addRow(
+					new ButtonFrame(this, "X", null, colors, new DeleteChargeCallback(i, this::removeCharge)::onPressed),
+					amountValueFrame,
+					new ButtonFrame(this, "+", null, colors, amountIncrementer::onIncrement),
+					new ButtonFrame(this, "-", null, colors, amountIncrementer::onDecrement),
+					delayValueFrame,
+					new ButtonFrame(this, "+", null, colors, delayIncrementer::onIncrement),
+					new ButtonFrame(this, "-", null, colors, delayIncrementer::onDecrement)
+			);
+		}
+
+		chargesTable.updateScrollbarRanges();
 	}
 
-	private void createDoubleIncrementerFrame(FrameConfig config, FrameColors colors, String text, GetterAndSetter<Double> source, Double offset){
+	private void createDoubleIncrementerFrame(FrameConfig config, FrameColors colors, String text, GetterAndSetter<Double> source) {
 		ValueFrame<Double> valueFrame = new ValueFrame<>(this, config.duplicate(), colors, text, source, Double.class, false);
-		DoubleIncrementer incrementer = new DoubleIncrementer(valueFrame, source, offset);
+		DoubleIncrementer incrementer = new DoubleIncrementer(valueFrame::update, source, 1.0, null, null);
 		guiComponents.add(valueFrame);
 		config.x = config.xEnd;
 		config.xEnd = config.x + 2;
@@ -190,15 +208,15 @@ public class TestCannonGUI extends Screen implements IJumperGUI {
 		guiComponents.add(new ButtonFrame(this, "-", config.duplicate(), colors, incrementer::onDecrement));
 	}
 
-	public void open(String testCannonString){
+	public void open(String testCannonString) {
 		try {
-			TestCannonCharge testCannonCharge;
-			if(testCannonString.isEmpty()){
-				testCannonCharge = new TestCannonCharge();
-			}else{
-				testCannonCharge = objectMapper.readValue(testCannonString, TestCannonCharge.class);
+			TestCannon testCannon;
+			if (testCannonString.isEmpty()) {
+				testCannon = new TestCannon();
+			} else {
+				testCannon = objectMapper.readValue(testCannonString, TestCannon.class);
 			}
-			load(testCannonCharge);
+			load(testCannon);
 			generateScreenComponents();
 			Minecraft.getInstance().displayGuiScreen(this);
 		} catch (JsonProcessingException e) {
@@ -207,8 +225,8 @@ public class TestCannonGUI extends Screen implements IJumperGUI {
 		}
 	}
 
-	public void load(TestCannonCharge other){
-		testCannonCharge.load(other);
+	public void load(TestCannon other) {
+		testCannon.load(other);
 	}
 
 	@Override
@@ -245,7 +263,7 @@ public class TestCannonGUI extends Screen implements IJumperGUI {
 
 		queueLeftUpdate = false;
 
-		if(shouldClose){
+		if (shouldClose) {
 			onClose();
 			shouldClose = false;
 		}
@@ -283,39 +301,51 @@ public class TestCannonGUI extends Screen implements IJumperGUI {
 
 	@Override
 	public void drawCenteredString(FontRenderer fontRenderer, String text, int xPos, int height, int color) {
-		double configFontHeight = guiManager.getGuiConfig().getFontHeight();
-		if (configFontHeight == 0) {
+		double configFontSize = guiManager.getGuiConfig().getFontHeight();
+		if (configFontSize == 0) {
 			return;
 		}
-		height -= (fontRenderer.FONT_HEIGHT * configFontHeight) / 2;
-		xPos /= configFontHeight;
-		height /= configFontHeight;
+		height -= (fontRenderer.FONT_HEIGHT * configFontSize) / 2;
+		xPos /= configFontSize;
+		height /= configFontSize;
 
 		GL11.glPushMatrix();
-		GL11.glScaled(configFontHeight, configFontHeight, configFontHeight);
+		GL11.glScaled(configFontSize, configFontSize, configFontSize);
 		super.drawCenteredString(fontRenderer, text, xPos, height, color);
 		GL11.glPopMatrix();
 	}
 
+	private void closeWithoutSend(boolean isPressed){
+		if(isPressed){
+			cancelCannonData = true;
+			onClose();
+			cancelCannonData = false;
+		}
+	}
+
 	@Override
 	public void onClose() {
-		if (minecraft.currentScreen != null) {
-			minecraft.displayGuiScreen((Screen) null);
+		guiManager.main.moduleManager.focusReleaseAllFrames();
+
+		if (minecraft != null && minecraft.currentScreen != null) {
+			minecraft.displayGuiScreen(null);
 		}
 
-		try {
-			String json = objectMapper.writeValueAsString(testCannonCharge);
-			Minecraft.getInstance().player.sendChatMessage("[TestCannonData]" + json);
-			System.out.println("[TestCannonData]" + json);
-		} catch (JsonProcessingException e) {
-			ChatUtils.messagePlayer("", "failed to build testCannonData!", false);
-			e.printStackTrace();
+		if (!cancelCannonData) {
+			try {
+				String json = objectMapper.writeValueAsString(testCannon);
+				guiManager.main.serverChatListener.testCannonChannel.sendToServer(new StringPacket().setData(json));
+				System.out.println("[TestCannonData]: " + json);
+			} catch (JsonProcessingException e) {
+				ChatUtils.messagePlayer("", "failed to build testCannonData!", false);
+				e.printStackTrace();
+			}
 		}
 
 		guiComponents.clear();
 	}
 
-	//overrides to avoid stupidness
+	//overrides to avoid stupidity
 	@Override
 	public String getNarrationMessage() {
 		return "";

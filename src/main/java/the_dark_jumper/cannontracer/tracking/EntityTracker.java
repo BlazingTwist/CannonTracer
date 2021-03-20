@@ -1,7 +1,6 @@
 package the_dark_jumper.cannontracer.tracking;
 
 import com.google.common.collect.Sets;
-import com.mojang.blaze3d.matrix.MatrixStack;
 import java.util.Iterator;
 import java.util.Queue;
 import java.util.Set;
@@ -11,9 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Vec3d;
@@ -169,9 +166,9 @@ public class EntityTracker {
 		}
 
 		Minecraft minecraft = Minecraft.getInstance();
-		EntityRendererManager rendererManager = minecraft.getRenderManager();
-		IRenderTypeBuffer.Impl bufferSource = Minecraft.getInstance().getRenderTypeBuffers().getBufferSource();
-		MatrixStack matrixStack = new MatrixStack();
+		//EntityRendererManager rendererManager = minecraft.getRenderManager();
+		//IRenderTypeBuffer.Impl bufferSource = Minecraft.getInstance().getRenderTypeBuffers().getBufferSource();
+		//MatrixStack matrixStack = new MatrixStack();
 		ClientPlayerEntity player = minecraft.player;
 		if (player == null) {
 			return;

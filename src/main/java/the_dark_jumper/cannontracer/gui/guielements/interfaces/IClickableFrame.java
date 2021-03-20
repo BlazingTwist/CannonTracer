@@ -1,13 +1,13 @@
 package the_dark_jumper.cannontracer.gui.guielements.interfaces;
 
 public interface IClickableFrame extends IRenderableFrame{
-	public boolean getIsClicked();
-	public void setIsClicked(boolean isClicked);
+	boolean getIsClicked();
+	void setIsClicked(boolean isClicked);
 	
-	public boolean getHovered();
-	public void setHovered(boolean hovered);
+	boolean getHovered();
+	void setHovered(boolean hovered);
 	
-	public default void mouseOver(int x, int y, int scaledScreenWidth, int scaledScreenHeight, boolean mouseLeftDown, boolean queueLeftUpdate) {
+	default void mouseOver(int x, int y, int scaledScreenWidth, int scaledScreenHeight, boolean mouseLeftDown, boolean queueLeftUpdate) {
 		if(getIsClicked() && !mouseLeftDown) {
 			setIsClicked(false);
 		}
@@ -26,11 +26,11 @@ public interface IClickableFrame extends IRenderableFrame{
 	}
 	
 	@Override
-	public default int getInnerColor() {
+	default int getInnerColor() {
 		return getHovered() ? getColors().colorHover : getColors().innerColor;
 	}
 	
-	public default int getInnerColor2() {
+	default int getInnerColor2() {
 		return getHovered() ? getColors().colorHover2 : getColors().innerColor2;
 	}
 }

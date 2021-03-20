@@ -12,7 +12,7 @@ public enum ChatCommands {
 	DEBUG("/tracer debug"),
 	TRACE_SAVE("/tracer save"),
 	TRACE_DELETE("/tracer delete"),
-	TRACE_LOAD("/tracer open"),
+	TRACE_LOAD("/tracer load"),
 	TRACE_LIST("/tracer list");
 
 	private String commandPrefix;
@@ -35,7 +35,7 @@ public enum ChatCommands {
 				ChatUtils.messagePlayer("/tracer list", " - lists all saved traces", true);
 				ChatUtils.messagePlayer("/tracer save [trace_name]", " - saves the rendered traces to the given trace_name", true);
 				ChatUtils.messagePlayer("/tracer save [trace_name]", " - deletes the saved trace with the given trace_name", true);
-				ChatUtils.messagePlayer("/tracer open [trace_name_1] [trace_name_2] ... [trace_name_n]", " - open one or more saved traces", true);
+				ChatUtils.messagePlayer("/tracer load [trace_name_1] [trace_name_2] ... [trace_name_n]", " - open one or more saved traces", true);
 				break;
 			}
 			case DEBUG: {

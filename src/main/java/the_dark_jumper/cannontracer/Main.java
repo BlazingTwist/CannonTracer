@@ -35,6 +35,8 @@ public class Main {
 	public final RenderTickListener renderTickListener;
 	public final ServerChatListener serverChatListener;
 
+	public static final int testCannonChannelID = 0;
+
 	private static Main instance;
 
 	public static Main getInstance() {
