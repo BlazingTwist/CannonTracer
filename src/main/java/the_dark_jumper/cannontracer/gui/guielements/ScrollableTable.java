@@ -31,9 +31,9 @@ public class ScrollableTable implements IRenderableFrame, IClickableFrame, IKeyE
 	@Override public boolean getHovered() {return false;}
 	@Override public void setHovered(boolean hovered) {}
 	
-	private double horizontalScrollFactor = 1;
+	private float horizontalScrollFactor = 1;
 	private ScrollbarFrame horizontalScrollbar = null;
-	private double verticalScrollFactor = 1;
+	private float verticalScrollFactor = 1;
 	private ScrollbarFrame verticalScrollbar = null;
 	private FormatData uniformColFormat = null;
 	private FormatData uniformRowFormat = null;
@@ -109,11 +109,11 @@ public class ScrollableTable implements IRenderableFrame, IClickableFrame, IKeyE
 		FrameConfig lastConfig = getCellConfig(getAmountOfColumns() - 1, rows.size() - 1);
 		if(horizontalScrollbar != null) {
 			horizontalScrollbar.setScrollbarSize(100d / lastConfig.xEnd);
-			horizontalScrollFactor = lastConfig.xEnd / 100d;
+			horizontalScrollFactor = lastConfig.xEnd / 100f;
 		}
 		if(verticalScrollbar != null) {
 			verticalScrollbar.setScrollbarSize(100d / lastConfig.yEnd);
-			verticalScrollFactor = lastConfig.yEnd / 100d;
+			verticalScrollFactor = lastConfig.yEnd / 100f;
 		}
 	}
 	
@@ -391,6 +391,7 @@ public class ScrollableTable implements IRenderableFrame, IClickableFrame, IKeyE
 	}
 	
 	public void renderTableFrame(IRenderableFrame frame, float perceivedX1, float perceivedY1, float perceivedX2, float perceivedY2, int guiScale, FrameConfig frameConfig, boolean allowOutOfBounds) {
+		float epsilon = 0.01f;
 		float width = perceivedX2 - perceivedX1;
 		float height = perceivedY2 - perceivedY1;
 		float x1 = getPercentValue(width, frameConfig.x) + perceivedX1;
@@ -403,21 +404,21 @@ public class ScrollableTable implements IRenderableFrame, IClickableFrame, IKeyE
 			frame.drawTexts(x1, y1, x2, y2);
 			return;
 		}
-		double scrollViewStartX = perceivedX1;
-		double scrollViewEndX = perceivedX2;
-		double scrollViewStartY = perceivedY1;
-		double scrollViewEndY = perceivedY2;
+		float scrollViewStartX = perceivedX1;
+		float scrollViewEndX = perceivedX2;
+		float scrollViewStartY = perceivedY1;
+		float scrollViewEndY = perceivedY2;
 		if(horizontalScrollbar != null) {
 			double factor = width * horizontalScrollFactor;
 			double scrollpos = horizontalScrollbar.scrollbarPos * (1 - horizontalScrollbar.getScrollbarSize());
-			scrollViewStartX = perceivedX1 + (factor * scrollpos);
-			scrollViewEndX = perceivedX1 + (factor * (scrollpos + horizontalScrollbar.getScrollbarSize()));
+			scrollViewStartX = (float)(perceivedX1 + (factor * scrollpos));
+			scrollViewEndX = (float)(perceivedX1 + (factor * (scrollpos + horizontalScrollbar.getScrollbarSize())));
 		}
 		if(verticalScrollbar != null) {
 			double factor = height * verticalScrollFactor;
 			double scrollpos = verticalScrollbar.scrollbarPos * (1 - verticalScrollbar.getScrollbarSize());
-			scrollViewStartY = perceivedY1 + (factor * scrollpos);
-			scrollViewEndY = perceivedY1 + (factor * (scrollpos + verticalScrollbar.getScrollbarSize()));
+			scrollViewStartY = (float)(perceivedY1 + (factor * scrollpos));
+			scrollViewEndY = (float)(perceivedY1 + (factor * (scrollpos + verticalScrollbar.getScrollbarSize())));
 		}
 		
 		/*double scrollViewStartX = horizontalScrollbar.scrollbarPos * (1 - horizontalScrollbar.getScrollbarSize());
@@ -428,16 +429,16 @@ public class ScrollableTable implements IRenderableFrame, IClickableFrame, IKeyE
 		scrollViewEndX = (scrollViewEndX * width * horizontalScrollFactor) + perceivedX1;
 		scrollViewStartY = (scrollViewStartY * height * verticalScrollFactor) + perceivedY1;
 		scrollViewEndY = (scrollViewEndY * height * verticalScrollFactor) + perceivedY1;*/
-		if(x1 < scrollViewStartX || x2 > scrollViewEndX || y1 < scrollViewStartY || y2 > scrollViewEndY) {
+		if((x1 + epsilon) < scrollViewStartX || (x2 - epsilon) > scrollViewEndX || (y1 + epsilon) < scrollViewStartY || (y2 - epsilon) > scrollViewEndY) {
 			//frame would be outside of table
 			//System.out.println("horizscrollbarpos: "+horizontalScrollbar.scrollbarPos+" | horizscrollbarsize: "+horizontalScrollbar.getScrollbarSize()+" | horizscrollfactor: "+horizontalScrollFactor+" | vertscrollbarpos: "+verticalScrollbar.scrollbarPos+" | vertscrollbarsize: "+verticalScrollbar.getScrollbarSize()+" | vertscrollfactor: "+verticalScrollFactor+" | width: "+width+" | height: "+height);
 			//System.out.println("rendertableframe: "+x1+" | "+scrollViewStartX+" | "+x2+" | "+scrollViewEndX+" | "+y1+" | "+scrollViewStartY+" | "+y2+" | "+scrollViewEndY);
 			return;
 		}
-		x1 = (int)(x1 - scrollViewStartX + perceivedX1);
-		x2 = (int)(x2 - scrollViewStartX + perceivedX1);
-		y1 = (int)(y1 - scrollViewStartY + perceivedY1);
-		y2 = (int)(y2 - scrollViewStartY + perceivedY1);
+		x1 = (x1 - scrollViewStartX + perceivedX1);
+		x2 = (x2 - scrollViewStartX + perceivedX1);
+		y1 = (y1 - scrollViewStartY + perceivedY1);
+		y2 = (y2 - scrollViewStartY + perceivedY1);
 		frame.doFills(x1, y1, x2, y2, frameConfig.borderThickness / guiScale);
 		frame.drawTexts(x1, y1, x2, y2);
 	}

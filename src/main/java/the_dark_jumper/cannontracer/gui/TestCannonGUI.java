@@ -6,8 +6,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 import jumpercommons.GetterAndSetter;
+import jumpercommons.SimpleLocation;
 import jumpercommons.TestCannon;
 import jumpercommons.TestCannonCharge;
+import jumpercommons.TestCannonMessageObject;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
@@ -61,6 +63,7 @@ public class TestCannonGUI extends Screen implements IJumperGUI {
 	private boolean shouldClose = false;
 	private boolean cancelCannonData = false;
 
+	private final SimpleLocation cmdLocation = new SimpleLocation();
 	private final TestCannon testCannon = new TestCannon();
 
 	public TestCannonGUI(GuiManager guiManager) {
@@ -83,8 +86,8 @@ public class TestCannonGUI extends Screen implements IJumperGUI {
 		}
 	}
 
-	private void cancelButtonPressed(boolean isPressed){
-		if(isPressed){
+	private void cancelButtonPressed(boolean isPressed) {
+		if (isPressed) {
 			cancelCannonData = true;
 			shouldClose = true;
 		}
@@ -220,15 +223,16 @@ public class TestCannonGUI extends Screen implements IJumperGUI {
 		guiComponents.add(new ButtonFrame(this, "-", config.duplicate(), colors, incrementer::onDecrement));
 	}
 
-	public void open(String testCannonString) {
+	public void open(String messageObjectString) {
 		try {
+			TestCannonMessageObject messageObject = objectMapper.readValue(messageObjectString, TestCannonMessageObject.class);
 			TestCannon testCannon;
-			if (testCannonString.isEmpty()) {
+			if (messageObject.getTestCannonString().isEmpty()) {
 				testCannon = new TestCannon();
 			} else {
-				testCannon = objectMapper.readValue(testCannonString, TestCannon.class);
+				testCannon = objectMapper.readValue(messageObject.getTestCannonString(), TestCannon.class);
 			}
-			load(testCannon);
+			load(messageObject.getCmdLocation(), testCannon);
 			generateScreenComponents();
 			Minecraft.getInstance().displayGuiScreen(this);
 		} catch (JsonProcessingException e) {
@@ -237,8 +241,9 @@ public class TestCannonGUI extends Screen implements IJumperGUI {
 		}
 	}
 
-	public void load(TestCannon other) {
-		testCannon.load(other);
+	public void load(SimpleLocation location, TestCannon testCannon) {
+		this.cmdLocation.load(location);
+		this.testCannon.load(testCannon);
 	}
 
 	@Override
@@ -338,9 +343,12 @@ public class TestCannonGUI extends Screen implements IJumperGUI {
 
 		if (!cancelCannonData) {
 			try {
-				String json = objectMapper.writeValueAsString(testCannon);
-				guiManager.main.serverChatListener.testCannonChannel.sendToServer(new StringPacket().setData(json));
-				System.out.println("[TestCannonData]: " + json);
+				String testCannonJson = objectMapper.writeValueAsString(testCannon);
+				TestCannonMessageObject messageObject = new TestCannonMessageObject(cmdLocation, testCannonJson);
+				String message = objectMapper.writeValueAsString(messageObject);
+
+				guiManager.main.serverChatListener.testCannonChannel.sendToServer(new StringPacket().setData(message));
+				System.out.println("[TestCannonData]: " + message);
 			} catch (JsonProcessingException e) {
 				ChatUtils.messagePlayer("", "failed to build testCannonData!", false);
 				e.printStackTrace();

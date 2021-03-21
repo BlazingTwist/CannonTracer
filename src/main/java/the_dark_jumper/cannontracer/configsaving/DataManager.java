@@ -191,9 +191,13 @@ public class DataManager {
 
 		try {
 			List<String> lines = Files.readAllLines(Paths.get(configPathGNS.get()));
+			System.err.println("Found " + lines.size() + " lines at configPath: " + configPathGNS.get());
+
 			StringBuilder jsonBuilder = new StringBuilder();
 			lines.forEach(line -> jsonBuilder.append(line).append("\n"));
 			String json = jsonBuilder.toString();
+			System.err.println("Collected lines to String: " + json);
+
 			ObjectMapper mapper = getObjectMapper();
 			this.tracerConfig = mapper.readValue(json, TracerConfig.class);
 		} catch (Exception e) {
