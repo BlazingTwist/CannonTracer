@@ -244,8 +244,16 @@ public class ConfigGUI extends Screen implements IJumperGUI {
 		trackingTable = new ScrollableTable(this, config.duplicate(), colors);
 		trackingTable.setUniformColFormat(true, 10, 1);
 		trackingTable.setColFormat(true,
-				new FormatData(2, 1),
-				new FormatData(20, 1)
+				new FormatData(2, 1),  // Delete-Button
+				new FormatData(20, 1), // ID
+				new FormatData(7, 1), // TIME
+				new FormatData(10, 1), // Thickness
+				new FormatData(10, 1), // hitBoxRadius
+				new FormatData(7, 1), // Red
+				new FormatData(7, 1), // Green
+				new FormatData(7, 1), // Blue
+				new FormatData(7, 1), // Alpha
+				new FormatData(10, 1)  // Render
 		);
 		trackingTable.setUniformRowFormat(false, 4, 1);
 		for (String key : entities.keySet()) {

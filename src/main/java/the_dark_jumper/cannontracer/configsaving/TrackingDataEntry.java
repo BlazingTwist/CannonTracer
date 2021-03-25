@@ -16,7 +16,7 @@ public class TrackingDataEntry {
 	private Color color = new Color(0, 0, 0, 255);
 
 	@JsonProperty("hitBoxRadius")
-	private double hitBoxRadius = 0.5;
+	private double hitBoxRadius = 0.49;
 
 	public TrackingDataEntry() {
 	}
