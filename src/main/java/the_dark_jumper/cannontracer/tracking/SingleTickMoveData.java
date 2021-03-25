@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import java.util.HashMap;
+import java.util.Optional;
 import jumpercommons.SimpleLocation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -15,7 +16,7 @@ import org.lwjgl.opengl.GL11;
 import the_dark_jumper.cannontracer.Main;
 import the_dark_jumper.cannontracer.configsaving.Color;
 import the_dark_jumper.cannontracer.configsaving.TrackingDataEntry;
-import the_dark_jumper.cannontracer.modules.ModuleManager;
+import the_dark_jumper.cannontracer.settings.SinglePlayerSettings;
 
 public class SingleTickMoveData {
 	@JsonIgnore
@@ -37,7 +38,7 @@ public class SingleTickMoveData {
 	/**
 	 * Jackson constructor
 	 */
-	private SingleTickMoveData(){
+	private SingleTickMoveData() {
 		entityTracker = Main.getInstance().entityTracker;
 	}
 
@@ -76,88 +77,108 @@ public class SingleTickMoveData {
 		}
 	}
 
-	public void setupDrawingBuffer(BufferBuilder bufferBuilder, TrackingDataEntry trackingData, String entityName) {
+	public void setupDrawingBuffer(BufferBuilder bufferBuilder, TrackingDataEntry trackingData, String entityName, boolean renderLines) {
 		GL11.glLineWidth(trackingData.getThickness());
+		if(renderLines){
+			handleDrawLines(bufferBuilder, trackingData);
+		}
+		handleDrawHitBox(bufferBuilder, trackingData, entityName);
+	}
+
+	private void handleDrawLines(BufferBuilder bufferBuilder, TrackingDataEntry trackingData) {
 		Color color = trackingData.getColor();
-		int targetRed = color.getRed();
-		int targetGreen = color.getGreen();
-		int targetBlue = color.getBlue();
-		int targetAlpha = color.getAlpha();
 
 		//always y1->y2 first
-		bufferBuilder.pos(pos1.x, pos1.y, pos1.z).color(0, 0, 0, 0).endVertex();
-		bufferBuilder.pos(pos1.x, pos2.y, pos1.z).color(targetRed, targetGreen, targetBlue, targetAlpha).endVertex();
+		drawPosTransparent(bufferBuilder, pos1.x, pos1.y, pos1.z);
+		drawPos(bufferBuilder, pos1.x, pos2.y, pos1.z, color);
 
 		//x1->x2 next if difference is greater, otherwise z1->z2
 		if (Math.abs(pos2.x - pos1.x) >= Math.abs(pos2.z - pos1.z)) {
-			bufferBuilder.pos(pos2.x, pos2.y, pos1.z).color(targetRed, targetGreen, targetBlue, targetAlpha).endVertex();
+			drawPos(bufferBuilder, pos2.x, pos2.y, pos1.z, color);
 		} else {
-			bufferBuilder.pos(pos1.x, pos2.y, pos2.z).color(targetRed, targetGreen, targetBlue, targetAlpha).endVertex();
+			drawPos(bufferBuilder, pos1.x, pos2.y, pos2.z, color);
 		}
-		bufferBuilder.pos(pos2.x, pos2.y, pos2.z).color(targetRed, targetGreen, targetBlue, targetAlpha).endVertex();
-
-		int targetTick;
-		boolean isExplosionTick = false;
-		if (entityTracker.main.moduleManager.state == ModuleManager.State.SINGLEPLAYER) {
-			if (!entityTracker.main.singlePlayerSettings.renderBoxesGNS.get()) {
-				return;
-			}
-			if (entityTracker.main.singlePlayerSettings.modeGNS.get() == 2) {
-				if (!tickData.containsKey(entityName)) {
-					return;
-				}
-				targetTick = entityTracker.main.singlePlayerSettings.renderTickGNS.get() + tickOffset;
-				if (!tickData.get(entityName).containsKey(targetTick)) {
-					return;
-				}
-				isExplosionTick = tickData.get(entityName).get(targetTick);
-			}
-		} else if (entityTracker.main.moduleManager.state == ModuleManager.State.MULTIPLAYER) {
-			//not checking renderboxes, because always active in multiplayer
-			if (!tickData.containsKey(entityName)) {
-				return;
-			}
-			targetTick = entityTracker.main.multiPlayerSettings.renderTickGNS.get() + tickOffset;
-			if (!tickData.get(entityName).containsKey(targetTick)) {
-				return;
-			}
-			isExplosionTick = tickData.get(entityName).get(targetTick);
-		}
-
-		if (isExplosionTick) {
-			targetRed = 255 - targetRed;
-			targetGreen = 255 - targetGreen;
-			targetBlue = 255 - targetBlue;
-		}
-
-		bufferBuilder.pos((pos2.x - 0.49), (pos2.y - 0.49), (pos2.z - 0.49)).color(0, 0, 0, 0).endVertex();
-		bufferBuilder.pos((pos2.x + 0.49), (pos2.y - 0.49), (pos2.z - 0.49)).color(targetRed, targetGreen, targetBlue, targetAlpha).endVertex();
-		bufferBuilder.pos((pos2.x + 0.49), (pos2.y - 0.49), (pos2.z + 0.49)).color(targetRed, targetGreen, targetBlue, targetAlpha).endVertex();
-		bufferBuilder.pos((pos2.x - 0.49), (pos2.y - 0.49), (pos2.z + 0.49)).color(targetRed, targetGreen, targetBlue, targetAlpha).endVertex();
-		bufferBuilder.pos((pos2.x - 0.49), (pos2.y - 0.49), (pos2.z - 0.49)).color(targetRed, targetGreen, targetBlue, targetAlpha).endVertex();
-		bufferBuilder.pos((pos2.x - 0.49), (pos2.y + 0.49), (pos2.z - 0.49)).color(targetRed, targetGreen, targetBlue, targetAlpha).endVertex();
-		bufferBuilder.pos((pos2.x + 0.49), (pos2.y + 0.49), (pos2.z - 0.49)).color(targetRed, targetGreen, targetBlue, targetAlpha).endVertex();
-		bufferBuilder.pos((pos2.x + 0.49), (pos2.y + 0.49), (pos2.z + 0.49)).color(targetRed, targetGreen, targetBlue, targetAlpha).endVertex();
-		bufferBuilder.pos((pos2.x - 0.49), (pos2.y + 0.49), (pos2.z + 0.49)).color(targetRed, targetGreen, targetBlue, targetAlpha).endVertex();
-		bufferBuilder.pos((pos2.x - 0.49), (pos2.y - 0.49), (pos2.z + 0.49)).color(targetRed, targetGreen, targetBlue, targetAlpha).endVertex();
-
-		//fill missing 3 lines
-		bufferBuilder.pos((pos2.x - 0.49), (pos2.y + 0.49), (pos2.z + 0.49)).color(0, 0, 0, 0).endVertex();
-		bufferBuilder.pos((pos2.x - 0.49), (pos2.y + 0.49), (pos2.z - 0.49)).color(targetRed, targetGreen, targetBlue, targetAlpha).endVertex();
-		bufferBuilder.pos((pos2.x + 0.49), (pos2.y - 0.49), (pos2.z - 0.49)).color(0, 0, 0, 0).endVertex();
-		bufferBuilder.pos((pos2.x + 0.49), (pos2.y + 0.49), (pos2.z - 0.49)).color(targetRed, targetGreen, targetBlue, targetAlpha).endVertex();
-		bufferBuilder.pos((pos2.x + 0.49), (pos2.y - 0.49), (pos2.z + 0.49)).color(0, 0, 0, 0).endVertex();
-		bufferBuilder.pos((pos2.x + 0.49), (pos2.y + 0.49), (pos2.z + 0.49)).color(targetRed, targetGreen, targetBlue, targetAlpha).endVertex();
+		drawPos(bufferBuilder, pos2.x, pos2.y, pos2.z, color);
 	}
 
-	public void renderAxisText(EntityRendererManager rendererManager, MatrixStack matrixStack, IRenderTypeBuffer buffer){
+	private void handleDrawHitBox(BufferBuilder bufferBuilder, TrackingDataEntry trackingData, String entityName) {
+		Optional<Boolean> isExplosionTick;
+		switch (entityTracker.main.moduleManager.state) {
+			case SINGLEPLAYER: {
+				SinglePlayerSettings spSettings = entityTracker.main.singlePlayerSettings;
+				if (!spSettings.renderBoxesGNS.get()) {
+					return;
+				}
+				if (spSettings.modeGNS.get() == 2) { // Last X Seconds - mode
+					int targetTick = spSettings.renderTickGNS.get() + tickOffset;
+					isExplosionTick = Optional.ofNullable(tickData.get(entityName))
+							.map(entityTickData -> entityTickData.get(targetTick));
+				} else {
+					isExplosionTick = Optional.of(false);
+				}
+				break;
+			}
+			case MULTIPLAYER: {
+				int targetTick = entityTracker.main.multiPlayerSettings.renderTickGNS.get() + tickOffset;
+				isExplosionTick = Optional.ofNullable(tickData.get(entityName))
+						.map(entityTickData -> entityTickData.get(targetTick));
+				break;
+			}
+			default:
+				return;
+		}
+
+		if (!isExplosionTick.isPresent()) {
+			return;
+		}
+
+		Color color = trackingData.getColor();
+		if (isExplosionTick.get()) {
+			color = color.copy().invert();
+		}
+		drawHitBox(bufferBuilder, pos2, trackingData.getHitBoxRadius(), color);
+	}
+
+	private static void drawHitBox(BufferBuilder bufferBuilder, SimpleLocation location, double radius, Color color) {
+		double x0 = location.x - radius;
+		double x1 = location.x + radius;
+		double y0 = location.y - radius;
+		double y1 = location.y + radius;
+		double z0 = location.z - radius;
+		double z1 = location.z + radius;
+
+		drawHalfHitBox(bufferBuilder, color, x1, x0, y1, y0, z0, z1);
+		drawHalfHitBox(bufferBuilder, color, x0, x1, y0, y1, z0, z1);
+	}
+
+	private static void drawHalfHitBox(BufferBuilder bufferBuilder, Color color, double x0, double x1, double y0, double y1, double z0, double z1) {
+		drawPosTransparent(bufferBuilder, x1, y1, z0);
+		drawPos(bufferBuilder, x0, y1, z0, color);
+		drawPos(bufferBuilder, x0, y1, z1, color);
+		drawPos(bufferBuilder, x1, y1, z1, color);
+
+		drawPosTransparent(bufferBuilder, x1, y0, z0);
+		drawPos(bufferBuilder, x1, y1, z0, color);
+		drawPos(bufferBuilder, x1, y1, z1, color);
+		drawPos(bufferBuilder, x1, y0, z1, color);
+	}
+
+	private static void drawPosTransparent(BufferBuilder bufferBuilder, double x, double y, double z) {
+		bufferBuilder.pos(x, y, z).color(0, 0, 0, 0).endVertex();
+	}
+
+	private static void drawPos(BufferBuilder bufferBuilder, double x, double y, double z, Color color) {
+		bufferBuilder.pos(x, y, z).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
+	}
+
+	public void renderAxisText(EntityRendererManager rendererManager, MatrixStack matrixStack, IRenderTypeBuffer buffer) {
 		SimpleLocation delta = SimpleLocation.sub(pos2, pos1);
 		renderText(rendererManager, "" + delta.y, matrixStack, buffer, pos1.x, pos1.y + (delta.y / 2), pos1.z);
 
 		if (Math.abs(pos2.x - pos1.x) >= Math.abs(pos2.z - pos1.z)) {
 			renderText(rendererManager, "" + delta.x, matrixStack, buffer, pos1.x + (delta.x / 2), pos2.y, pos1.z);
 			renderText(rendererManager, "" + delta.z, matrixStack, buffer, pos2.x, pos2.y, pos1.z + (delta.z / 2));
-		}else{
+		} else {
 			renderText(rendererManager, "" + delta.z, matrixStack, buffer, pos1.x, pos2.y, pos1.z + (delta.z / 2));
 			renderText(rendererManager, "" + delta.x, matrixStack, buffer, pos1.x + (delta.x / 2), pos2.y, pos2.z);
 		}
@@ -172,7 +193,7 @@ public class SingleTickMoveData {
 			matrixStackIn.scale(-0.025f, -0.025f, 0.025f);
 			Matrix4f matrix = matrixStackIn.getLast().getMatrix();
 			float backgroundOpacity = Minecraft.getInstance().gameSettings.getTextBackgroundOpacity(0.25f);
-			int backgroundColor = (int)(backgroundOpacity * 255f) << 24;
+			int backgroundColor = (int) (backgroundOpacity * 255f) << 24;
 			FontRenderer fontRenderer = renderManager.getFontRenderer();
 			fontRenderer.renderString(displayText, 0, 0, 0x20FFFFFF, false, matrix, bufferIn, false, backgroundColor, 0);
 			fontRenderer.renderString(displayText, 0, 0, 0xFFFFFFFF, false, matrix, bufferIn, false, 0, 0);

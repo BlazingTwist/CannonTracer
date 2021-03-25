@@ -190,16 +190,8 @@ public class DataManager {
 		updatePathGNS.set(prefs.get("TracerUpdatePath", ""));
 
 		try {
-			List<String> lines = Files.readAllLines(Paths.get(configPathGNS.get()));
-			System.err.println("Found " + lines.size() + " lines at configPath: " + configPathGNS.get());
-
-			StringBuilder jsonBuilder = new StringBuilder();
-			lines.forEach(line -> jsonBuilder.append(line).append("\n"));
-			String json = jsonBuilder.toString();
-			System.err.println("Collected lines to String: " + json);
-
 			ObjectMapper mapper = getObjectMapper();
-			this.tracerConfig = mapper.readValue(json, TracerConfig.class);
+			this.tracerConfig = mapper.readValue(new File(configPathGNS.get()), TracerConfig.class);
 		} catch (Exception e) {
 			System.err.println("Unable to parse config, resetting to default");
 			e.printStackTrace();

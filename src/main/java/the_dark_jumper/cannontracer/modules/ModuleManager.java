@@ -34,6 +34,7 @@ public class ModuleManager {
 	public ModuleBasic showLastTickSP;
 
 	public ModuleBasic xRayTracesMP;
+	public ModuleBasic renderLinesMP;
 	public ModuleBasic menuMP;
 	public ModuleBasic pullDataMP;
 	public ModuleBasic clearDataMP;
@@ -120,6 +121,10 @@ public class ModuleManager {
 		xRayTracesMP.setBehaviour(new ToggleBehaviour(xRayTracesMP, false, main.multiPlayerSettings.xRayTraceGNS));
 		multiPlayerModules.add(xRayTracesMP);
 
+		renderLinesMP = new ModuleBasic("RenderLinesMP", true, false);
+		renderLinesMP.setBehaviour(new ToggleBehaviour(renderLinesMP, true, main.multiPlayerSettings.renderLinesGNS));
+		multiPlayerModules.add(renderLinesMP);
+
 		menuMP = new ModuleBasic("MenuMP", false, true);
 		menuMP.setBehaviour(new ToggleBehaviour(menuMP, false, main.multiPlayerSettings.renderMenuGNS));
 		multiPlayerModules.add(menuMP);
@@ -171,6 +176,7 @@ public class ModuleManager {
 
 		MultiPlayerKeybinds keysMP = main.dataManager.getTracerConfig().getMultiPlayerConfig().getKeybinds();
 		xRayTracesMP.setKeybind(keysMP.getxRayTracesMP());
+		renderLinesMP.setKeybind(keysMP.getRenderLinesMP());
 		menuMP.setKeybind(keysMP.getMenuMP());
 		pullDataMP.setKeybind(keysMP.getPullDataMP());
 		clearDataMP.setKeybind(keysMP.getClearDataMP());

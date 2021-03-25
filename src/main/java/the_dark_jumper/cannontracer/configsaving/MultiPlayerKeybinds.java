@@ -4,34 +4,37 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class MultiPlayerKeybinds {
 	@JsonProperty("XRayTracesMP")
-	private KeybindEntry xRayTracesMP = new KeybindEntry().addTrigger(45, 42);
+	private KeybindEntry xRayTracesMP = new KeybindEntry().addTrigger(45, 42); // X + LeftShift
+
+	@JsonProperty("RenderLinesMP")
+	private KeybindEntry renderLinesMP = new KeybindEntry().addTrigger(38, 42); // L + LeftShift
 
 	@JsonProperty("MenuMP")
-	private KeybindEntry menuMP = new KeybindEntry().addTrigger(46, 42);
+	private KeybindEntry menuMP = new KeybindEntry().addTrigger(46, 42); // C + LeftShift
 
 	@JsonProperty("PullDataMP")
-	private KeybindEntry pullDataMP = new KeybindEntry().addTrigger(19).addExclude(42);
+	private KeybindEntry pullDataMP = new KeybindEntry().addTrigger(19).addExclude(42); // R + !LeftShift
 
 	@JsonProperty("ClearDataMP")
-	private KeybindEntry clearDataMP = new KeybindEntry().addTrigger(19, 42);
+	private KeybindEntry clearDataMP = new KeybindEntry().addTrigger(19, 42); // R + LeftShift
 
 	@JsonProperty("DisplayTickMP+")
-	private KeybindEntry displayTickMPAdd = new KeybindEntry().addTrigger(333);
+	private KeybindEntry displayTickMPAdd = new KeybindEntry().addTrigger(333); // ArrowRight
 
 	@JsonProperty("DisplayTickMP-")
-	private KeybindEntry displayTickMPSub = new KeybindEntry().addTrigger(331);
+	private KeybindEntry displayTickMPSub = new KeybindEntry().addTrigger(331); // ArrowLeft
 
 	@JsonProperty("DisplayDespawnTickMP")
-	private KeybindEntry displayDespawnTickMP = new KeybindEntry().addTrigger(42, 333);
+	private KeybindEntry displayDespawnTickMP = new KeybindEntry().addTrigger(42, 333); // LeftShift + ArrowRight
 
 	@JsonProperty("DisplayPrevDespawnTickMP")
-	private KeybindEntry displayPreviousDespawnTickMP = new KeybindEntry().addTrigger(42, 331);
+	private KeybindEntry displayPreviousDespawnTickMP = new KeybindEntry().addTrigger(42, 331); // LeftShift + ArrowLeft
 
 	@JsonProperty("ShowFirstTickMP")
-	private KeybindEntry showFirstTickMP = new KeybindEntry().addTrigger(328);
+	private KeybindEntry showFirstTickMP = new KeybindEntry().addTrigger(328); // ArrowUP
 
 	@JsonProperty("ShowLastTickMP")
-	private KeybindEntry showLastTickMP = new KeybindEntry().addTrigger(336);
+	private KeybindEntry showLastTickMP = new KeybindEntry().addTrigger(336); // ArrowDown
 
 	public MultiPlayerKeybinds() {
 	}
@@ -42,6 +45,15 @@ public class MultiPlayerKeybinds {
 
 	public MultiPlayerKeybinds setxRayTracesMP(KeybindEntry xRayTracesMP) {
 		this.xRayTracesMP = xRayTracesMP;
+		return this;
+	}
+
+	public KeybindEntry getRenderLinesMP() {
+		return renderLinesMP;
+	}
+
+	public MultiPlayerKeybinds setRenderLinesMP(KeybindEntry renderLinesMP) {
+		this.renderLinesMP = renderLinesMP;
 		return this;
 	}
 

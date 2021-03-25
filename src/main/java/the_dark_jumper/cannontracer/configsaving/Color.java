@@ -60,4 +60,23 @@ public class Color {
 		this.alpha = alpha;
 		return this;
 	}
+
+	/**
+	 * Inverts `this` color and returns `this`
+	 *
+	 * @return this Color Object
+	 */
+	public Color invert() {
+		red = 255 - red;
+		green = 255 - green;
+		blue = 255 - blue;
+		return this;
+	}
+
+	/**
+	 * @return a new instance of {@link the_dark_jumper.cannontracer.configsaving.Color} with the same Property-Values
+	 */
+	public Color copy() {
+		return new Color(red, green, blue, alpha);
+	}
 }

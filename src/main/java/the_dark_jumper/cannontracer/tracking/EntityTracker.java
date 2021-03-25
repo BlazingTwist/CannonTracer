@@ -194,11 +194,12 @@ public class EntityTracker {
 		final BufferBuilder bufferBuilder = tessellator.getBuffer();
 		bufferBuilder.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION_COLOR);
 
+		boolean renderLines = isSinglePlayer || main.multiPlayerSettings.renderLinesGNS.get();
 		for (SingleTickMoveData moveData : tracingHistory) {
 			for (String key : moveData.tickData.keySet()) {
 				TrackingDataEntry trackData = isSinglePlayer ? main.dataManager.getTrackingDataSP().get(key) : main.dataManager.getTrackingDataMP().get(key);
 				if (trackData != null && trackData.isRender()) {
-					moveData.setupDrawingBuffer(bufferBuilder, trackData, key);
+					moveData.setupDrawingBuffer(bufferBuilder, trackData, key, renderLines);
 
 					// TODO check axis rendering
 					//moveData.renderAxisText(rendererManager, matrixStack, bufferSource);

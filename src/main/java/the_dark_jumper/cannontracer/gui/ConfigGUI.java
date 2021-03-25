@@ -264,6 +264,7 @@ public class ConfigGUI extends Screen implements IJumperGUI {
 				new ValueFrame<>(this, null, table.colors, "id", new GetterAndSetter<>(idHandler::getID, idHandler::setID), String.class, true),
 				new ValueFrame<>(this, null, table.colors, "time", new GetterAndSetter<>(trackingData::getTime, trackingData::setTime), Float.class, false),
 				new ValueFrame<>(this, null, table.colors, "thickness", new GetterAndSetter<>(trackingData::getThickness, trackingData::setThickness), Float.class, false),
+				new ValueFrame<>(this, null, table.colors, "hitBoxRadius", new GetterAndSetter<>(trackingData::getHitBoxRadius, trackingData::setHitBoxRadius), Double.class, false),
 				new ValueFrame<>(this, null, table.colors, "red", new GetterAndSetter<>(trackingData.getColor()::getRed, trackingData.getColor()::setRed), Integer.class, false),
 				new ValueFrame<>(this, null, table.colors, "green", new GetterAndSetter<>(trackingData.getColor()::getGreen, trackingData.getColor()::setGreen), Integer.class, false),
 				new ValueFrame<>(this, null, table.colors, "blue", new GetterAndSetter<>(trackingData.getColor()::getBlue, trackingData.getColor()::setBlue), Integer.class, false),
@@ -401,18 +402,18 @@ public class ConfigGUI extends Screen implements IJumperGUI {
 	@Override
 	@ParametersAreNonnullByDefault
 	public void drawCenteredString(FontRenderer fontRenderer, String text, int xPos, int height, int color) {
-		double configFontHeight = guiManager.getGuiConfig().getFontHeight();
-		if (configFontHeight == 0) {
+		double configFontSize = guiManager.getGuiConfig().getFontHeight();
+		if (configFontSize == 0) {
 			return;
 		}
-		height -= (fontRenderer.FONT_HEIGHT * configFontHeight) / 2;
-		xPos /= configFontHeight;
-		height /= configFontHeight;
+		height -= (fontRenderer.FONT_HEIGHT * configFontSize) / 2;
+		xPos /= configFontSize;
+		height /= configFontSize;
 
 		GL11.glPushMatrix();
 		//GlStateManager.pushMatrix();
-		GL11.glScaled(configFontHeight, configFontHeight, configFontHeight);
-		//GlStateManager.scaled(configFontHeight, configFontHeight, configFontHeight);
+		GL11.glScaled(configFontSize, configFontSize, configFontSize);
+		//GlStateManager.scaled(configFontSize, configFontSize, configFontSize);
 		super.drawCenteredString(fontRenderer, text, xPos, height, color);
 		GL11.glPopMatrix();
 		//GlStateManager.popMatrix();

@@ -15,6 +15,9 @@ public class TrackingDataEntry {
 	@JsonProperty("color")
 	private Color color = new Color(0, 0, 0, 255);
 
+	@JsonProperty("hitBoxRadius")
+	private double hitBoxRadius = 0.5;
+
 	public TrackingDataEntry() {
 	}
 
@@ -58,6 +61,15 @@ public class TrackingDataEntry {
 
 	public TrackingDataEntry setColor(Color color) {
 		this.color = color;
+		return this;
+	}
+
+	public double getHitBoxRadius() {
+		return hitBoxRadius;
+	}
+
+	public TrackingDataEntry setHitBoxRadius(double hitBoxRadius) {
+		this.hitBoxRadius = hitBoxRadius;
 		return this;
 	}
 }

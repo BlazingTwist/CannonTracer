@@ -10,6 +10,7 @@ import the_dark_jumper.cannontracer.tracking.SingleTickMoveData;
 public class MultiPlayerSettings {
 	public final Main main;
 
+	public GetterAndSetter<Boolean> renderLinesGNS = new GetterAndSetter<>(true);
 	public GetterAndSetter<Integer> renderTickGNS = new GetterAndSetter<>(0);
 	public GetterAndSetter<Boolean> xRayTraceGNS = new GetterAndSetter<>(false);
 	private boolean renderMenu = false;
