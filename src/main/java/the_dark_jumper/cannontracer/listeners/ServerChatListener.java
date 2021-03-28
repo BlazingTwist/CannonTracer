@@ -117,10 +117,22 @@ public class ServerChatListener {
 		for (SingleTickMoveData moveData : main.entityTracker.tracingHistory) {
 			if (moveData.isSameData(pos1, pos2)) {
 				//is old
-				if (!moveData.tickData.containsKey(entityName)) {
-					moveData.tickData.put(entityName, new HashMap<>());
+				HashMap<Integer, Boolean> tickData;
+				if (moveData.tickData.containsKey(entityName)) {
+					tickData = moveData.tickData.get(entityName);
+				} else {
+					tickData = new HashMap<>();
+					moveData.tickData.put(entityName, tickData);
 				}
-				moveData.tickData.get(entityName).put(tick, isLastTick);
+
+				if (tickData.containsKey(tick)) {
+					if (isLastTick && !tickData.get(tick)) {
+						// update to reflect that this move had an explosion
+						tickData.put(tick, true);
+					}
+				} else {
+					tickData.put(tick, isLastTick);
+				}
 				return;
 			}
 		}
