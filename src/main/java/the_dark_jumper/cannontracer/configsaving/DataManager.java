@@ -13,6 +13,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
@@ -209,6 +210,9 @@ public class DataManager {
 
 			System.err.println("read: " + readLines + " lines at configPath: " + configPathGNS.get());
 			System.err.println("Collected lines to String: " + json);
+			Path path = Paths.get(configPathGNS.get());
+			long size = Files.size(path);
+			System.err.println("Filesize is: " + size + " | at Path: " + path.toString());
 
 			ObjectMapper mapper = getObjectMapper();
 			//this.tracerConfig = mapper.readValue(json, TracerConfig.class);
