@@ -212,7 +212,8 @@ public class DataManager {
 			System.err.println("Collected lines to String: " + json);
 			Path path = Paths.get(configPathGNS.get());
 			long size = Files.size(path);
-			System.err.println("Filesize is: " + size + " | at Path: " + path.toString());
+			File configFile = new File(configPathGNS.get());
+			System.err.println("Filesize is: " + size + " | at Path: " + path.toString() + " | exists? " + configFile.isFile());
 
 			ObjectMapper mapper = getObjectMapper();
 			//this.tracerConfig = mapper.readValue(json, TracerConfig.class);

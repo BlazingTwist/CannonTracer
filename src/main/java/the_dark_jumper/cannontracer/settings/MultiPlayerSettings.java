@@ -2,6 +2,7 @@ package the_dark_jumper.cannontracer.settings;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import jumpercommons.GetterAndSetter;
 import net.minecraft.client.Minecraft;
 import the_dark_jumper.cannontracer.Main;
@@ -83,7 +84,7 @@ public class MultiPlayerSettings {
 		int max = main.moduleManager.getMaxDisplayTickMP();
 		int currentTick = startTick;
 		while ((currentTick = currentTick - 1) != startTick) {
-			if(currentTick < 0){
+			if (currentTick < 0) {
 				currentTick = max;
 			}
 			if (despawnTicks.contains(currentTick)) {
@@ -99,11 +100,10 @@ public class MultiPlayerSettings {
 		HashSet<Integer> result = new HashSet<>();
 		for (SingleTickMoveData moveData : main.entityTracker.tracingHistory) {
 			for (HashMap<Integer, Boolean> tickData : moveData.tickData.values()) {
-				for (int key : tickData.keySet()) {
-					if (tickData.get(key)) {
-						result.add(key);
-					}
-				}
+				tickData.entrySet().stream()
+						.filter(Map.Entry::getValue) // filter for despawn ticks
+						.map(Map.Entry::getKey) // get ticks
+						.forEach(result::add);
 			}
 		}
 		return result;
@@ -114,27 +114,27 @@ public class MultiPlayerSettings {
 		for (SingleTickMoveData singleTickMoveData : main.entityTracker.tracingHistory) {
 			for (HashMap<Integer, Boolean> tickData : singleTickMoveData.tickData.values()) {
 				int minTick = tickData.keySet().stream().min(Integer::compareTo).orElse(Integer.MAX_VALUE);
-				if(minTick < first){
+				if (minTick < first) {
 					first = minTick;
 				}
 			}
 		}
-		if(first < main.moduleManager.getMaxDisplayTickMP()){
+		if (first < main.moduleManager.getMaxDisplayTickMP()) {
 			renderTickGNS.set(first);
 		}
 	}
 
-	public void showLastTick(boolean b){
+	public void showLastTick(boolean b) {
 		int last = Integer.MIN_VALUE;
 		for (SingleTickMoveData singleTickMoveData : main.entityTracker.tracingHistory) {
 			for (HashMap<Integer, Boolean> tickData : singleTickMoveData.tickData.values()) {
 				int maxTick = tickData.keySet().stream().max(Integer::compareTo).orElse(Integer.MIN_VALUE);
-				if(maxTick > last){
+				if (maxTick > last) {
 					last = maxTick;
 				}
 			}
 		}
-		if(last >= 0){
+		if (last >= 0) {
 			renderTickGNS.set(last);
 		}
 	}
