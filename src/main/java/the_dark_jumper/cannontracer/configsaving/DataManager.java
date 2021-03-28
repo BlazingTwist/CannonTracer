@@ -3,9 +3,15 @@ package the_dark_jumper.cannontracer.configsaving;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -121,7 +127,7 @@ public class DataManager {
 		prefs.put("TracerUpdatePath", updatePathGNS.get());
 
 		try {
-			FileWriter out = new FileWriter(configPathGNS.get());
+			OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(configPathGNS.get()), StandardCharsets.UTF_8);
 			ObjectMapper mapper = getObjectMapper();
 			String jsonString = mapper.writeValueAsString(tracerConfig);
 
@@ -190,7 +196,22 @@ public class DataManager {
 		updatePathGNS.set(prefs.get("TracerUpdatePath", ""));
 
 		try {
+			int readLines = 0;
+			StringBuilder jsonBuilder = new StringBuilder();
+
+			BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(configPathGNS.get()), StandardCharsets.UTF_8));
+			String line;
+			while ((line = reader.readLine()) != null) {
+				jsonBuilder.append(line).append("\n");
+				readLines++;
+			}
+			String json = jsonBuilder.toString();
+
+			System.err.println("read: " + readLines + " lines at configPath: " + configPathGNS.get());
+			System.err.println("Collected lines to String: " + json);
+
 			ObjectMapper mapper = getObjectMapper();
+			//this.tracerConfig = mapper.readValue(json, TracerConfig.class);
 			this.tracerConfig = mapper.readValue(new File(configPathGNS.get()), TracerConfig.class);
 		} catch (Exception e) {
 			System.err.println("Unable to parse config, resetting to default");

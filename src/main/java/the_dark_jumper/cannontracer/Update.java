@@ -18,7 +18,7 @@ public class Update {
 	public static final String OUTDATED_MSG = "is outdated, please update using the button on the config screen!";
 	public static final String MOD_NAME = "CannonTracer ";
 	
-	public static final String VERSION = "1.1.1";
+	public static final String VERSION = "1.1.2";
 	
 	public static void sendUpdateMessageIfNeeded() {
 		if(checkUpdateAvailable()) {
