@@ -43,12 +43,12 @@ The mod also gives you these Key-Binds (drag the blue bar on the right to scroll
 
 ## Examples and Screenshots
 
-#### CannonTester and CannonTracer in action
+#### CannonTracer and CannonTester in action
 
-![CommandBlock for Projectiles](projectilesCMD.png)
-![CommandBlock for Propellant](propellantCMD.png)
 ![Tracer example POV 1](examplePOV1.gif)
 ![Tracer example POV 2](examplePOV2.gif)
+![CommandBlock for Projectiles](projectilesCMD.png)
+![CommandBlock for Propellant](propellantCMD.png)
 
 <br/>
 
